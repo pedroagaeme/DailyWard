@@ -1,23 +1,31 @@
 import { CalendarSearchIcon } from "@/assets/images/header-icons/date-picker-icons/calendar-search-icon";
-import { GoDateAfterIcon } from "@/assets/images/header-icons/date-picker-icons/go-date-after-icon";
-import { GoDateBeforeIcon } from "@/assets/images/header-icons/date-picker-icons/go-date-before-icon";
 import { Colors } from "@/constants/Colors";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { toSegmentedDate } from "@/constants/SegmentedDate";
+import { GoDateBeforeButton } from "./GoDateBeforeButton";
+import { DateTime } from "luxon";
+import { GoDateAfterButton } from "./GoDateAfterButton";
 
 export function CustomDatePicker() {
-    return (
+    const diaryCreationDate = DateTime.fromSQL("2025-07-15");
+    const currentDate = DateTime.now().startOf('day');
+    const [pickedDate, setPickedDate] = useState<DateTime>(currentDate);
+    const segmentedPickedDate = toSegmentedDate(pickedDate);
+
+    return (pickedDate &&
         <View style={styles.container}>
             <View style={styles.row}>
-                <Text style={styles.text}>Janeiro, 2025</Text>
+                <Text style={styles.text}>{segmentedPickedDate.monthYear}</Text>
                 <CalendarSearchIcon/>
             </View>
             <View style={styles.row}>
-                <GoDateBeforeIcon/>
+                <GoDateBeforeButton pickedDate={pickedDate} setPickedDate={setPickedDate} diaryCreationDate={diaryCreationDate}/>
                 <View style={styles.dayContainer}>
-                    <Text style={styles.dayNumberText}>24</Text>
-                    <Text style={styles.text}>QUA</Text>
+                    <Text style={styles.dayNumberText}>{segmentedPickedDate.day}</Text>
+                    <Text style={styles.text}>{segmentedPickedDate.weekday}</Text>
                 </View>
-                <GoDateAfterIcon/>
+                <GoDateAfterButton pickedDate={pickedDate} setPickedDate={setPickedDate} currentDate={currentDate}/>
             </View>
         </View>
     );
@@ -39,6 +47,7 @@ const styles = StyleSheet.create({
         fontSize:16,
     },
     dayContainer: {
+        width:'100%',
         alignItems:'center',
     },
     dayNumberText: {

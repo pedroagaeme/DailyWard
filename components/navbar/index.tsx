@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { StyleSheet, View } from "react-native";
 import { tabIconArray } from "../../constants/TabIconArray";
-import { TabButton } from "./tab-button";
+import { TabButton } from "./TabButton";
 
 export function Navbar() {
     return (

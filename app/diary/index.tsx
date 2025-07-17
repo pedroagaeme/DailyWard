@@ -1,9 +1,9 @@
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FeedArea, FeedItem } from '../../components/feed-area';
-import { Header } from '../../components/header';
-import { Navbar } from '../../components/navbar';
+import { FeedArea, FeedItem } from '../../components/FeedArea';
+import { Header } from '../../components/Header';
+import { Navbar } from '../../components/Navbar';
 
 const sampleData: FeedItem[] = [
   {
@@ -33,7 +33,7 @@ const sampleData: FeedItem[] = [
 ];
 
 
-export function Diary() {
+export default function Diary() {
     return (
     <View style={styles.container}>
         <Header></Header>

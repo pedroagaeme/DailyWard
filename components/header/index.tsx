@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DiaryNameDisplay } from './diary-name-display';
+import { DiaryNameDisplay } from './DiaryNameDisplay';
 import { DailyWardLogo } from '@/assets/images/header-icons/dailyward-logo';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { SettingsIcon } from '@/assets/images/header-icons/settings-icon';
