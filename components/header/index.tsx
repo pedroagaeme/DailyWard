@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
     shadowHeader: {
         shadowColor: '#000',
         shadowOffset: {
-        width: 0,
-        height: 2,
+            width: 0,
+            height: 2, 
         },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 8,
+        elevation: 4, 
     },
     headerContentWrapper: {
         gap:15,
