@@ -1,29 +1,30 @@
+import { DiaryFeedItem, renderDiaryFeedItem } from '@/components/FeedArea/DiaryFeedItem';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, View } from 'react-native';
-import { FeedArea, FeedItem } from '../../components/FeedArea';
+import { FeedArea } from '../../components/FeedArea';
 import { Header } from '../../components/Header';
 
-const sampleData: FeedItem[] = [
+const sampleData: DiaryFeedItem[] = [
   {
-    posterName: "John Doe",
+    name: "John Doe",
     posterProfilePicUrl: "https://example.com/profile1.jpg",
     contentPicUrl: "https://example.com/post1.jpg",
     contentText: "Amazing sunset at the beach today!"
   },
   {
-    posterName: "Jane Smith", 
+    name: "Jane Smith", 
     posterProfilePicUrl: "https://example.com/profile2.jpg",
     contentPicUrl: "https://example.com/post2.jpg",
     contentText: "Coffee and coding session in progress."
   },
   {
-    posterName: "John Doe",
+    name: "John Doe",
     posterProfilePicUrl: "https://example.com/profile1.jpg",
     contentPicUrl: "https://example.com/post1.jpg",
     contentText: "Amazing sunset at the beach today!"
   },
   {
-    posterName: "John Doe",
+    name: "John Doe",
     posterProfilePicUrl: "https://example.com/profile1.jpg",
     contentPicUrl: "https://example.com/post1.jpg",
     contentText: "Amazing sunset at the beach today!"
@@ -35,7 +36,13 @@ export default function Diary() {
     return (
     <View style={styles.container}>
         <Header></Header>
-        <FeedArea items={sampleData}/>
+        <FeedArea 
+          items={sampleData} 
+          renderItem={renderDiaryFeedItem} 
+          fadedEdges={{top:true, bottom:true}} 
+          immersiveScreen={{top:false, bottom:true}} 
+          overlayHeight={40}
+        />
     </View>
     );
 };
@@ -46,15 +53,5 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
         backgroundColor: Colors.light.background, 
         overflow: 'visible'
-    },
-    behindLayer: {
-        flex:1,
-    },
-    overlay: {
-        position:'absolute',
-        height:'100%',
-        width:'100%',
-        justifyContent:'flex-end',
-        paddingBottom:30,
     },
 });

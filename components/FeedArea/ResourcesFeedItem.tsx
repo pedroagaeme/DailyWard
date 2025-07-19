@@ -1,0 +1,71 @@
+import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
+import { DiaryFeedItem } from './DiaryFeedItem';
+
+export interface ResourcesFeedItem extends DiaryFeedItem {
+    creationDate: string;
+}
+
+export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item}) => (
+  <View style={[styles.itemContainer, styles.shadow]}>
+    <View style={styles.headerRow}>
+      <Text style={styles.posterName}>{item.name}</Text>
+      <Text style={styles.creationDateText}>{item.creationDate}</Text>
+    </View>
+    <View style={styles.contentPic}></View>
+    <Text style={styles.contentText}>{item.contentText}</Text>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent:'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  posterName: {
+    fontFamily:'Inter_600SemiBold',
+    fontSize: 16,
+    color: '#333333',
+  },
+  contentPic: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  contentText: {
+    fontFamily:'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#666666',
+  },
+  creationDateText: {
+    fontFamily:'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#666666',
+  }
+});

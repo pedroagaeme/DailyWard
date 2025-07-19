@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 import { GoDateAfterButton } from "./GoDateAfterButton";
 
 export function CustomDatePicker() {
-    const diaryCreationDate = DateTime.fromSQL("2025-07-15");
+    const diaryCreationDate = DateTime.fromSQL("2025-06-01");
     const currentDate = DateTime.now().startOf('day');
     const [pickedDate, setPickedDate] = useState<DateTime>(currentDate);
     const segmentedPickedDate = toSegmentedDate(pickedDate);
