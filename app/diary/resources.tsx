@@ -56,7 +56,8 @@ export default function Resources() {
         renderItem={renderResourcesFeedItem} 
         fadedEdges={{top:true, bottom:true}} 
         immersiveScreen={{top:false, bottom:true}}
-        overlayHeight={40}
+        overlayHeight={76}
+        navbarInset={true}
       />
     </View>
     );

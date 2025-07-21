@@ -9,27 +9,31 @@ import {
 import { FadedOverlayContainer } from './FadedOverlayContainer';
 import { useFeedAreaInsets } from '@/hooks/useFeedAreaInsets';
 
-export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight, additionalPadding}: {
+interface Props {
   items:FeedItem[], 
   renderItem:ListRenderItem<any>, 
   fadedEdges:InsetToggle, 
   immersiveScreen:InsetToggle, 
-  overlayHeight:number,
-  additionalPadding?:number}) 
+  overlayHeight?:number,
+  additionalPadding?:number,
+  numColumns?:number,
+  navbarInset?:boolean,
+}
+export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = 0, numColumns = 0, navbarInset = false}: Props) 
   {
 
-  const additionalPaddingNumber = (additionalPadding ? additionalPadding : 0);
-  const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight});
+  const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
   
   return (
     <FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}>
-      <FlatList 
+      <FlatList
+        numColumns={numColumns}
         data={items} 
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={[styles.flatListWrapper, {
           paddingTop:topPadding, 
-          paddingBottom:bottomPadding + additionalPaddingNumber
+          paddingBottom:bottomPadding + additionalPadding
         }]}
         showsVerticalScrollIndicator={false}
       />

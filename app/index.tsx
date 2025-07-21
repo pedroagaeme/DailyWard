@@ -1,9 +1,94 @@
-import Diary from '@/app/Diary';
+import { View, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { FeedArea } from '@/components/FeedArea';
+import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedArea';
 
-export default function Index_Page() {
+const sampleData:HomeFeedItem[] = [
+  {
+    name: "Daily Exercise",
+    description: "Track workouts, running sessions, gym visits, and physical activity goals"
+  },
+  {
+    name: "Book Reading",
+    description: "Keep a record of books read, currently reading, and reading goals for the year"
+  },
+  {
+    name: "Monthly Budget",
+    description: "Monitor income, expenses, savings, and financial goals on a monthly basis"
+  },
+  {
+    name: "Water Intake",
+    description: "Log daily water consumption to maintain proper hydration levels"
+  },
+  {
+    name: "Meditation Sessions",
+    description: "Record mindfulness practice, meditation duration, and mental wellness progress"
+  },
+  {
+    name: "Language Learning",
+    description: "Track vocabulary learned, lessons completed, and fluency progress in new languages"
+  },
+  {
+    name: "Sleep Quality",
+    description: "Monitor sleep hours, bedtime routine, and overall sleep health patterns"
+  },
+  {
+    name: "Habit Building",
+    description: "Track daily habits, streak counters, and personal development goals"
+  },
+  {
+    name: "Daily Exercise",
+    description: "Track workouts, running sessions, gym visits, and physical activity goals"
+  },
+  {
+    name: "Book Reading",
+    description: "Keep a record of books read, currently reading, and reading goals for the year"
+  },
+  {
+    name: "Monthly Budget",
+    description: "Monitor income, expenses, savings, and financial goals on a monthly basis"
+  },
+  {
+    name: "Water Intake",
+    description: "Log daily water consumption to maintain proper hydration levels"
+  },
+  {
+    name: "Meditation Sessions",
+    description: "Record mindfulness practice, meditation duration, and mental wellness progress"
+  },
+  {
+    name: "Language Learning",
+    description: "Track vocabulary learned, lessons completed, and fluency progress in new languages"
+  },
+  {
+    name: "Sleep Quality",
+    description: "Monitor sleep hours, bedtime routine, and overall sleep health patterns"
+  },
+  {
+    name: "Habit Building",
+    description: "Track daily habits, streak counters, and personal development goals"
+  },
+];
+export default function App() {
     return (
-    <Diary/>
+    <View style={styles.container}>
+        <FeedArea 
+            items={sampleData} 
+            renderItem={renderHomeFeedItem} 
+            immersiveScreen={{top:true, bottom:true}}
+            fadedEdges={{top:true, bottom:true}}
+            overlayHeight={75}
+            numColumns={2}
+        />
+    </View>
     );
 };
 
-
+const styles = StyleSheet.create({
+    container: {
+        flex:1,
+        justifyContent:'space-between',
+        backgroundColor: Colors.light.background, 
+        overflow: 'visible'
+    },
+});

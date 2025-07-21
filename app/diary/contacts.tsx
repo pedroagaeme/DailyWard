@@ -72,8 +72,9 @@ export default function Contacts() {
             renderItem={renderContactsFeedItem} 
             fadedEdges={{top:true, bottom:true}} 
             immersiveScreen={{top:true, bottom:true}}
-            overlayHeight={40}
+            overlayHeight={75}
             additionalPadding={feedAreaAdditionalPadding}
+            navbarInset={true}
         />
     </View>
     );

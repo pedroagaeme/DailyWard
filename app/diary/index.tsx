@@ -41,7 +41,8 @@ export default function Diary() {
           renderItem={renderDiaryFeedItem} 
           fadedEdges={{top:true, bottom:true}} 
           immersiveScreen={{top:false, bottom:true}} 
-          overlayHeight={40}
+          overlayHeight={75}
+          navbarInset={true}
         />
     </View>
     );
