@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { FadedOverlayContainer } from './FadedOverlayContainer';
 import { useFeedAreaInsets } from '@/hooks/useFeedAreaInsets';
+import MaskedView from '@react-native-masked-view/masked-view';
 
 interface Props {
   items:FeedItem[], 
@@ -25,7 +26,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
   
   return (
-    <FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}>
+    <MaskedView  style={{flex:1}} maskElement={<FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}/>}>
       <FlatList
         numColumns={numColumns}
         data={items} 
@@ -37,7 +38,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
         }]}
         showsVerticalScrollIndicator={false}
       />
-    </FadedOverlayContainer>
+    </MaskedView>
   );
 }
 
