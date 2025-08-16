@@ -3,6 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { FeedArea } from '@/components/FeedArea';
 import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedArea';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AddIcon } from '@/assets/images/add-icon';
 
 const sampleData:HomeFeedItem[] = [
   {
@@ -73,22 +74,23 @@ const sampleData:HomeFeedItem[] = [
 export default function App() {
     return (
     <View style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
         <View style={styles.row}>
           <Text style={styles.greetingsText}>Bem-vindo(a), Pedro</Text>
+          <View style={styles.profilePic}></View>
         </View>
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Diários</Text>
-          <View style={styles.button}> 
-              <Text style={styles.buttonText}>Criar Diário</Text>
+          <View style={styles.button}>
+            <AddIcon></AddIcon>
           </View>
         </View>
       </SafeAreaView>
       <FeedArea 
           items={sampleData} 
           renderItem={renderHomeFeedItem} 
-          immersiveScreen={{top:true, bottom:true}}
-          fadedEdges={{top:true, bottom:true}}
+          immersiveScreen={{top:false, bottom:true}}
+          fadedEdges={{top:false, bottom:false}}
           overlayHeight={40}
           numColumns={2}
       />
@@ -99,37 +101,35 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    backgroundColor: Colors.light.background, 
-    overflow: 'visible'
+    backgroundColor: Colors.light.background,
+    overflow: 'visible',
+    gap:10,
+  },
+  header: {
+    padding:20,
+    gap:20,
   },
   row: {
-    paddingVertical:10,
-    paddingHorizontal:20,
     alignItems:'center',
     justifyContent:'space-between',
     flexDirection:'row',
   },
   greetingsText: {
     fontFamily: 'Inter_400Regular',
-    fontSize:18,
-    color: Colors.light.primary,
+    fontSize:16,
+    color: '#6f7579ff',
   },
   feedTitleText: {
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter_600SemiBold',
     fontSize:24,
     color: Colors.light.primary,
   },
-  button: {
-    alignItems:'center',
-    flexDirection:'row',
-    backgroundColor: Colors.light.primary,
-    borderRadius:20,
-    paddingVertical:10,
-    paddingHorizontal:15,
+  profilePic: {
   },
-  buttonText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize:16,
-    color: 'white',
+  button: {
+    justifyContent:'center',
+    alignItems:'center',
+    height:40,
+    aspectRatio:1,
   },
 });

@@ -1,5 +1,5 @@
 import { View, StyleSheet, ViewProps } from "react-native";
-import {LinearGradient} from 'expo-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { InsetToggle } from "@/constants/HeightInsets";
 
 interface Props extends ViewProps {
@@ -10,8 +10,9 @@ interface Props extends ViewProps {
 export function FadedOverlayContainer({overlayHeight = 40, fadedEdges, ...props}:Props) {
   return (
     <View style={styles.container}>
-      {fadedEdges.top && <LinearGradient
-         colors={[
+      {fadedEdges.top &&
+      <LinearGradient
+        colors={[
           'rgba(236, 236, 236, 0)',
           'rgba(236, 236, 236, 0.02)',
           'rgba(236, 236, 236, 0.05)',
@@ -29,7 +30,8 @@ export function FadedOverlayContainer({overlayHeight = 40, fadedEdges, ...props}
 
       <View style={styles.contentContainer}/>
 
-      {fadedEdges.bottom &&  <LinearGradient
+      {fadedEdges.bottom &&
+      <LinearGradient
         colors={[
               'rgba(236, 236, 236, 1)',
               'rgba(236, 236, 236, 0.9)',

@@ -1,5 +1,5 @@
 import { FeedItem } from '@/constants/FeedItem';
-import { InsetToggle, navbarMaxHeight } from '@/constants/HeightInsets';
+import { InsetToggle } from '@/constants/HeightInsets';
 import React from 'react';
 import {
   FlatList,
@@ -44,6 +44,6 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
 
 const styles = StyleSheet.create({
   flatListWrapper: {
-    padding: 16,
+    paddingHorizontal:10,
   },
 });

@@ -19,12 +19,12 @@ export default function Layout() {
              Início
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="search" href="/Diary/resources"  asChild>
+        <TabTrigger name="resources" href="/diary/resources"  asChild>
           <CustomTabButton Icon={ResourcesIcon}>
             Recursos
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="settings" href="/Diary/contacts" asChild>
+        <TabTrigger name="contacts" href="/diary/contacts" asChild>
           <CustomTabButton Icon={ContactsIcon}>
             Contatos
           </CustomTabButton>
