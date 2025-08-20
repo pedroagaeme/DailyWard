@@ -15,7 +15,7 @@ export const renderContactsFeedItem: ListRenderItem<ContactsFeedItem> = ({item})
 
 const styles = StyleSheet.create({
   itemContainer: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding:24,
     marginBottom: 16,
@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
   posterName: {
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
-    color: 'white',
+    color: Colors.light.secondary,
   },
 });

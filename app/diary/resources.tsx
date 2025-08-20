@@ -1,9 +1,9 @@
 import { ColapsibleIcon } from "@/assets/images/colapsible-icon";
-import { SearchIcon } from "@/assets/images/search-icon";
 import { FeedArea } from "@/components/FeedArea";
 import { ResourcesFeedItem, renderResourcesFeedItem} from "@/components/FeedArea/ResourcesFeedItem";
+import { SearchBar } from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const sampleData: ResourcesFeedItem[] = [
@@ -46,17 +46,14 @@ export default function Resources() {
           <ColapsibleIcon/>
           <Text style={styles.contentText}>Todos os contatos</Text>
         </View>
-        <View style={styles.searchBar}>
-          <SearchIcon height={28}/>
-          <TextInput style={styles.searchInput}/>
-        </View>
+        <SearchBar/>
       </View>
       <FeedArea 
         items={sampleData} 
         renderItem={renderResourcesFeedItem} 
         fadedEdges={{top:true, bottom:true}} 
         immersiveScreen={{top:false, bottom:true}}
-        overlayHeight={40}
+        overlayHeight={30}
         navbarInset={true}
       />
     </View>
@@ -75,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems:'flex-start',
     gap:20,
     paddingTop:20,
-    paddingHorizontal:20,
+    paddingHorizontal:15,
   },
   button: {
     alignItems:'center',
@@ -104,21 +101,5 @@ const styles = StyleSheet.create({
     lineHeight:20,
     color: Colors.light.primary,
   },
-  searchBar: {
-    flexDirection:'row',
-    alignItems:'center',
-    width:'100%',
-    backgroundColor: '#F6F6F6',
-    borderRadius: 20,
-    paddingHorizontal:10,
-    gap:5,
-    borderWidth: 1,
-    borderColor: '#7C7C7C',
-  },
-  searchInput: {
-    flex: 1,
-    paddingRight: 10,
-    paddingLeft: 0,
-    color: '#424242',
-  },
+
 });

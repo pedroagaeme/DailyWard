@@ -4,6 +4,7 @@ import { FeedArea } from '@/components/FeedArea';
 import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedArea';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AddIcon } from '@/assets/images/add-icon';
+import { SearchBar } from '@/components/SearchBar';
 
 const sampleData:HomeFeedItem[] = [
   {
@@ -85,6 +86,7 @@ export default function App() {
             <AddIcon></AddIcon>
           </View>
         </View>
+        <SearchBar/>
       </SafeAreaView>
       <FeedArea 
           items={sampleData} 
@@ -92,7 +94,7 @@ export default function App() {
           immersiveScreen={{top:false, bottom:true}}
           fadedEdges={{top:false, bottom:false}}
           overlayHeight={40}
-          numColumns={2}
+          numColumns={1}
       />
     </View>
     );
@@ -117,7 +119,7 @@ const styles = StyleSheet.create({
   greetingsText: {
     fontFamily: 'Inter_400Regular',
     fontSize:16,
-    color: '#6f7579ff',
+    color:  Colors.light.secondary,
   },
   feedTitleText: {
     fontFamily: 'Inter_600SemiBold',
@@ -129,7 +131,7 @@ const styles = StyleSheet.create({
   button: {
     justifyContent:'center',
     alignItems:'center',
-    height:40,
+    height:35,
     aspectRatio:1,
   },
 });

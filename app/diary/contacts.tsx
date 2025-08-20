@@ -67,15 +67,15 @@ export default function Contacts() {
                 <Text style={styles.text}>Convidar Contatos</Text>
             </View>
         </View>
-        <FeedArea 
-            items={sampleData} 
-            renderItem={renderContactsFeedItem} 
-            fadedEdges={{top:true, bottom:true}} 
-            immersiveScreen={{top:true, bottom:true}}
-            overlayHeight={75}
-            additionalPadding={feedAreaAdditionalPadding}
-            navbarInset={true}
-        />
+          <FeedArea 
+              items={sampleData} 
+              renderItem={renderContactsFeedItem} 
+              fadedEdges={{top:false, bottom:false}} 
+              immersiveScreen={{top:true, bottom:true}}
+              overlayHeight={40}
+              additionalPadding={{top: 20, bottom:feedAreaAdditionalPadding}}
+              navbarInset={true}
+          />
     </View>
     );
 };
@@ -99,9 +99,7 @@ const styles = StyleSheet.create({
         position:'absolute',
         alignItems:'center',
         flexDirection:'row',
-        borderWidth:1,
-        backgroundColor:'white',
-        borderColor: Colors.light.primary,
+        backgroundColor: '#d3e2ed',
         borderRadius:10,
         padding:15,
         gap:10,
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
         fontFamily:'Inter_500Medium',
         fontSize: 18,
         lineHeight:20,
-        color: Colors.light.primary,
+        color: Colors.light.secondary,
     },
     shadow: {
     shadowColor: '#000',

@@ -1,5 +1,6 @@
 import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
 import { FeedItem } from '@/constants/FeedItem';
+import { Colors } from '@/constants/Colors';
 
 export interface DiaryFeedItem extends FeedItem {
   contentText: string;
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
   posterName: {
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
-    color: '#333333',
+    color: Colors.light.text,
   },
   contentPic: {
     width: '100%',
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 20,
-    color: '#666666',
+    color: Colors.light.text,
+    opacity:0.7,
   },
 });

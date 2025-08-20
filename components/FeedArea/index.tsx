@@ -1,5 +1,5 @@
 import { FeedItem } from '@/constants/FeedItem';
-import { InsetToggle } from '@/constants/HeightInsets';
+import { heightInsets, InsetToggle } from '@/constants/HeightInsets';
 import React from 'react';
 import {
   FlatList,
@@ -16,11 +16,11 @@ interface Props {
   fadedEdges:InsetToggle, 
   immersiveScreen:InsetToggle, 
   overlayHeight?:number,
-  additionalPadding?:number,
+  additionalPadding?:heightInsets,
   numColumns?:number,
   navbarInset?:boolean,
 }
-export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = 0, numColumns = 0, navbarInset = false}: Props) 
+export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 0, navbarInset = false}: Props) 
   {
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
@@ -33,8 +33,8 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={[styles.flatListWrapper, {
-          paddingTop:topPadding, 
-          paddingBottom:bottomPadding + additionalPadding
+          paddingTop:topPadding + additionalPadding.top, 
+          paddingBottom:bottomPadding + additionalPadding.bottom
         }]}
         showsVerticalScrollIndicator={false}
       />
