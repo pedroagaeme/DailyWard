@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
 import { FeedArea } from '@/components/FeedArea';
 import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedArea';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AddIcon } from '@/assets/images/add-icon';
 import { SearchBar } from '@/components/SearchBar';
+import { Colors } from '@/constants/Colors';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const sampleData:HomeFeedItem[] = [
   {
@@ -82,9 +81,6 @@ export default function App() {
         </View>
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Diários</Text>
-          <View style={styles.button}>
-            <AddIcon></AddIcon>
-          </View>
         </View>
         <SearchBar/>
       </SafeAreaView>
@@ -103,7 +99,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.light.background[95],
     overflow: 'visible',
     gap:10,
   },
@@ -119,19 +115,13 @@ const styles = StyleSheet.create({
   greetingsText: {
     fontFamily: 'Inter_400Regular',
     fontSize:16,
-    color:  Colors.light.secondary,
+    color:  Colors.light.text[30],
   },
   feedTitleText: {
     fontFamily: 'Inter_600SemiBold',
     fontSize:24,
-    color: Colors.light.primary,
+    color: Colors.light.text[5],
   },
   profilePic: {
-  },
-  button: {
-    justifyContent:'center',
-    alignItems:'center',
-    height:35,
-    aspectRatio:1,
   },
 });

@@ -1,8 +1,11 @@
-import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
-import { DiaryFeedItem } from './DiaryFeedItem';
+import { FeedItem } from '@/constants/FeedItem';
+import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
-export interface ResourcesFeedItem extends DiaryFeedItem {
-    creationDate: string;
+export interface ResourcesFeedItem extends FeedItem {
+  creationDate: string;
+  contentText: string;
+  posterProfilePicUrl: string;
+  contentPicUrl: string;
 }
 
 export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item}) => (

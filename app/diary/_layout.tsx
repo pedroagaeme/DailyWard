@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-around',
     alignSelf:'center',
     borderRadius:20,
-    backgroundColor: Colors.light.primary,
+  backgroundColor: Colors.light.primary,
     },
     shadowNavbar: {
       shadowColor: '#000',

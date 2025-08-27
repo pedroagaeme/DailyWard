@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         justifyContent:'space-between',
-        backgroundColor: Colors.light.background, 
+  backgroundColor: Colors.light.background[95],
         overflow: 'visible'
     },
     overlay: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         fontFamily:'Inter_500Medium',
         fontSize: 18,
         lineHeight:20,
-        color: Colors.light.secondary,
+  color: Colors.light.text[30],
     },
     shadow: {
     shadowColor: '#000',

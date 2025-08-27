@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
   posterName: {
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
-    color: Colors.light.secondary,
+  color: Colors.light.text[30],
   },
 });

@@ -1,6 +1,6 @@
-import { View, TextInput, StyleSheet } from "react-native"
-import { Colors } from "@/constants/Colors"
 import { SearchIcon } from "@/assets/images/search-icon"
+import { Colors } from "@/constants/Colors"
+import { StyleSheet, TextInput, View } from "react-native"
 
 export function SearchBar() {
     return (
@@ -8,27 +8,28 @@ export function SearchBar() {
             <View style={{paddingHorizontal:5}}>
                 <SearchIcon height={28}/>
             </View>
-            <TextInput style={styles.searchInput} placeholder="Pesquisar"/>
+            <TextInput style={styles.searchInput} placeholder="Buscar Diários"/>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     searchBar: {
-        flexDirection:'row',
-        alignItems:'center',
-        width:'100%',
-        backgroundColor: Colors.light.tertiary,
-        borderRadius: 25,
-        paddingHorizontal:10,
-        paddingVertical:5,
-        gap:5,
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background[100], 
+        borderRadius: 12, 
+        paddingHorizontal: 16, 
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 2,
     },
     searchInput: {
-        flex: 1,
-        fontSize:14,
-        paddingRight: 10,
-        paddingLeft: 0,
-        color: '#424242',
+        flex: 1, 
+        fontSize: 16, 
+        color: '#1E293B',
+        paddingVertical: 12
     },
 })

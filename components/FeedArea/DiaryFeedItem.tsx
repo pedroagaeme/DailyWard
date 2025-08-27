@@ -1,41 +1,32 @@
-import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
-import { FeedItem } from '@/constants/FeedItem';
 import { Colors } from '@/constants/Colors';
+import { FeedItem } from '@/constants/FeedItem';
+import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
 export interface DiaryFeedItem extends FeedItem {
   contentText: string;
+  hour: string;
   posterProfilePicUrl: string,
   contentPicUrl: string;
 }
 export const renderDiaryFeedItem: ListRenderItem<DiaryFeedItem> = ({item}) => (
-  <View style={[styles.itemContainer, styles.shadow]}>
+  <View style={styles.itemContainer}>
     <View style={styles.headerRow}>
       <Text style={styles.posterName}>{item.name}</Text>
+      <Text style={styles.hourText}>{item.hour}</Text>
     </View>
-    <View style={styles.contentPic}></View>
     <Text style={styles.contentText}>{item.contentText}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
   itemContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 20,
   },
   headerRow: {
     flexDirection: 'row',
+    justifyContent:'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
@@ -48,7 +39,7 @@ const styles = StyleSheet.create({
   posterName: {
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
-    color: Colors.light.text,
+    color: Colors.light.text[5],
   },
   contentPic: {
     width: '100%',
@@ -60,7 +51,13 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 20,
-    color: Colors.light.text,
+    color: Colors.light.text[5],
     opacity:0.7,
   },
+  hourText: {
+    fontFamily:'Inter_400Regular',
+    fontSize: 12,
+    color: Colors.light.text[5],
+    opacity:0.7,
+  }
 });

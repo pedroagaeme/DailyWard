@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems:'stretch',
     justifyContent:'space-between',
-    backgroundColor: Colors.light.background, 
+    backgroundColor: Colors.light.background[95],
     overflow: 'visible'
   },
   header: {
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     borderWidth:1,
     backgroundColor:'white',
-    borderColor: Colors.light.primary,
+  borderColor: Colors.light.background[90],
     borderRadius:10,
     paddingVertical:5,
     paddingRight:20,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_500Medium',
     fontSize: 20,
     lineHeight:20,
-    color: Colors.light.primary,
+  color: Colors.light.text[5],
   },
 
 });
