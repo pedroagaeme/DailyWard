@@ -1,5 +1,5 @@
 import { FeedArea } from '@/components/FeedArea';
-import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedArea';
+import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
 import { SearchBar } from '@/components/SearchBar';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
@@ -82,8 +82,8 @@ export default function App() {
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Diários</Text>
         </View>
-        <SearchBar/>
       </SafeAreaView>
+      <SearchBar placeholder='Buscar Diários...' color={Colors.light.background[100]}/>
       <FeedArea 
           items={sampleData} 
           renderItem={renderHomeFeedItem} 
@@ -101,10 +101,11 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor: Colors.light.background[95],
     overflow: 'visible',
-    gap:10,
+    gap:24,
   },
   header: {
-    padding:20,
+    padding:16,
+    paddingBottom:0,
     gap:20,
   },
   row: {
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   },
   feedTitleText: {
     fontFamily: 'Inter_600SemiBold',
-    fontSize:24,
+    fontSize:28,
     color: Colors.light.text[5],
   },
   profilePic: {

@@ -1,10 +1,13 @@
-import { InviteToDiaryIcon } from "@/assets/images/invite-to-diary-icon";
-import { FeedArea } from "@/components/FeedArea";
+import { AddContactsButton } from "@/components/AddContactsButton";
 import { ContactsFeedItem, renderContactsFeedItem } from "@/components/FeedArea/ContactsFeedItem";
 import { Colors } from "@/constants/Colors";
 import { inviteButtonBottomMargin, inviteButtonMaxHeight, navbarMaxHeight } from "@/constants/HeightInsets";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { DiaryCodeArea } from "@/components/DiaryCodeArea";
+import { AdminIcon } from "@/assets/images/admin-icon";
+import { AdminParticipants } from "@/components/AdminParticipants";
+import { ParticipantsIcon } from "@/assets/images/participants-icon";
 
 const sampleData: ContactsFeedItem[] = [
   {
@@ -60,55 +63,70 @@ export default function Contacts() {
     const buttonBottomInset = insets.bottom + navbarMaxHeight + inviteButtonBottomMargin;
     const feedAreaAdditionalPadding = inviteButtonBottomMargin + inviteButtonMaxHeight;
     return (
-    <View style={styles.container}>
-        <View style={styles.overlay}>
-            <View style={[styles.button, styles.shadow, {bottom:buttonBottomInset}]}>
-                <InviteToDiaryIcon/>
-                <Text style={styles.text}>Convidar Contatos</Text>
-            </View>
+    <View style={[styles.container, {paddingTop: insets.top}]}>
+      <View style={styles.header}>
+        <Text style={styles.sectionTitle}>Participantes</Text>
+        <DiaryCodeArea />
+        <AddContactsButton />
+      </View>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <AdminIcon width={28} height={28} />
+          <Text style={styles.subsectionTitle}>Administradores</Text>
         </View>
-          <FeedArea 
-              items={sampleData} 
-              renderItem={renderContactsFeedItem} 
-              fadedEdges={{top:false, bottom:false}} 
-              immersiveScreen={{top:true, bottom:true}}
-              overlayHeight={40}
-              additionalPadding={{top: 20, bottom:feedAreaAdditionalPadding}}
-              navbarInset={true}
-          />
+        <AdminParticipants />
+      </View>
+      <View style={styles.section}>
+          <View style={styles.row}>
+            <ParticipantsIcon width={28} height={28} />
+            <Text style={styles.subsectionTitle}>Outros Participantes</Text>
+          </View>
+      </View>
     </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        justifyContent:'space-between',
-  backgroundColor: Colors.light.background[95],
-        overflow: 'visible'
-    },
-    overlay: {
-        zIndex:1,
-        position:'absolute',
-        width:'100%',
-        height:'100%',
-        pointerEvents:'box-none',
-        alignItems:'center',
-    },
-    button: {
-        position:'absolute',
-        alignItems:'center',
-        flexDirection:'row',
-        backgroundColor: '#d3e2ed',
-        borderRadius:10,
-        padding:15,
-        gap:10,
-    },
-    text: {
-        fontFamily:'Inter_500Medium',
-        fontSize: 18,
-        lineHeight:20,
-  color: Colors.light.text[30],
+  container: {
+    flex:1,
+    backgroundColor: Colors.light.background[100],
+    gap:32,
+    paddingHorizontal:16,
+    overflow: 'visible'
+  },
+  header: {
+    alignItems:'flex-start',
+    paddingTop:20,
+    gap:24,
+    paddingBottom:8,
+  },
+  section: {
+    gap:16,
+  },
+  sectionTitle: {
+    fontFamily:'Inter_600SemiBold',
+    fontSize: 24,
+    lineHeight: 28,
+    marginBottom:8,
+    color: Colors.light.text[5],
+  },
+  row: {
+    flexDirection:'row',
+    alignItems:'center',
+    gap:8,
+  },
+  subsectionTitle: {
+    fontFamily:'Inter_600SemiBold',
+    fontSize: 20,
+    lineHeight: 24,
+    letterSpacing: -0.5,
+    color: Colors.light.text[5],
+  },
+  text: {
+    fontFamily:'Inter_500Medium',
+    fontSize: 18,
+    lineHeight:20,
+    color: Colors.light.text[30],
     },
     shadow: {
     shadowColor: '#000',

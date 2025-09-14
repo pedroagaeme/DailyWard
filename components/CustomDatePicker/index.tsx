@@ -84,9 +84,7 @@ export function CustomDatePicker({chosenDate, setChosenDate}:CustomDatePickerPro
 
 const styles = StyleSheet.create({
     wrapper: {
-        marginTop:15,
-        gap:5,
-        borderTopWidth:1,
+        paddingBottom:8,
         borderBottomWidth:1.5,
         borderColor: Colors.light.background[90],
     },

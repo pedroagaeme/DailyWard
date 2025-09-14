@@ -35,7 +35,7 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
-    navbar: {
+  navbar: {
     position: "absolute",
     maxHeight:navbarMaxHeight,
 		width:300,
@@ -46,16 +46,16 @@ const styles = StyleSheet.create({
     justifyContent:'space-around',
     alignSelf:'center',
     borderRadius:20,
-  backgroundColor: Colors.light.primary,
-    },
-    shadowNavbar: {
-      shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2, 
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 3, 
-    },
+    backgroundColor: Colors.light.primary,
+  },
+  shadowNavbar: {
+    shadowColor: '#000',
+      shadowOffset: {
+          width: 0,
+          height: 2, 
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 3, 
+  },
 });

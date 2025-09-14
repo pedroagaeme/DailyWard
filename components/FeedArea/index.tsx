@@ -80,6 +80,6 @@ const styles = StyleSheet.create({
   flatListWrapper: {
   },
   itemWrapper: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
   },
 });

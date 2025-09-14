@@ -11,7 +11,8 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "components/CustomDatePicker",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "components/custom-date-picker"  ]
+  ]
 }

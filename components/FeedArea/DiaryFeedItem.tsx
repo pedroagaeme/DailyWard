@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
     paddingHorizontal: 8,
-    paddingVertical: 20,
+    paddingVertical: 15,
   },
   headerRow: {
     flexDirection: 'row',

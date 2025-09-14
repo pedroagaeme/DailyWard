@@ -3,9 +3,9 @@ import { DiaryFeedItem, renderDiaryFeedItem } from '@/components/FeedArea/DiaryF
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
 import { FeedArea } from '../../components/FeedArea';
-import { CustomDatePicker } from '@/components/custom-date-picker';
+import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DateItem } from '@/components/custom-date-picker/DateItem';
+import { DateItem } from '@/components/CustomDatePicker/DateItem';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { SettingsIcon } from '@/assets/images/header-icons/settings-icon';
 
@@ -74,8 +74,8 @@ export default function Diary() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <SafeAreaView edges={["top", "left", "right"]}>
+      <View>
+        <SafeAreaView style={styles.header} edges={["top", "left", "right"]}>
           <View style={styles.row}>
             <GoBackIcon/>
             <View style={styles.titleContainer}>
@@ -90,16 +90,15 @@ export default function Diary() {
       <FeedArea 
         items={sampleData} 
         renderItem={renderDiaryFeedItem} 
-        fadedEdges={{top:false, bottom:true}} 
+        fadedEdges={{top:false, bottom:false}} 
         immersiveScreen={{top:false, bottom:true}} 
-        overlayHeight={30}
         navbarInset={true}
         separator={{
           enabled: true,
           color: Colors.light.background[90],
           height: 1,
           marginVertical: 8,
-          marginHorizontal: 0,
+          marginHorizontal: 10,
         }}
       />
     </View>
@@ -115,14 +114,16 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop:20,
+    gap: 16,
   },
   row: {
-    paddingHorizontal:15,
+    paddingHorizontal:16,
     flexDirection:'row',
     justifyContent:'space-between',
     alignItems:'center',
   },
   titleContainer: {
+    gap:4,
     position:'absolute',
     justifyContent:'center',
     alignItems:'center',
@@ -133,7 +134,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Inter_700Bold',
-    fontSize: 20,
+    fontSize: 24,
+    lineHeight: 28,
     color: Colors.light.text[5],
   },
   monthYearText: {
