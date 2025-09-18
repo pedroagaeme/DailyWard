@@ -15,12 +15,7 @@ export const CustomTabButton = React.forwardRef<View, CustomTabButtonProps>(
 				{...props}
 				style={[styles.button, props.isFocused && styles.focusedButton]}
 			>
-				<Icon/>
-				<Text
-					style={[styles.text, props.isFocused && styles.focusedText]}
-				>
-					{props.children}
-				</Text>
+				<Icon width={32} height={32} />
 			</Pressable>
 		);
 	}
@@ -31,17 +26,11 @@ const styles = StyleSheet.create({
 		flex:1,
         justifyContent:'center',
         alignItems:'center',
-		opacity:0.4,
+		opacity:0.6,
     },
 	focusedButton: {
 		opacity:1,
 	},
-    text: {
-        fontSize:12,
-        fontFamily: 'Inter_400Regular',
-        color: 'white',
-		opacity: 0.4,
-    },
 	focusedText: {
 		opacity:1,
 	}

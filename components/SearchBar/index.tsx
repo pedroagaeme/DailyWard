@@ -17,7 +17,7 @@ export function SearchBar({ placeholder, searchFilterNames, color }: SearchBarPr
     return (
         <View style={styles.wrapper}>
             <View style={[styles.searchBar, { backgroundColor: color || Colors.light.background[95]}]}>
-                <TextInput style={styles.searchInput} placeholder={placeholder}/>
+                <TextInput style={styles.searchInput} placeholder={placeholder} placeholderTextColor={Colors.light.text[30]}/>
                 <SearchIcon />
             </View>
             {searchFilterNames && (
@@ -46,12 +46,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         marginHorizontal: 16,
         paddingVertical: 4,
-        color: Colors.light.text[5],
     },
     searchInput: {
         flex: 1, 
         fontSize: 16,
         fontFamily: 'Inter_400Regular',
-        color: '#1E293B',
+        color: Colors.light.text[5],
     },
 })

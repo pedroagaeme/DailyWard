@@ -14,14 +14,14 @@ const sampleData: DiaryFeedItem[] = [
     name: "John Doe",
     posterProfilePicUrl: "https://example.com/profile1.jpg",
     contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
+    contentText: "Na aula de hoje, realizamos uma atividade prática de matemática usando blocos coloridos para trabalhar o conceito de adição. Cada aluno recebeu um conjunto de blocos para montar pequenas torres que representaram diferentes operações.",
     hour: "14:30",
   },
   {
     name: "Jane Smith", 
     posterProfilePicUrl: "https://example.com/profile2.jpg",
     contentPicUrl: "https://example.com/post2.jpg",
-    contentText: "Coffee and coding session in progress.",
+    contentText: "Coffee and coding session in progressdsadbjoiasduibasdbuiasdbuioasbuidoasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssu.",
     hour: "09:15",
   },
   {
@@ -97,7 +97,7 @@ export default function Diary() {
           enabled: true,
           color: Colors.light.background[90],
           height: 1,
-          marginVertical: 8,
+          marginVertical: 0,
           marginHorizontal: 10,
         }}
       />
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Inter_700Bold',
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 24,
     color: Colors.light.text[5],
   },
   monthYearText: {

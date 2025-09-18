@@ -76,10 +76,6 @@ export default function App() {
     <View style={styles.container}>
       <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
         <View style={styles.row}>
-          <Text style={styles.greetingsText}>Bem-vindo(a), Pedro</Text>
-          <View style={styles.profilePic}></View>
-        </View>
-        <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Diários</Text>
         </View>
       </SafeAreaView>
@@ -89,7 +85,7 @@ export default function App() {
           renderItem={renderHomeFeedItem} 
           immersiveScreen={{top:false, bottom:true}}
           fadedEdges={{top:false, bottom:false}}
-          overlayHeight={40}
+          additionalPadding={{top:12, bottom:0}}
           numColumns={1}
       />
     </View>
@@ -121,6 +117,7 @@ const styles = StyleSheet.create({
   feedTitleText: {
     fontFamily: 'Inter_600SemiBold',
     fontSize:28,
+    lineHeight: 34,
     color: Colors.light.text[5],
   },
   profilePic: {

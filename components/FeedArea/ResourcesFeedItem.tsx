@@ -2,25 +2,30 @@ import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
-export interface MaterialsFeedItem extends FeedItem {
+export interface ResourcesFeedItem extends FeedItem {
     type?: string;
     title?: string;
     description?: string;
 }
 
-export const renderMaterialsFeedItem: ListRenderItem<MaterialsFeedItem> = ({item}) => (
+export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item}) => (
   <View style={styles.itemContainer}>
     <View>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.descriptionText}>{item.description}</Text>
     </View>
     <View style={styles.footerRow}>
-      <View style={styles.posterProfilePic}>
-        {/* Placeholder for profile picture */}
+      <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
+        <View style={styles.posterProfilePic}>
+          {/* Placeholder for profile picture */}
+        </View>
+        <View style={styles.nameAndDateContainer}>
+          <Text style={styles.posterName}>{item.name}</Text>
+          <Text style={styles.dateText}>2 dias atrás</Text>
+        </View>
       </View>
-      <View style={styles.nameAndDateContainer}>
-        <Text style={styles.posterName}>{item.name}</Text>
-        <Text style={styles.dateText}>2 dias atrás</Text>
+      <View style={styles.typeBadge}>
+        <Text style={styles.typeBadgeText}>{item.type}</Text>
       </View>
     </View>
   </View>
@@ -37,7 +42,8 @@ const styles = StyleSheet.create({
     gap:25,
   },
   footerRow: {
-    gap:10,
+    gap:12,
+    justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -75,5 +81,17 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 50,
     backgroundColor: Colors.light.background[90],
+  },
+  typeBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    backgroundColor: Colors.light.background[95],
+  },
+  typeBadgeText: {
+    fontFamily:'Inter_600SemiBold',
+    fontSize: 12,
+    color: Colors.light.text[30],
+    textAlign: 'center',
   },
 });

@@ -43,7 +43,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
         {
           backgroundColor: separator.color || Colors.light.background[95],
           height: separator.height || 1,
-          marginVertical: separator.marginVertical || 8,
+          marginVertical: separator.marginVertical || 0,
           marginHorizontal: separator.marginHorizontal || 0,
         }
       } />

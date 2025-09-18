@@ -16,17 +16,15 @@ export default function Layout() {
       <TabList style={[styles.navbar, styles.shadowNavbar, {bottom:insets.bottom}]}>
         <TabTrigger name="home" href="/" asChild>
           <CustomTabButton Icon={HomeIcon}>
-             Início
           </CustomTabButton>
         </TabTrigger>
         <TabTrigger name="resources" href="/diary/resources"  asChild>
           <CustomTabButton Icon={ResourcesIcon}>
-            Recursos
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="contacts" href="/diary/contacts" asChild>
+        <TabTrigger name="participants" href="/diary/participants" asChild>
           <CustomTabButton Icon={ContactsIcon}>
-            Contatos
+            Participantes
           </CustomTabButton>
         </TabTrigger>
       </TabList>
@@ -37,15 +35,14 @@ export default function Layout() {
 const styles = StyleSheet.create({
   navbar: {
     position: "absolute",
+    alignItems:"center",
     maxHeight:navbarMaxHeight,
-		width:300,
-    paddingVertical:10,
-    paddingHorizontal:20,
-    gap:10,
+    marginHorizontal:40,
+    padding: 16,
     flexDirection:'row',
     justifyContent:'space-around',
     alignSelf:'center',
-    borderRadius:20,
+    borderRadius:40,
     backgroundColor: Colors.light.primary,
   },
   shadowNavbar: {

@@ -1,6 +1,4 @@
-export const navbarMaxHeight = 60;
-export const inviteButtonMaxHeight = 60;
-export const inviteButtonBottomMargin = 80;
+export const navbarMaxHeight = 64;
 
 export interface InsetToggle {
     top:boolean;

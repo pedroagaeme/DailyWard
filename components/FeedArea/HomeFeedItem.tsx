@@ -14,11 +14,11 @@ function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   };
   return(
     <Pressable style={styles.itemContainer} onPress={handlePress}>
-      <View style={styles.picture} />
       <View style={styles.contentArea}>
-        <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
+        <Text style={styles.title} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.descriptionText} numberOfLines={3}>{item.description}</Text>
       </View>
+      <View style={styles.picture} />
     </Pressable>
   )
 }
@@ -30,38 +30,34 @@ const styles = StyleSheet.create({
   itemContainer: {
     backgroundColor: Colors.light.background[100],
     borderRadius: 12,
-    padding: 0,
     marginBottom: 12,
     borderWidth: 0.5,
     borderColor: Colors.light.background[90],
     flexDirection: 'row',
     overflow: 'hidden',
   },
-  picture: {
-    backgroundColor: Colors.light.primary,
-    width: 80,
-    height: '100%',
-    flexShrink: 0,
-  },
-  contentArea: {
+  contentArea:{
     flex: 1,
-    padding: 16,
-    gap: 8,
+    padding:24,
+    gap: 12,
     justifyContent: 'center',
   },
-  name: {
-    fontFamily:'Inter_500Medium',
+  title: {
+    fontFamily:'Inter_600SemiBold',
     fontSize: 18,
-    lineHeight: 22,
     color: Colors.light.text[5],
-    letterSpacing: -0.1,
+    lineHeight: 20,
+    marginBottom: 10,
   },
-  description: {
+  descriptionText: {
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 18,
     color: Colors.light.text[30],
-    opacity: 0.8,
-    letterSpacing: 0.05,
+  },
+  picture: {
+    backgroundColor: Colors.light.primary,
+    height:144,
+    aspectRatio: 0.7,
   },
 });

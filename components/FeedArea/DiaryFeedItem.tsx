@@ -11,18 +11,24 @@ export interface DiaryFeedItem extends FeedItem {
 export const renderDiaryFeedItem: ListRenderItem<DiaryFeedItem> = ({item}) => (
   <View style={styles.itemContainer}>
     <View style={styles.headerRow}>
-      <Text style={styles.posterName}>{item.name}</Text>
+      <View style={styles.profileSection}>
+        <View style={styles.profilePic} />
+        <Text style={styles.posterName}>{item.name}</Text>
+      </View>
       <Text style={styles.hourText}>{item.hour}</Text>
     </View>
-    <Text style={styles.contentText}>{item.contentText}</Text>
+    <Text style={styles.contentText} numberOfLines={3}>{item.contentText}</Text>
+    <View style={styles.contentPic} />
   </View>
 );
 
 const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 15,
+    paddingHorizontal: 4,
+    paddingTop: 24,
+    paddingBottom: 28,
+    gap:12,
   },
   headerRow: {
     flexDirection: 'row',
@@ -30,34 +36,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap:12,
+  },
   profilePic: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 12,
+    backgroundColor: Colors.light.background[90],
   },
   posterName: {
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
+    lineHeight: 24,
     color: Colors.light.text[5],
   },
   contentPic: {
     width: '100%',
-    height: 200,
+    aspectRatio: 16/9,
     borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: Colors.light.background[90],
   },
   contentText: {
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 20,
-    color: Colors.light.text[5],
-    opacity:0.7,
+    color: Colors.light.text[30],
   },
   hourText: {
     fontFamily:'Inter_400Regular',
     fontSize: 12,
-    color: Colors.light.text[5],
-    opacity:0.7,
+    color: Colors.light.text[30],
   }
 });

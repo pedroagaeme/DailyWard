@@ -11,6 +11,10 @@ export function AdminParticipants() {
     const participants: AdminParticipant[] = [
         { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
         { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
+        { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
+        { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
+        { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
+        { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
     ];
 
     const renderAdminParticipant = ({ item }: { item: AdminParticipant }) => (
@@ -24,7 +28,7 @@ export function AdminParticipants() {
         <FlatList
             data={participants}
             renderItem={renderAdminParticipant}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.container}
@@ -34,6 +38,7 @@ export function AdminParticipants() {
 
 const styles = StyleSheet.create({
     container: {
+        paddingHorizontal:16,
         gap: 16,
     },
     card: {
@@ -59,7 +64,7 @@ const styles = StyleSheet.create({
     },
     profilePic: {
         width: '100%',
-        height: 100,
+        aspectRatio: 1,
         backgroundColor: Colors.light.background[95],
         borderWidth: 1,
         borderColor: Colors.light.background[90],
