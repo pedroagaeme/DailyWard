@@ -10,8 +10,8 @@ interface AuthProps {
     onLogout?: () => Promise<void>;
 }
 
-const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
-const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 export const API_URL = 'https://dailyward.app/api/v1';
 
 const AuthContext = createContext<AuthProps>({});
@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const register = async (data: RegisterFormData) => {
         try {
+            console.log(data)
             await axios.post(`${API_URL}/auth/register/`, data);
         }
         catch (error) {
@@ -55,8 +56,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 data
             );
 
-            const accessToken = response.data.data.access_token;
-            const refreshToken = response.data.data.refresh_token;
+            const accessToken = response.data.data.accessToken;
+            const refreshToken = response.data.data.refreshToken;
 
             await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken);
             await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);

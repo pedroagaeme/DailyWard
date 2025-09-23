@@ -17,7 +17,6 @@ export default function Register() {
     const confirmPasswordRef = useRef<TextInput>(null);
 
     const onSubmit = async (data: RegisterFormData) => {
-        data
         const result = await onRegister!(data);
         if(result && result.error) {
             console.log(result.error);
