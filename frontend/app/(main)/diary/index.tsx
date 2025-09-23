@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DiaryFeedItem, renderDiaryFeedItem } from '@/components/FeedArea/DiaryFeedItem';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
-import { FeedArea } from '../../components/FeedArea';
+import { FeedArea } from '../../../components/FeedArea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DateItem } from '@/components/CustomDatePicker/DateItem';

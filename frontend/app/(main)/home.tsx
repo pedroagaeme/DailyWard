@@ -71,7 +71,7 @@ const sampleData:HomeFeedItem[] = [
     description: "Track daily habits, streak counters, and personal development goals"
   },
 ];
-export default function App() {
+export default function Home() {
     return (
     <View style={styles.container}>
       <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>

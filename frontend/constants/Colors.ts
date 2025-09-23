@@ -8,16 +8,17 @@ const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-      background: {
-        100: '#ffffff', 
-        95: '#f1f1f1',  
-        90: '#eeeeee',  
+    background: {
+      100: '#ffffff', 
+      95: '#f6f6f6',  
+      90: '#eeeeee',  
     },
     text: {
       5: '#1E293B',   
       30: '#475569',  
     },
     primary: '#6d9bc3', 
+    error: '#ba1a1a',
   },
   dark: {
   },
