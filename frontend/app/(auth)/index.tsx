@@ -6,13 +6,21 @@ import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';
 import { LoginFormData } from '@/constants/FormTypes';
 import { Link } from 'expo-router';
+import { useAuth } from '../../utils/AuthContext';
 
 export default function Login() {
     const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();
     const passwordRef = useRef<TextInput>(null);
+    const { onLogin, authState } = useAuth();
 
-    const OnSubmit = (data: LoginFormData) => {
-        console.log(data);
+
+    const onSubmit = async (data: LoginFormData) => {
+        const result = await onLogin!(data);
+        if(result && result.error) {
+            console.log(result.error);
+            console.log((authState?.isAuthenticated === true) ? "autenticado" : "não autenticado");
+        }
+
     };
 
     return(
@@ -51,6 +59,7 @@ export default function Login() {
                             onChangeText={onChange}
                             value={value}
                             errors={errors.password}
+                            onSubmitEditing={handleSubmit(onSubmit)}
                             submitBehavior='blurAndSubmit'
                             ref={passwordRef}
                         />
@@ -60,12 +69,12 @@ export default function Login() {
                         minLength: { value: 8, message: 'Senha deve ter no mínimo 8 caracteres' }
                     }}
                 />
-                <Pressable style={styles.button} onPress={handleSubmit(OnSubmit)}>
+                <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </Pressable>
                 <View style={styles.row}>
                     <Text style={styles.text}>Ainda não tem uma conta? </Text>
-                    <Link href="/(auth)/register" style={styles.link}>
+                    <Link href="/(auth)/register" style={styles.link} replace>
                         Cadastre-se.
                     </Link>
                 </View>

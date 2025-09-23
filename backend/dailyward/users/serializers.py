@@ -5,16 +5,16 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=8, write_only=True)
-    password2 = serializers.CharField(min_length=8, write_only=True)
+    confirm_password = serializers.CharField(min_length=8, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password', 'password2']
+        fields = ['email', 'first_name', 'last_name', 'password', 'confirm_password']
 
     def validate(self, attrs):
         password = attrs.get('password', '')
-        password2 = attrs.get('password2', '')
-        if password != password2:
+        confirm_password = attrs.get('confirm_password', '')
+        if password != confirm_password:
             raise serializers.ValidationError("passwords do not match")
         return attrs
     

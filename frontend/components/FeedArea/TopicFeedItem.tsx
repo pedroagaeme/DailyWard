@@ -2,13 +2,13 @@ import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
-export interface DiaryFeedItem extends FeedItem {
+export interface TopicFeedItem extends FeedItem {
   contentText: string;
   hour: string;
   posterProfilePicUrl: string,
   contentPicUrl: string;
 }
-export const renderDiaryFeedItem: ListRenderItem<DiaryFeedItem> = ({item}) => (
+export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
   <View style={styles.itemContainer}>
     <View style={styles.headerRow}>
       <View style={styles.profileSection}>

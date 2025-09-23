@@ -1,5 +1,6 @@
 import { FeedArea } from '@/components/FeedArea';
 import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
+import { LogoutButton } from '@/components/LogoutButton';
 import { SearchBar } from '@/components/SearchBar';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
@@ -77,6 +78,7 @@ export default function Home() {
       <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Diários</Text>
+          <LogoutButton />
         </View>
       </SafeAreaView>
       <SearchBar placeholder='Buscar Diários...' color={Colors.light.background[100]}/>

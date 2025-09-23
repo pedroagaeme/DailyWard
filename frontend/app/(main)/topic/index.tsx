@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DiaryFeedItem, renderDiaryFeedItem } from '@/components/FeedArea/DiaryFeedItem';
+import { TopicFeedItem, renderTopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
 import { FeedArea } from '../../../components/FeedArea';
@@ -9,67 +9,12 @@ import { DateItem } from '@/components/CustomDatePicker/DateItem';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { SettingsIcon } from '@/assets/images/header-icons/settings-icon';
 
-const sampleData: DiaryFeedItem[] = [
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Na aula de hoje, realizamos uma atividade prática de matemática usando blocos coloridos para trabalhar o conceito de adição. Cada aluno recebeu um conjunto de blocos para montar pequenas torres que representaram diferentes operações.",
-    hour: "14:30",
-  },
-  {
-    name: "Jane Smith", 
-    posterProfilePicUrl: "https://example.com/profile2.jpg",
-    contentPicUrl: "https://example.com/post2.jpg",
-    contentText: "Coffee and coding session in progressdsadbjoiasduibasdbuiasdbuioasbuidoasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssu.",
-    hour: "09:15",
-  },
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
-    hour: "14:30",
-  },
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
-    hour: "14:30",
-  },
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
-    hour: "14:30",
-  },
-  {
-    name: "Jane Smith", 
-    posterProfilePicUrl: "https://example.com/profile2.jpg",
-    contentPicUrl: "https://example.com/post2.jpg",
-    contentText: "Coffee and coding session in progress.",
-    hour: "09:15",
-  },
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
-    hour: "14:30",
-  },
-  {
-    name: "John Doe",
-    posterProfilePicUrl: "https://example.com/profile1.jpg",
-    contentPicUrl: "https://example.com/post1.jpg",
-    contentText: "Amazing sunset at the beach today!",
-    hour: "14:30",
-  },
+const sampleData: TopicFeedItem[] = [
+
 ];
 
 
-export default function Diary() {
+export default function Topics() {
   const [chosenDate, setChosenDate] = useState<DateItem>();
 
   return (
@@ -89,7 +34,7 @@ export default function Diary() {
       </View>
       <FeedArea 
         items={sampleData} 
-        renderItem={renderDiaryFeedItem} 
+        renderItem={renderTopicFeedItem} 
         fadedEdges={{top:false, bottom:false}} 
         immersiveScreen={{top:false, bottom:true}} 
         navbarInset={true}

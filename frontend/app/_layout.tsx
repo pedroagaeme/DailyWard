@@ -10,8 +10,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider, useAuth} from '../utils/AuthContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -31,16 +31,29 @@ export default function RootLayout() {
   if (!loaded && !error) {
     return null;
   }
-
+  
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(auth)/index" options={{ headerShown: false }} />
-        <Stack.Screen name="(main)/home" options={{ headerShown: false }} />
-        <Stack.Screen name="(main)/diary" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-      </Stack>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
+  );
+}
+
+function AppContent() {
+  const { authState } = useAuth();
+  return (
+    <Stack initialRouteName="(auth)/index" screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!!authState?.isAuthenticated}>
+        <Stack.Screen name="(main)/home" options={{ headerShown: false }} />
+        <Stack.Screen name="(main)/topic" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={!authState?.isAuthenticated}>
+        <Stack.Screen name="(auth)/index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
+      </Stack.Protected>
+    </Stack>
   );
 }

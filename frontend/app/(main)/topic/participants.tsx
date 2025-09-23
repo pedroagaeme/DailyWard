@@ -3,7 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { useState } from "react";
 import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { DiaryCodeArea } from "@/components/DiaryCodeArea";
+import { DiaryCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
 import { AdminParticipants } from "@/components/AdminParticipants";
 import { ParticipantsIcon } from "@/assets/images/participants-icon";

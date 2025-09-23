@@ -4,18 +4,27 @@ import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';
-import { RegisterFormData } from '@/constants/FormTypes';
+import { RegisterFormData, LoginFormData } from '@/constants/FormTypes';
 import { Link } from 'expo-router';
+import { useAuth } from '../../utils/AuthContext';
 
 export default function Register() {
     const { control, handleSubmit, formState: {errors} } = useForm<RegisterFormData>();
+    const { onRegister, onLogin } = useAuth();
     const lastNameRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
     const passwordRef = useRef<TextInput>(null);
     const confirmPasswordRef = useRef<TextInput>(null);
 
-    const OnSubmit = (data: RegisterFormData) => {
-        console.log(data);
+    const onSubmit = async (data: RegisterFormData) => {
+        data
+        const result = await onRegister!(data);
+        if(result && result.error) {
+            console.log(result.error);
+        }
+        else {
+            onLogin!({email: data.email, password: data.password});
+        }
     };
 
     return(
@@ -39,6 +48,9 @@ export default function Register() {
                             submitBehavior='submit'
                         />
                     )}
+                    rules={{
+                        required: 'Nome é obrigatório'
+                    }}
                 />
                 <Controller
                     name="lastName"
@@ -56,6 +68,9 @@ export default function Register() {
                             ref={lastNameRef}
                         />
                     )}
+                    rules={{ 
+                        required: 'Sobrenome é obrigatório' 
+                    }}
                 />
                 <Controller 
                     name="email" 
@@ -109,18 +124,18 @@ export default function Register() {
                             onChangeText={onChange}
                             value={value}
                             errors={errors.confirmPassword}
-                            onSubmitEditing={handleSubmit(OnSubmit)}
+                            onSubmitEditing={handleSubmit(onSubmit)}
                             ref={confirmPasswordRef}
                             submitBehavior='blurAndSubmit'
                         />
                     )}
                 />
-                <Pressable style={styles.button} onPress={handleSubmit(OnSubmit)}>
+                <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
                     <Text style={styles.buttonText}>Cadastrar</Text>
                 </Pressable>
                 <View style={styles.row}>
                     <Text style={styles.text}>Já tem uma conta? </Text>
-                    <Link href="/(auth)" style={styles.link}>
+                    <Link href="/(auth)" style={styles.link} replace>
                         Entrar.
                     </Link>
                 </View>
