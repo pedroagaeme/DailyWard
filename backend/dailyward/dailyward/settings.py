@@ -116,7 +116,6 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-
 # Support for custom user model
 
 AUTH_USER_MODEL = "users.User" 
