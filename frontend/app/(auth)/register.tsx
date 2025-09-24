@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';
-import { RegisterFormData, LoginFormData } from '@/constants/FormTypes';
+import { RegisterFormData } from '@/constants/FormTypes';
 import { Link } from 'expo-router';
 import { useAuth } from '../../utils/AuthContext';
 

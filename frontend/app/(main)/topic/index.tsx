@@ -8,13 +8,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DateItem } from '@/components/CustomDatePicker/DateItem';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { SettingsIcon } from '@/assets/images/header-icons/settings-icon';
-
-const sampleData: TopicFeedItem[] = [
-
-];
+import { useEffect } from 'react';
+import { API_URL } from '@/utils/AuthContext';
+import axios from 'axios';
 
 
 export default function Topics() {
+  const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>();
 
   return (
@@ -33,7 +33,7 @@ export default function Topics() {
         </SafeAreaView>
       </View>
       <FeedArea 
-        items={sampleData} 
+        items={posts} 
         renderItem={renderTopicFeedItem} 
         fadedEdges={{top:false, bottom:false}} 
         immersiveScreen={{top:false, bottom:true}} 
