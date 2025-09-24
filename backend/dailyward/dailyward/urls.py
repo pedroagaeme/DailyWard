@@ -23,13 +23,13 @@ from resources.views import ResourceViewSet
 
 router = DefaultRouter()
 router.register(r'topics', TopicViewSet, basename='topic')
-router.register(r'posts', PostViewSet, basename='post')
 router.register(r'resources', ResourceViewSet, basename='resource')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/v1/<int:user_id>/', include(router.urls)),
+    path('api/v1/users/me/', include(router.urls)),
+    path('api/v1/users/me/topics/<int:topic_id>/posts/', include('posts.urls')),
 
     path('api/v1/auth/', include('users.urls'))
 ]

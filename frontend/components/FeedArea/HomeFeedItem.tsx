@@ -4,19 +4,20 @@ import { useRouter } from 'expo-router';
 import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export interface HomeFeedItem extends FeedItem {
-  description?: string
+  title: string;
+  description?: string;
 }
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   const router = useRouter();
   const handlePress = () => {
-    router.push('/topic')
+    router.push({pathname:'/topic', params:{id:item.id}}); // navigate to topic page with id param
   };
 
   return(
     <Pressable style={styles.itemContainer} onPress={handlePress}>
       <View style={styles.contentArea}>
-        <Text style={styles.title} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
         <Text style={styles.descriptionText} numberOfLines={3}>{item.description}</Text>
       </View>
       <View style={styles.picture} />

@@ -3,6 +3,7 @@ import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
 export interface TopicFeedItem extends FeedItem {
+  postedBy: string;
   contentText: string;
   hour: string;
   posterProfilePicUrl: string,
@@ -13,7 +14,7 @@ export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
     <View style={styles.headerRow}>
       <View style={styles.profileSection}>
         <View style={styles.profilePic} />
-        <Text style={styles.posterName}>{item.name}</Text>
+        <Text style={styles.posterName}>{item.postedBy}</Text>
       </View>
       <Text style={styles.hourText}>{item.hour}</Text>
     </View>

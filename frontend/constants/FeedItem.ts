@@ -1,3 +1,3 @@
 export interface FeedItem {
-  name: string;
+  id: string;
 }

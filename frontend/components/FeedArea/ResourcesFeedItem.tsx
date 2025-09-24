@@ -3,8 +3,8 @@ import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 
 export interface ResourcesFeedItem extends FeedItem {
+    title: string;
     type?: string;
-    title?: string;
     description?: string;
 }
 
@@ -20,7 +20,7 @@ export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item
           {/* Placeholder for profile picture */}
         </View>
         <View style={styles.nameAndDateContainer}>
-          <Text style={styles.posterName}>{item.name}</Text>
+          <Text style={styles.posterName}>{item.title}</Text>
           <Text style={styles.dateText}>2 dias atrás</Text>
         </View>
       </View>

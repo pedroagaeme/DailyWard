@@ -2,13 +2,15 @@ import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
 import { FeedItem } from '@/constants/FeedItem';
 import { Colors } from '@/constants/Colors';
 
-export interface ContactsFeedItem extends FeedItem {
-    lastMessage?: string;
+export interface ParticipantsFeedItem extends FeedItem {
+  fullName: string;
+  isContact: boolean;
+  lastMessage?: string;
 }
-export const renderContactsFeedItem: ListRenderItem<ContactsFeedItem> = ({item}) => (
+export const renderParticipantsFeedItem: ListRenderItem<ParticipantsFeedItem> = ({item}) => (
   <View style={[styles.itemContainer, styles.shadow]}>
     <View style={styles.headerRow}>
-      <Text style={styles.posterName}>{item.name}</Text>
+      <Text style={styles.posterName}>{item.fullName}</Text>
     </View>
   </View>
 );

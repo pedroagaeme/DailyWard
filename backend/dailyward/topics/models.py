@@ -5,7 +5,7 @@ from users.models import User
 
 class Topic(models.Model):
     title = models.CharField(max_length=75)
-    description = models.TextField
+    description = models.TextField(blank=True)
     topic_image = models.ImageField(upload_to='topic_images/', null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_topics", null=True)
     created_at = models.DateTimeField(auto_now_add=True)

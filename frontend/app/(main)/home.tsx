@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchUserTopics = async () => {
       try {
-        const response = await axios.get(`${API_URL}/topics/`);
+        const response = await axios.get(`${API_URL}/users/me/topics/`);
         if (response.status === 200) {
           setTopics(response.data);
         }
