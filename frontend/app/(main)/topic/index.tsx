@@ -17,6 +17,7 @@ export default function Topics() {
   const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>();
 
+
   return (
     <View style={styles.container}>
       <View>
