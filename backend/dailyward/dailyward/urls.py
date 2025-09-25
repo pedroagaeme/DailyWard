@@ -15,11 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path, register_converter
 from topics.views import TopicViewSet
-from posts.views import PostViewSet
+from posts.views import PostViewSet, PostsByDayAPIView
 from resources.views import ResourceViewSet
 from rest_framework_nested import routers
+from .converters import DateConverter
 
 router = routers.SimpleRouter()
 router.register(r'topics', TopicViewSet, basename='topic')
@@ -27,11 +28,12 @@ router.register(r'topics', TopicViewSet, basename='topic')
 topics_router = routers.NestedSimpleRouter(router, r'topics', lookup='topic')
 topics_router.register(r'posts', PostViewSet)
 
+register_converter(DateConverter, 'date')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path('api/v1/users/me/topics/<int:topic_pk>/posts/<date:date_iso>/', PostsByDayAPIView.as_view(), name='topic-post-archive'),
     path('api/v1/users/me/', include(router.urls)),
     path('api/v1/users/me/', include(topics_router.urls)),
-
     path('api/v1/auth/', include('users.urls'))
 ]

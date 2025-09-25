@@ -1,0 +1,13 @@
+from django.urls.converters import StringConverter
+import re
+from datetime import datetime
+
+class DateConverter(StringConverter):
+    regex = r'\d{4}-\d{2}-\d{2}'
+    format = '%Y-%m-%d'
+    
+    def to_python(self, value):
+        return datetime.strptime(value, self.format).date()
+    
+    def to_url(self, value):
+        return value.strftime(self.format)
