@@ -16,20 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
 from topics.views import TopicViewSet
 from posts.views import PostViewSet
 from resources.views import ResourceViewSet
+from rest_framework_nested import routers
 
-router = DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'topics', TopicViewSet, basename='topic')
-router.register(r'resources', ResourceViewSet, basename='resource')
+
+topics_router = routers.NestedSimpleRouter(router, r'topics', lookup='topic')
+topics_router.register(r'posts', PostViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/v1/users/me/', include(router.urls)),
-    path('api/v1/users/me/topics/<int:topic_id>/posts/', include('posts.urls')),
+    path('api/v1/users/me/', include(topics_router.urls)),
 
     path('api/v1/auth/', include('users.urls'))
 ]

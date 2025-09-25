@@ -14,7 +14,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
-
 # Using environment variables
 load_dotenv()
 
@@ -46,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_nested',
     'storages',
     'users',
     'topics',

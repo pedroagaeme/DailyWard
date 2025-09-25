@@ -4,7 +4,7 @@ from topics.models import Participant
 class IsTopicParticipant(permissions.BasePermission):
     """Allow safe reads if requester is a participant of the post's topic."""
     def has_permission(self, request, view):
-        topic_id = view.kwargs.get('topic_id')
+        topic_id = view.kwargs.get('topic_pk')
         if topic_id:
             return Participant.objects.filter(topic_id=topic_id, user=request.user).exists()
         return False

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Post
 from .serializers import PostSerializer
 from .permissions import IsTopicParticipant, IsAuthor, IsAuthorOrTopicAdmin
-
+from topics.models import Topic
 #create your views here.
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -25,35 +25,15 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         # filter posts by topic from URL
-        topic_id = self.kwargs.get('topic_id')          
-        if not topic_id:
-            raise NotFound(detail="topic_id is required in the URL")
-        return Post.objects.filter(topic_id=topic_id)
-    
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path=r'(?P<date_iso>\d{4}-\d{2}-\d{2})',
-        permission_classes=[permissions.IsAuthenticated, IsTopicParticipant],
-    )
-    def posts_by_date(self, request, topic_id=None, date_iso=None):
-        # validate URL params
-        if not topic_id:
-            raise NotFound(detail="topic_id is required in the URL")
-        if not date_iso:
-            raise NotFound(detail="date_iso is required in the URL")
+        topic_id = self.kwargs.get('topic_pk')          
+        return Post.objects.filter(topic=topic_id)
 
-        # parse/validate date string
-        date_obj = parse_date(date_iso)
-        if not date_obj:
-            raise ValidationError("Invalid date format. Use YYYY-MM-DD.")
+    def create(self, request, *args, **kwargs):
+        topic_pk = self.kwargs.get('topic_pk')
+        request.data['topic'] = topic_pk
+        return super().create(request, *args, **kwargs)
 
-        qs = Post.objects.filter(topic_id=topic_id, created_at__date=date_obj).order_by("created_at")
+    def perform_create(self, serializer):
+        post = serializer.save(posted_by=self.request.user)
+        
 
-        page = self.paginate_queryset(qs)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
