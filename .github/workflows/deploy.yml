@@ -44,7 +44,7 @@ jobs:
             export AZURE_CONTAINER_NAME=${{ secrets.AZURE_CONTAINER_NAME }}
             export EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
             export EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-            export CERT_PEM=${{ secrets.CERT_PEM_BASE64 }}
-            export CERT_KEY=${{ secrets.CERT_KEY_BASE64 }}
+            export CERT_PEM_BASE64=${{ secrets.CERT_PEM_BASE64 }}
+            export CERT_KEY_BASE64=${{ secrets.CERT_KEY_BASE64 }}
             docker compose -f compose.prod.yml pull
             docker compose -f compose.prod.yml up -d --build
