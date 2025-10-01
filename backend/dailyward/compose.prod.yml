@@ -16,7 +16,7 @@ services:
       retries: 10
       start_period: 30s
 
-  dailyward-api:
+  django-dailyward-api:
     build: .
     container_name: dailyward-api
     expose:
@@ -44,7 +44,7 @@ services:
       - 80:80
       - 443:443
     depends_on:
-      - dailyward-api
+      - django-dailyward-api
     environment:
       - CERT_PEM=${CERT_PEM}
       - CERT_KEY=${CERT_KEY}
