@@ -34,6 +34,7 @@ jobs:
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
             export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
             export DATABASE_PORT=${{ secrets.DATABASE_PORT }}
+            export DATABASE_ENGINE=${{ secrets.DATABASE_ENGINE }}
             export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
             export DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
             export DJANGO_CSRF_TRUSTED_ORIGINS=${{ secrets.DJANGO_CSRF_TRUSTED_ORIGINS }}
@@ -43,7 +44,7 @@ jobs:
             export AZURE_CONTAINER_NAME=${{ secrets.AZURE_CONTAINER_NAME }}
             export EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
             export EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-            export CERT_PEM=${{ secrets.CERT_PEM }}
-            export CERT_KEY=${{ secrets.CERT_KEY }}
+            export CERT_PEM=${{ secrets.CERT_PEM_BASE64 }}
+            export CERT_KEY=${{ secrets.CERT_KEY_BASE64 }}
             docker compose -f compose.prod.yml pull
             docker compose -f compose.prod.yml up -d --build

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from dailytrack.backend.dailyward.resources.permissions import IsAuthor, IsAuthorOrTopicAdmin, IsTopicParticipant
+from .permissions import IsAuthor, IsAuthorOrTopicAdmin, IsTopicParticipant
 from rest_framework import viewsets, permissions
 from .models import Resource
 from .serializers import ResourceSerializer
