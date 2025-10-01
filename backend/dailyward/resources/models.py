@@ -12,7 +12,7 @@ CATEGORY_CHOICES = [
 
 class Resource(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, default='')
     resource_type = models.CharField(choices=CATEGORY_CHOICES, default='file', max_length=12)
     file = models.FileField(upload_to='resources/', blank=True, null=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
