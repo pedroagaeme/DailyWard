@@ -1,0 +1,47 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "."
+          target: "~/dailyward"
+
+      - name: Deploy containers on VPS
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/dailyward/backend/dailyward
+            export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+            export DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
+            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
+            export DATABASE_PORT=${{ secrets.DATABASE_PORT }}
+            export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+            export DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}
+            export DJANGO_CSRF_TRUSTED_ORIGINS=${{ secrets.DJANGO_CSRF_TRUSTED_ORIGINS }}
+            export DEBUG=${{ secrets.DEBUG }}
+            export AZURE_ACCOUNT_NAME=${{ secrets.AZURE_ACCOUNT_NAME }}
+            export AZURE_ACCOUNT_KEY=${{ secrets.AZURE_ACCOUNT_KEY }}
+            export AZURE_CONTAINER_NAME=${{ secrets.AZURE_CONTAINER_NAME }}
+            export EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+            export EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+            docker compose -f compose.prod.yml pull
+            docker compose -f compose.prod.yml up -d --build
