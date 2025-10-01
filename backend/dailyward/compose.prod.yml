@@ -46,7 +46,7 @@ services:
     depends_on:
       - django-dailyward-api
     environment:
-      - CERT_PEM=${CERT_PEM}
-      - CERT_KEY=${CERT_KEY}
+      - CERT_PEM_BASE64=${CERT_PEM_BASE64}
+      - CERT_KEY_BASE64=${CERT_KEY_BASE64}
 volumes:
   postgres_data:
