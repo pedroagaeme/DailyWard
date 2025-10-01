@@ -11,11 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
 import os
 from datetime import timedelta
 # Using environment variables
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -105,9 +103,9 @@ STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
-            "account_name": os.getenv("AZURE_ACCOUNT_NAME"),
-            "account_key": os.getenv("AZURE_ACCOUNT_KEY"),
-            "container_name": os.getenv("AZURE_CONTAINER_NAME"),
+            "account_name": os.environ.get("AZURE_ACCOUNT_NAME"),
+            "account_key": os.environ.get("AZURE_ACCOUNT_KEY"),
+            "container_name": os.environ.get("AZURE_CONTAINER_NAME"),
             "timeout": 20,
             "expiration_secs": 500,
         },

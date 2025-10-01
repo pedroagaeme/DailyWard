@@ -59,7 +59,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         topic_id = self.kwargs.get('topic_pk') 
         topic = Topic.objects.get(pk=topic_id)
-        post = serializer.save(posted_by=self.request.user, topic=topic)
+        serializer.save(posted_by=self.request.user, topic=topic)
     
 class PostsByDayAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsTopicParticipant]
