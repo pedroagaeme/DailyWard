@@ -35,8 +35,6 @@ DailyWard é um aplicativo desenvolvido para facilitar a comunicação, organiza
 - **backend/**: Código do servidor Django, configurações, apps e scripts
 - **frontend/**: Aplicativo mobile, componentes, telas, assets e utilitários
 - **.github/**: Workflows de CI/CD
-- **constants/**: Definições de tipos, cores e dados globais
-- **components/**: Componentes reutilizáveis para UI
 
 ## Como Contribuir
 
