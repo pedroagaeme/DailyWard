@@ -3,18 +3,33 @@ import { HomeIcon } from '@/assets/images/tab-icons/home-icon';
 import { ResourcesIcon } from '@/assets/images/tab-icons/resources-icon';
 import { CustomTabButton } from '@/components/CustomTabButton';
 import { Colors } from '@/constants/Colors';
-import { navbarMaxHeight } from '@/constants/HeightInsets';
 import { TabList, Tabs, TabSlot, TabTrigger } from 'expo-router/ui';
-import { StyleSheet } from 'react-native';
+import { useRouter, useSegments } from 'expo-router';
+import { Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AddIcon } from '@/assets/images/add-icon';
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const segments = useSegments();
+
+  // Get the focused tab name from segments
+  const focusedTab = segments[segments.length - 1];
+
+  // Define button action based on focused tab
+  const handleButtonPress = () => {
+    router.push("/create-post");
+  };
+
   return (
     <Tabs>
       <TabSlot />
+      <Pressable onPress={handleButtonPress} style={[styles.button, styles.shadowNavbar, {bottom:insets.bottom}]}>
+        <AddIcon width={32} height={32}  />
+      </Pressable>
       <TabList style={[styles.navbar, styles.shadowNavbar, {bottom:insets.bottom}]}>
-        <TabTrigger name="home" href="/topic" asChild>
+        <TabTrigger name="posts" href="/topic" asChild>
           <CustomTabButton Icon={HomeIcon}>
           </CustomTabButton>
         </TabTrigger>
@@ -36,12 +51,20 @@ const styles = StyleSheet.create({
   navbar: {
     position: "absolute",
     alignItems:"center",
-    maxHeight:navbarMaxHeight,
-    marginHorizontal:40,
+    marginLeft:20,
+    marginRight:100,
     padding: 16,
     flexDirection:'row',
     justifyContent:'space-around',
-    alignSelf:'center',
+    borderRadius:40,
+    backgroundColor: Colors.light.primary,
+  },
+  button: {
+    position: 'absolute',
+    justifyContent:"center",
+    alignItems:"center",
+    right:20,
+    padding: 16,
     borderRadius:40,
     backgroundColor: Colors.light.primary,
   },

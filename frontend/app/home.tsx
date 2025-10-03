@@ -6,8 +6,7 @@ import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
-import { API_URL } from '@/utils/AuthContext';
-import axios from 'axios';
+import { axiosPrivate } from '@/utils/api';
 
 export default function Home() {
   const [topics, setTopics] = useState<HomeFeedItem[]>([]);
@@ -15,9 +14,9 @@ export default function Home() {
   useEffect(() => {
     const fetchUserTopics = async () => {
       try {
-        const response = await axios.get(`${API_URL}/users/me/topics/`);
+        const response = await axiosPrivate.get(`/users/me/topics/`);
         if (response.status === 200) {
-          setTopics(response.data);
+          setTopics(response.data.results);
         }
         else {
           throw new Error('Failed to fetch topics');
@@ -31,23 +30,23 @@ export default function Home() {
   }, []);
 
   return (
-  <View style={styles.container}>
-    <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
-      <View style={styles.row}>
-        <Text style={styles.feedTitleText}>Seus Diários</Text>
-        <LogoutButton />
+      <View style={styles.container}>
+        <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
+          <View style={styles.row}>
+            <Text style={styles.feedTitleText}>Seus Diários</Text>
+            <LogoutButton />
+          </View>
+        </SafeAreaView>
+        <SearchBar placeholder='Buscar Diários...' color={Colors.light.background[100]}/>
+        <FeedArea 
+            items={topics} 
+            renderItem={renderHomeFeedItem} 
+            immersiveScreen={{top:false, bottom:true}}
+            fadedEdges={{top:false, bottom:false}}
+            additionalPadding={{top:12, bottom:0}}
+            numColumns={1}
+        />
       </View>
-    </SafeAreaView>
-    <SearchBar placeholder='Buscar Diários...' color={Colors.light.background[100]}/>
-    <FeedArea 
-        items={topics} 
-        renderItem={renderHomeFeedItem} 
-        immersiveScreen={{top:false, bottom:true}}
-        fadedEdges={{top:false, bottom:false}}
-        additionalPadding={{top:12, bottom:0}}
-        numColumns={1}
-    />
-  </View>
   );
 };
 

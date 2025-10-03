@@ -1,5 +1,5 @@
 import { Pressable } from "react-native";
-import { useAuth } from "@/utils/AuthContext";
+import { useAuth } from "@/utils/authContext";
 import { LogoutIcon } from "@/assets/images/logout-icon";
 
 export function LogoutButton() {

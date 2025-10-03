@@ -22,15 +22,13 @@ export default function Resources() {
       <View style={styles.header}>
         <View style={styles.row}>
           <Text style={styles.sectionTitle}>Recursos</Text>
-          <AddResourceButton />
         </View>
-        <SearchBar placeholder="Buscar Recursos..." searchFilterNames={["Anúncios", "Materiais", "Anúncis", "Maeriais", "Anncios", "Mateiais"]} />
+        <SearchBar placeholder="Buscar Recursos..." />
       </View>
       <FeedArea
         items={resources}
         renderItem={renderResourcesFeedItem}
-        fadedEdges={{top: true, bottom: false}}
-        overlayHeight={16}
+        fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 0}}
         navbarInset={true}
@@ -45,10 +43,10 @@ const styles = StyleSheet.create({
     alignItems:'stretch',
     justifyContent:'space-between',
     backgroundColor: Colors.light.background[100],
-    overflow: 'visible'
+    overflow: 'visible',
+    gap:16,
   },
   header: {
-    alignItems:'flex-start',
     gap:24,
     paddingTop:20,
     paddingBottom:8,
@@ -68,8 +66,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 28,
+    lineHeight: 34,
     color: Colors.light.text[5],
   },
 });

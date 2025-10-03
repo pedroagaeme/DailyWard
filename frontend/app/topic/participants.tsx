@@ -1,7 +1,6 @@
 import { AddContactsButton } from "@/components/AddContactsButton";
 import { Colors } from "@/constants/Colors";
-import { useState } from "react";
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DiaryCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
@@ -11,7 +10,6 @@ import { ParticipantsIcon } from "@/assets/images/participants-icon";
 
 export default function Members() {
     const insets = useSafeAreaInsets();
-    const [windowHeight, setWindowHeight] = useState(Dimensions.get('window').height);
 
     return (
       <ScrollView contentContainerStyle={{flexGrow:1}}>
@@ -59,8 +57,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 28,
+    lineHeight: 34,
     marginBottom:8,
     color: Colors.light.text[5],
   },

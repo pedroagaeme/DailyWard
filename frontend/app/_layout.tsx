@@ -11,7 +11,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider, useAuth} from '../utils/AuthContext';
+import { AuthProvider, useAuth} from '../utils/authContext';
+import { TopicProvider } from '@/utils/topicContext';
+import { RegisterFormProvider } from '@/utils/registerFormContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -35,7 +37,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <AppContent />
+        <TopicProvider>
+          <RegisterFormProvider>
+            <AppContent />
+          </RegisterFormProvider>
+        </TopicProvider>
       </AuthProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -45,14 +51,17 @@ export default function RootLayout() {
 function AppContent() {
   const { authState } = useAuth();
   return (
-    <Stack initialRouteName="(auth)/index" screenOptions={{ headerShown: false }}>
+    <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!authState?.isAuthenticated}>
-        <Stack.Screen name="(main)/home" options={{ headerShown: false }} />
-        <Stack.Screen name="(main)/topic" options={{ headerShown: false }} />
+        <Stack.Screen name="home" options={{ headerShown: false }} />
+        <Stack.Screen name="topic" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!authState?.isAuthenticated}>
-        <Stack.Screen name="(auth)/index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="register/index" options={{ headerShown: false }} />
+        <Stack.Screen name="register/password-form" options={{ headerShown: false }} />
+        <Stack.Screen name="register/email-form" options={{ headerShown: false }} />
+        <Stack.Screen name="register/verify-email" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

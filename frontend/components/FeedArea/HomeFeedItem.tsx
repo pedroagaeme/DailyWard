@@ -1,17 +1,22 @@
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
+import { useTopic } from '@/utils/topicContext';
 import { useRouter } from 'expo-router';
 import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export interface HomeFeedItem extends FeedItem {
   title: string;
   description?: string;
+  createdAt?: string;
 }
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   const router = useRouter();
+  const { registerTopic } = useTopic();
+
   const handlePress = () => {
-    router.push({pathname:'/topic', params:{id:item.id}}); // navigate to topic page with id param
+    registerTopic!({ id: item.id, title: item.title, creationDate: item.createdAt || Date.now().toString() });
+    router.push('/topic'); // navigate to topic page with id param
   };
 
   return(
