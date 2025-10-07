@@ -10,7 +10,7 @@ export function LogoutButton() {
     };
     
     return (
-        <Pressable onPress={handlePress} style={{ padding: 10 }}>
+        <Pressable onPress={handlePress} style={{ padding: 8, paddingLeft:0 }}>
             <LogoutIcon width={24} height={24} />
         </Pressable>
     );

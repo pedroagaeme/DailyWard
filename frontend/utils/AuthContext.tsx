@@ -5,8 +5,7 @@ import { UserProfile } from "./profile";
 import { axiosPublic } from "./api";
 
 interface AuthProps {
-    profile?: UserProfile | null;
-    authState?: {token: string | null, isAuthenticated: boolean | null};
+    authState?: {token: string | null, isAuthenticated: boolean | null, profile?: UserProfile | null};
     onRegister?: (data: RegisterFormData) => Promise<any>;
     onLogin?: (data: LoginFormData) => Promise<any>;
     onLogout?: () => Promise<void>;

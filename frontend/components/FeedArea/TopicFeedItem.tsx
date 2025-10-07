@@ -5,7 +5,7 @@ import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
 export interface TopicFeedItem extends FeedItem {
   posterName: string;
   contentText: string;
-  hour: string;
+  createdAt: string;
   posterProfilePicUrl: string,
   contentPicUrl: string;
 }
@@ -16,7 +16,7 @@ export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
         <View style={styles.profilePic}/>
         <Text style={styles.posterName}>{item.posterName}</Text>
       </View>
-      <Text style={styles.hourText}>{item.hour}</Text>
+      <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
     </View>
     {item.contentText && <Text style={styles.contentText} numberOfLines={3}>{item.contentText}</Text>}
     {item.contentPicUrl && <View style={styles.contentPic} />}
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   hourText: {
     fontFamily:'Inter_400Regular',
     fontSize: 12,
+    letterSpacing:0.5,
     color: Colors.light.text[30],
   }
 });

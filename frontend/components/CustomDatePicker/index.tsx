@@ -7,10 +7,11 @@ import { Colors } from "@/constants/Colors";
 
 interface CustomDatePickerProps {
     chosenDate:DateItem | undefined, 
-    setChosenDate:React.Dispatch<React.SetStateAction<DateItem | undefined>>
+    setChosenDate:React.Dispatch<React.SetStateAction<DateItem>>
+    topicCreationDate: DateTime,
 }
 
-export function CustomDatePicker({chosenDate, setChosenDate}:CustomDatePickerProps) {
+export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:CustomDatePickerProps) {
     const windowDimensions = Dimensions.get("window");
     const [dayItemWidth, setDayItemWidth] = useState<number>(0);
     const [items, setItems] = useState<DateItem[]>([])
@@ -18,12 +19,12 @@ export function CustomDatePicker({chosenDate, setChosenDate}:CustomDatePickerPro
 
     useEffect(() => {
         setDayItemWidth(windowDimensions.width / 5);
-        const startDate = DateTime.fromISO("2022-01-01").startOf("day");
+        const startDate = topicCreationDate.startOf("day");
         const currentDate = DateTime.now().startOf("day");
         const endDate = currentDate;
         const daysCount = endDate.diff(startDate, "days").days;
 
-        const validDates: DateItem[] = Array.from({ length: Math.ceil(daysCount) + 1 }, (_, i) => {
+        const validDates: DateItem[] = Array.from({ length: Math.ceil(daysCount) + 3 }, (_, i) => {
             const date = endDate.minus({ days: i });
             return {
                 date,
@@ -63,6 +64,9 @@ export function CustomDatePicker({chosenDate, setChosenDate}:CustomDatePickerPro
         }
     return (
         <View style={styles.wrapper}>
+            <View style={styles.monthYearContainer}>
+                <Text style={styles.monthYearText}>{chosenDate?.monthYear} </Text>
+            </View>
             <FlatList
                 ref={dateFlatListRef}
                 horizontal={true}
@@ -74,7 +78,7 @@ export function CustomDatePicker({chosenDate, setChosenDate}:CustomDatePickerPro
                 renderItem={renderDateItem}
                 keyExtractor={(item) => item.date.toString()}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingHorizontal:dayItemWidth * 2}}
+                contentContainerStyle={{paddingLeft:dayItemWidth * 2}}
                 onViewableItemsChanged={onViewableItensChange}
                 overScrollMode="never"
             />
@@ -92,5 +96,16 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter_500Medium',
         fontSize: 16,
         color: Colors.light.text[30],
+    },
+    monthYearContainer: {
+        flexDirection:'row',
+        paddingHorizontal:16,
+        paddingBottom:4,
+    },
+    monthYearText: {
+        fontFamily: 'Inter_500Medium',
+        fontSize: 14,
+        color: Colors.light.text[30],
+        opacity:0.7,
     },
 })

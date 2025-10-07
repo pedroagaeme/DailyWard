@@ -7,16 +7,17 @@ interface SearchBarProps {
     placeholder?: string;
     searchFilterNames?: string[];
     color?: string;
+    hasBorder?: boolean;
 }
 
-export function SearchBar({ placeholder, searchFilterNames, color }: SearchBarProps) {
+export function SearchBar({ placeholder, searchFilterNames, color, hasBorder }: SearchBarProps) {
     const renderSearchFilter = ({ item }: { item: string }) => (
         <SearchFilter name={item} />
     );
 
     return (
         <View style={styles.wrapper}>
-            <View style={[styles.searchBar, { backgroundColor: color || Colors.light.background[95]}]}>
+            <View style={[styles.searchBar, { backgroundColor: color || Colors.light.background[95], borderColor: hasBorder ? Colors.light.background[90] : 'transparent' }]}>
                 <TextInput style={styles.searchInput} placeholder={placeholder} placeholderTextColor={Colors.light.text[30]}/>
                 <SearchIcon />
             </View>
@@ -46,6 +47,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         marginHorizontal: 16,
         paddingVertical: 4,
+        borderWidth: 1,
     },
     searchInput: {
         flex: 1, 

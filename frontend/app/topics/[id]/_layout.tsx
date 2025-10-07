@@ -29,15 +29,15 @@ export default function Layout() {
         <AddIcon width={32} height={32}  />
       </Pressable>
       <TabList style={[styles.navbar, styles.shadowNavbar, {bottom:insets.bottom}]}>
-        <TabTrigger name="posts" href="/topic" asChild>
+        <TabTrigger name="posts" href="/topics/[id]" asChild>
           <CustomTabButton Icon={HomeIcon}>
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="resources" href="/topic/resources"  asChild>
+        <TabTrigger name="resources" href="/topics/[id]/resources"  asChild>
           <CustomTabButton Icon={ResourcesIcon}>
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="participants" href="/topic/participants" asChild>
+        <TabTrigger name="participants" href="/topics/[id]/participants" asChild>
           <CustomTabButton Icon={ContactsIcon}>
             Participantes
           </CustomTabButton>

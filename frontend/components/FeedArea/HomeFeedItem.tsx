@@ -1,31 +1,30 @@
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
-import { useTopic } from '@/utils/topicContext';
-import { useRouter } from 'expo-router';
 import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTopics } from '@/utils/topicsContext';
 
 export interface HomeFeedItem extends FeedItem {
   title: string;
   description?: string;
-  createdAt?: string;
+  createdAt: string;
 }
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
-  const router = useRouter();
-  const { registerTopic } = useTopic();
+  const { enterTopic } = useTopics();
 
   const handlePress = () => {
-    registerTopic!({ id: item.id, title: item.title, creationDate: item.createdAt || Date.now().toString() });
-    router.push('/topic'); // navigate to topic page with id param
+    enterTopic!(item.id, item.title, item.createdAt);
   };
 
   return(
     <Pressable style={styles.itemContainer} onPress={handlePress}>
+      <View style={styles.picture} />
       <View style={styles.contentArea}>
         <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
-        <Text style={styles.descriptionText} numberOfLines={3}>{item.description}</Text>
+        <Text style={styles.descriptionText} numberOfLines={3}>{item.description ? item.description : 'Sem descrição disponível.'}</Text>
       </View>
-      <View style={styles.picture} />
+      <View style={styles.descriptionArea}>
+      </View>
     </Pressable>
   )
 }
@@ -35,36 +34,39 @@ export const renderHomeFeedItem: ListRenderItem<HomeFeedItem> = ({item}) => (
 
 const styles = StyleSheet.create({
   itemContainer: {
-    backgroundColor: Colors.light.background[100],
     borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 0.5,
-    borderColor: Colors.light.background[90],
-    flexDirection: 'row',
+    marginBottom: 8,
     overflow: 'hidden',
   },
   contentArea:{
     flex: 1,
-    padding:24,
-    gap: 12,
-    justifyContent: 'center',
+    paddingVertical:12,
+    gap:8,
   },
   title: {
-    fontFamily:'Inter_600SemiBold',
-    fontSize: 18,
+    fontFamily:'Inter_500Medium',
+    fontSize: 20,
+    lineHeight:24,
     color: Colors.light.text[5],
-    lineHeight: 20,
-    marginBottom: 10,
+    letterSpacing: 0.6,
+  },
+  descriptionArea:{
+    height: 72, 
+    flex: 1,
+    paddingVertical:12,
+    paddingHorizontal:8,
   },
   descriptionText: {
     fontFamily:'Inter_400Regular',
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 14,
     color: Colors.light.text[30],
+    opacity: 0.8,
   },
   picture: {
-    backgroundColor: Colors.light.primary,
-    height:144,
-    aspectRatio: 0.7,
+    borderRadius: 12,
+    flex: 1,
+    aspectRatio: 1,
+    backgroundColor: Colors.light.background[80],
   },
 });

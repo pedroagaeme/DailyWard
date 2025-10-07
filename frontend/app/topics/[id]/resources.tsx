@@ -1,14 +1,10 @@
-import { AddResourceButton } from "@/components/AddResourceButton";
 import { FeedArea } from "@/components/FeedArea";
 import { ResourcesFeedItem, renderResourcesFeedItem } from "@/components/FeedArea/ResourcesFeedItem";
-import { SearchBar } from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
 export default function Resources() {
-    const insets = useSafeAreaInsets();
 
     const resources: ResourcesFeedItem[] = [
         { name: "John Doe", title: "Manual do Usuário", type: "Documento", description: "Um guia completo para novos usuários." },
@@ -18,12 +14,11 @@ export default function Resources() {
     ];
     
     return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.row}>
           <Text style={styles.sectionTitle}>Recursos</Text>
         </View>
-        <SearchBar placeholder="Buscar Recursos..." />
       </View>
       <FeedArea
         items={resources}
@@ -48,7 +43,7 @@ const styles = StyleSheet.create({
   },
   header: {
     gap:24,
-    paddingTop:20,
+    paddingTop:8,
     paddingBottom:8,
   },
   row: {
@@ -66,8 +61,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 24,
+    lineHeight: 32,
     color: Colors.light.text[5],
   },
 });

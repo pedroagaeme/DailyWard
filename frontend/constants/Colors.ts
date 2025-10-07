@@ -10,8 +10,9 @@ export const Colors = {
   light: {
     background: {
       100: '#ffffff', 
-      95: '#f6f6f6',  
+      95: '#f8f9f9',  
       90: '#eeeeee',  
+      80: '#e1e2e2',
     },
     text: {
       5: '#1E293B',   

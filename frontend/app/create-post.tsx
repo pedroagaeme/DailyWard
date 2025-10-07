@@ -5,12 +5,11 @@ import { SendPostButton } from '@/components/SendPostButton';
 import { useForm, Controller } from 'react-hook-form';
 import { axiosPrivate } from '@/utils/api';
 import { router } from 'expo-router';
-import { useTopic } from '@/utils/topicContext';
 import { useAuth } from '@/utils/authContext';
 
 export default function CreatePostPage() {
-  const { topicId } = useTopic();
-  const { profile } = useAuth();
+  const topicId = "1" // TODO: get from route params
+  const { authState } = useAuth();
   const { control, handleSubmit } = useForm();
 
   const onSubmit = (data:any) => {
@@ -33,7 +32,7 @@ export default function CreatePostPage() {
           <View style={styles.postContainer}>
             <View style={styles.profileSection}>
             <View style={styles.profilePic} />
-              <Text style={styles.posterName}>{profile?.name}</Text>
+              <Text style={styles.posterName}>{authState?.profile?.name}</Text>
             </View>
             <Controller
               name="contentText"

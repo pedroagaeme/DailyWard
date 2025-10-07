@@ -2,21 +2,21 @@ import { useState } from 'react';
 import { TopicFeedItem, renderTopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
 import { Colors } from '@/constants/Colors';
 import { StyleSheet, Text, View } from 'react-native';
-import { FeedArea } from '../../components/FeedArea';
+import { FeedArea } from '../../../components/FeedArea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { DateItem } from '@/components/CustomDatePicker/DateItem';
-import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { SettingsIcon } from '@/assets/images/header-icons/settings-icon';
 import { useEffect } from 'react';
 import { DateTime } from 'luxon';
 import { toSegmentedDate } from '@/constants/SegmentedDate';
 import { useDebounce } from '@/hooks/useDebounce';
 import { axiosPrivate } from '@/utils/api';
-import { useTopic } from '@/utils/topicContext';
+import { useTopics } from '@/utils/topicsContext';
 
 export default function Posts() {
-  const { topicId, topicName, topicCreationDate } = useTopic();
+  const { topicState } = useTopics();
+  const topicId = topicState?.id;
+  const topicCreationDate = topicState?.creationDate;
+
   const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>({
     date: DateTime.now(), 
@@ -42,26 +42,18 @@ export default function Posts() {
 
     fetchPosts();
 
-  }, [debouncedChosenDate]);
+  }, [debouncedChosenDate, topicId]);
 
   return (
       <View style={styles.container}>
         <View>
-          <SafeAreaView style={styles.header} edges={["top", "left", "right"]}>
-            <View style={styles.row}>
-              <GoBackIcon/>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{topicName}</Text>
-                <Text style={styles.monthYearText}>{chosenDate?.monthYear}</Text>
-              </View>
-              <SettingsIcon/>
-            </View>
+          <View style={styles.header}>
             <CustomDatePicker 
               chosenDate={chosenDate} 
               setChosenDate={setChosenDate}
-              topicCreationDate={topicCreationDate!}
+              topicCreationDate={DateTime.fromISO(topicCreationDate!)}
               />
-          </SafeAreaView>
+          </View>
         </View>
         <FeedArea 
           items={posts} 
@@ -89,35 +81,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   header: {
-    paddingTop:20,
+    paddingTop:8,
     gap: 16,
-  },
-  row: {
-    paddingHorizontal:16,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center',
-  },
-  titleContainer: {
-    gap:4,
-    position:'absolute',
-    justifyContent:'center',
-    alignItems:'center',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  title: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text[5],
-  },
-  monthYearText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    color: Colors.light.text[30],
-    opacity:0.5,
   },
 });

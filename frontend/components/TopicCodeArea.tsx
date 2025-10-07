@@ -2,7 +2,7 @@ import { InviteCodeIcon } from "@/assets/images/invite-code-icon";
 import { Colors } from "@/constants/Colors";
 import { View, StyleSheet, Text } from "react-native";
 
-export function DiaryCodeArea() {
+export function TopicCodeArea() {
     return (
         <View style={[styles.card, styles.cardShadow]}>
             <InviteCodeIcon height={70} width={70} />

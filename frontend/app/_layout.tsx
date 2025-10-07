@@ -12,7 +12,6 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth} from '../utils/authContext';
-import { TopicProvider } from '@/utils/topicContext';
 import { RegisterFormProvider } from '@/utils/registerFormContext';
 
 export default function RootLayout() {
@@ -37,11 +36,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <TopicProvider>
-          <RegisterFormProvider>
-            <AppContent />
-          </RegisterFormProvider>
-        </TopicProvider>
+        <RegisterFormProvider>
+          <AppContent />
+        </RegisterFormProvider>
       </AuthProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -53,8 +50,7 @@ function AppContent() {
   return (
     <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!authState?.isAuthenticated}>
-        <Stack.Screen name="home" options={{ headerShown: false }} />
-        <Stack.Screen name="topic" options={{ headerShown: false }} />
+        <Stack.Screen name="topics" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!authState?.isAuthenticated}>
         <Stack.Screen name="index" options={{ headerShown: false }} />

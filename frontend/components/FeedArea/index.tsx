@@ -70,6 +70,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
           paddingTop:topPadding + additionalPadding.top, 
           paddingBottom:bottomPadding + additionalPadding.bottom
         }]}
+        columnWrapperStyle={numColumns > 1 ? { gap: 20 } : undefined} // Adds horizontal gap between items in a row if multiple columns
         showsVerticalScrollIndicator={false}
       />
     </MaskedView>
@@ -78,8 +79,9 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
 
 const styles = StyleSheet.create({
   flatListWrapper: {
+    paddingHorizontal: 16,
   },
   itemWrapper: {
-    paddingHorizontal: 16,
+    flex: 1,
   },
 });

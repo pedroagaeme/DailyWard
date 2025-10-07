@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         width: '100%',
         aspectRatio: 1,
         backgroundColor: Colors.light.background[95],
-        borderWidth: 1,
+        borderBottomWidth: 1,
         borderColor: Colors.light.background[90],
     }
 })

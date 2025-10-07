@@ -1,16 +1,15 @@
-import { SendIcon } from "@/assets/images/send-icon";
-import { Pressable, StyleSheet, Text, PressableProps } from "react-native";
+import { Pressable, StyleSheet , Text} from "react-native";
 import { Colors } from "@/constants/Colors";
+import { AddIcon } from "@/assets/images/add-icon";
 
-
-export function SendPostButton(props: PressableProps) {
+export function GoToCreateTopicButton() {
     return (
-        <Pressable style={styles.button} {...props}>
-            <SendIcon width={24} height={24} />
-            <Text style={styles.buttonText}>Enviar</Text>
+        <Pressable style={styles.button}>
+            <AddIcon width={28} height={28} />
+            <Text style={styles.buttonText}>Criar</Text>
         </Pressable>
-    )
-};
+    );
+}
 
 const styles = StyleSheet.create({
     button: {

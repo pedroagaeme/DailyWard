@@ -24,9 +24,6 @@ export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item
           <Text style={styles.dateText}>2 dias atrás</Text>
         </View>
       </View>
-      <View style={styles.typeBadge}>
-        <Text style={styles.typeBadgeText}>{item.type}</Text>
-      </View>
     </View>
   </View>
 );
@@ -36,9 +33,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background[100],
     borderRadius: 15,
     padding: 20,
-    marginBottom: 16,
-    borderWidth: 1.2,
-    borderColor: Colors.light.background[90],
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.light.background[80],
     gap:25,
   },
   footerRow: {

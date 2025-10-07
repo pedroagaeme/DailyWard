@@ -1,22 +1,20 @@
 import { AddContactsButton } from "@/components/AddContactsButton";
 import { Colors } from "@/constants/Colors";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { DiaryCodeArea } from "@/components/TopicCodeArea";
+import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
 import { AdminParticipants } from "@/components/AdminParticipants";
 import { ParticipantsIcon } from "@/assets/images/participants-icon";
 
 
 export default function Members() {
-    const insets = useSafeAreaInsets();
 
     return (
       <ScrollView contentContainerStyle={{flexGrow:1}}>
-        <View style={[styles.container, {paddingTop: insets.top}]}>
+        <View style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.sectionTitle}>Participantes</Text>
-            <DiaryCodeArea />
+            <TopicCodeArea />
             <AddContactsButton />
           </View>
           <View style={styles.section}>
@@ -48,7 +46,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal:16,
     alignItems:'flex-start',
-    paddingTop:20,
+    paddingTop:8,
     gap:24,
     paddingBottom:8,
   },
@@ -57,9 +55,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',
-    fontSize: 28,
-    lineHeight: 34,
-    marginBottom:8,
+    fontSize: 24,
+    lineHeight: 32,
+    marginBottom: 4,
     color: Colors.light.text[5],
   },
   row: {
