@@ -3,11 +3,16 @@ import { Colors } from '@/constants/Colors';
 import { FieldError } from 'react-hook-form';
 
 
-export function FormInput({title, ref, errors, ...props}: {title?: string, ref?: React.Ref<TextInput>, errors?:FieldError} & TextInputProps) {
+export function FormInput({title, ref, errors, borderless = false, ...props}: {
+    title?: string, 
+    ref?: React.Ref<TextInput>, 
+    errors?:FieldError,
+    borderless?:boolean
+    } & TextInputProps) {
     return(
         <View style={styles.formContainer}>
-            <Text style={styles.label}>{title || props.placeholder}</Text>
-            <View style={styles.inputFieldContainer}>
+            {title && <Text style={styles.label}>{title}</Text>}
+            <View style={[styles.inputFieldContainer, borderless ? { borderWidth: 0, paddingHorizontal: 0} : {borderWidth: 1}]}>
                 <TextInput
                     {...props}
                     ref={ref}
@@ -31,7 +36,6 @@ const styles = StyleSheet.create({
         color: Colors.light.text[5],
     },
     inputFieldContainer: {
-        borderWidth: 1,
         borderColor: Colors.light.background[90],
         borderRadius: 8,
         paddingHorizontal: 12,

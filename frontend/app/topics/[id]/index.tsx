@@ -1,16 +1,15 @@
-import { useState } from 'react';
-import { TopicFeedItem, renderTopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
-import { Colors } from '@/constants/Colors';
-import { StyleSheet, Text, View } from 'react-native';
-import { FeedArea } from '../../../components/FeedArea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { DateItem } from '@/components/CustomDatePicker/DateItem';
-import { useEffect } from 'react';
-import { DateTime } from 'luxon';
+import { TopicFeedItem, renderTopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
+import { Colors } from '@/constants/Colors';
 import { toSegmentedDate } from '@/constants/SegmentedDate';
 import { useDebounce } from '@/hooks/useDebounce';
 import { axiosPrivate } from '@/utils/api';
 import { useTopics } from '@/utils/topicsContext';
+import { DateTime } from 'luxon';
+import { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { FeedArea } from '../../../components/FeedArea';
 
 export default function Posts() {
   const { topicState } = useTopics();
@@ -49,6 +48,7 @@ export default function Posts() {
         <View>
           <View style={styles.header}>
             <CustomDatePicker 
+              key={topicId}
               chosenDate={chosenDate} 
               setChosenDate={setChosenDate}
               topicCreationDate={DateTime.fromISO(topicCreationDate!)}

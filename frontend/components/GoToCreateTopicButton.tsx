@@ -1,10 +1,14 @@
-import { Pressable, StyleSheet , Text} from "react-native";
-import { Colors } from "@/constants/Colors";
 import { AddIcon } from "@/assets/images/add-icon";
+import { Colors } from "@/constants/Colors";
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text } from "react-native";
 
 export function GoToCreateTopicButton() {
+    const handlePress = () => {
+        router.push('/create-topic');
+    };
     return (
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={handlePress}>
             <AddIcon width={28} height={28} />
             <Text style={styles.buttonText}>Criar</Text>
         </Pressable>

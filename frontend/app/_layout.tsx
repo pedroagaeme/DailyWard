@@ -1,18 +1,19 @@
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { RegisterFormProvider } from '@/utils/registerFormContext';
+import {
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    useFonts
+} from '@expo-google-fonts/inter';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { 
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold, 
-  useFonts } from '@expo-google-fonts/inter';
-import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider, useAuth} from '../utils/authContext';
-import { RegisterFormProvider } from '@/utils/registerFormContext';
+import { AuthProvider, useAuth } from '../utils/authContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -51,6 +52,7 @@ function AppContent() {
     <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!authState?.isAuthenticated}>
         <Stack.Screen name="topics" options={{ headerShown: false }} />
+        <Stack.Screen name="create-topic" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!authState?.isAuthenticated}>
         <Stack.Screen name="index" options={{ headerShown: false }} />

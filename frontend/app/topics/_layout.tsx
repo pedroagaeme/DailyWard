@@ -1,11 +1,13 @@
-import { Drawer } from 'expo-router/drawer';
-import { DrawerContentScrollView, DrawerItemList, DrawerItem, DrawerContentComponentProps } from '@react-navigation/drawer';
-import { View, Text } from 'react-native';
+import { DailyWardLogoCompact } from '@/assets/images/dailyward-logo-compact';
 import { HomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
-import { TopicsProvider, useTopics } from '@/utils/topicsContext';
 import { LogoutButton } from '@/components/LogoutButton';
+import { Colors } from '@/constants/Colors';
 import { axiosPrivate } from '@/utils/api';
-import { use, useEffect, useState } from 'react';
+import { TopicsProvider, useTopics } from '@/utils/topicsContext';
+import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { Drawer } from 'expo-router/drawer';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { topics, topicState, enterTopic, exitTopic } = useTopics();
@@ -19,23 +21,23 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   }, [props.state.index]);
 
   return (
-    <DrawerContentScrollView {...props} style={{backgroundColor: '#f0f0f0', marginBottom: 8 }}>
+    <DrawerContentScrollView {...props} style={{backgroundColor: Colors.light.background[95], marginBottom: 8 }}>
       <View style={{ padding: 16, gap: 16}}>
         <LogoutButton />
-        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Bem-vindo(a)!</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.light.text[5] }}>Bem-vindo(a)!</Text>
       </View>
       <DrawerItem 
         label="Início"
         focused={!selectedItem}
         onPress={() => exitTopic!()}
         labelStyle = {{ 
-          color: !selectedItem ? '#1976d2' : '#475569',
+          color: !selectedItem ? Colors.light.primary : Colors.light.text[30],
           fontFamily: 'Inter_500Medium', 
           fontSize: 16 
         }}
       />
       <View style={{padding: 16}}>
-        <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#333333' }}>Seus Tópicos</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 16, color: Colors.light.text[5] }}>Seus Tópicos</Text>
       </View>
       {topics?.map((topic: HomeFeedItem) => (
         <DrawerItem
@@ -43,7 +45,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           focused={ String(selectedItem) === String(topic.id) }
           label={topic.title}
           labelStyle={{ 
-            color: String(selectedItem) === String(topic.id) ? '#1976d2' : '#475569', 
+            color: String(selectedItem) === String(topic.id) ? Colors.light.primary : Colors.light.text[30], 
             fontFamily: 'Inter_500Medium', 
             fontSize: 16 }}
           onPress={() => {
@@ -97,13 +99,24 @@ export const DrawerLayout = () => {
           name="index"
           options={{
             drawerLabel: 'Tópicos',
-            title: '',
+            title: 'Tópicos',
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <DailyWardLogoCompact width={32} height={32} />
+                <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 20, color: Colors.light.primary, letterSpacing: -0.2 }}>
+                  DailyWard
+                </Text>
+              </View>
+            ),
+            headerRight: () => (
+              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.background[90], marginRight: 16 }} />
+            ),
           }} 
         />
         <Drawer.Screen
           name="[id]"
           options={({ route }: { route: any }) => {
-            const label = selectedItemTitle|| 'Topic';
+            const label = selectedItemTitle || 'Topic';
             return {
               drawerLabel: label,
               title: label,

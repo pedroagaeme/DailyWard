@@ -25,7 +25,6 @@ export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
 
 const styles = StyleSheet.create({
   itemContainer: {
-    flex: 1,
     paddingHorizontal: 4,
     paddingTop: 24,
     paddingBottom: 28,

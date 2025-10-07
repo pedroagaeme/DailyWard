@@ -5,6 +5,7 @@ import { useFeedAreaInsets } from '@/hooks/useFeedAreaInsets';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import {
+  Dimensions,
   FlatList,
   ListRenderItem,
   StyleSheet,
@@ -30,10 +31,15 @@ interface Props {
   };
 }
 
-export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 0, navbarInset = false, separator}: Props) 
+const gapBetweenItems = 16;
+const flatListPaddingHorizontal = 16; // FlatList horizontal padding
+
+export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 1, navbarInset = false, separator}: Props) 
   {
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
+  const {width:windowWidth} = Dimensions.get('window');
+  const itemWidth = (windowWidth - (flatListPaddingHorizontal * 2) - (gapBetweenItems * (numColumns - 1))) / (numColumns);
   
   const ItemSeparator = () => {
     if (!separator?.enabled) return null;
@@ -52,7 +58,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
 
   const renderItemWithPadding = (info: any) => {
     return (
-      <View style={styles.itemWrapper}>
+      <View style={[styles.itemWrapper, {width: itemWidth}]}>
         {renderItem(info)}
       </View>
     );
@@ -70,7 +76,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
           paddingTop:topPadding + additionalPadding.top, 
           paddingBottom:bottomPadding + additionalPadding.bottom
         }]}
-        columnWrapperStyle={numColumns > 1 ? { gap: 20 } : undefined} // Adds horizontal gap between items in a row if multiple columns
+        columnWrapperStyle={numColumns > 1 ? { gap: 16 } : undefined} // Adds horizontal gap between items in a row if multiple columns
         showsVerticalScrollIndicator={false}
       />
     </MaskedView>
@@ -79,9 +85,8 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
 
 const styles = StyleSheet.create({
   flatListWrapper: {
-    paddingHorizontal: 16,
+    paddingHorizontal: flatListPaddingHorizontal,
   },
   itemWrapper: {
-    flex: 1,
   },
 });

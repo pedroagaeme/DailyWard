@@ -18,7 +18,7 @@ export const Colors = {
       5: '#1E293B',   
       30: '#475569',  
     },
-    primary: '#6d9bc3', 
+    primary: '#557fad', 
     error: '#ba1a1a',
   },
   dark: {

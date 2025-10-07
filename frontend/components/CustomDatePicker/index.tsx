@@ -1,9 +1,9 @@
-import { Dimensions, FlatList, View, Text, StyleSheet, ViewToken } from "react-native";
-import { DateItem, DateItemButton } from "./DateItem";
-import { useState, useEffect, useRef} from "react";
-import { DateTime } from "luxon";
-import { toSegmentedDate } from "@/constants/SegmentedDate";
 import { Colors } from "@/constants/Colors";
+import { toSegmentedDate } from "@/constants/SegmentedDate";
+import { DateTime } from "luxon";
+import { useEffect, useRef, useState } from "react";
+import { Dimensions, FlatList, StyleSheet, Text, View, ViewToken } from "react-native";
+import { DateItem, DateItemButton } from "./DateItem";
 
 interface CustomDatePickerProps {
     chosenDate:DateItem | undefined, 
@@ -21,7 +21,7 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
         setDayItemWidth(windowDimensions.width / 5);
         const startDate = topicCreationDate.startOf("day");
         const currentDate = DateTime.now().startOf("day");
-        const endDate = currentDate;
+        const endDate = currentDate.plus({ days: 2 });
         const daysCount = endDate.diff(startDate, "days").days;
 
         const validDates: DateItem[] = Array.from({ length: Math.ceil(daysCount) + 3 }, (_, i) => {
@@ -43,6 +43,7 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
             index={index} 
             width={dayItemWidth} 
             isSelected={chosenDate ? item.date.equals(chosenDate.date) : false}
+            isInaccessible={index >= items.length - 2 || index < 2}
             flatListRef={dateFlatListRef}
         />
     );
@@ -78,7 +79,6 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
                 renderItem={renderDateItem}
                 keyExtractor={(item) => item.date.toString()}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingLeft:dayItemWidth * 2}}
                 onViewableItemsChanged={onViewableItensChange}
                 overScrollMode="never"
             />

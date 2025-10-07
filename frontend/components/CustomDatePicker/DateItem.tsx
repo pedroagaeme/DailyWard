@@ -8,26 +8,29 @@ export interface DateItem extends SegmentedDate {
 }
 
 interface DateItemButtonProps {
-    item:DateItem, 
-    index:number,
-    width:number, 
-    isSelected:boolean,
+    item: DateItem, 
+    index: number,
+    width: number, 
+    isSelected: boolean,
+    isInaccessible?: boolean,
     flatListRef: React.RefObject<FlatList<DateItem> | null>
 }
 
-export function DateItemButton({item, index, width, isSelected, flatListRef}:DateItemButtonProps) {
-
+export function DateItemButton({item, index, width, isSelected, isInaccessible, flatListRef}: DateItemButtonProps) {
     const handlePress = () => {
         if(flatListRef) {
             flatListRef.current?.scrollToIndex({index, animated: true, viewPosition:0.5})
         }
     };
-    
     return (
-        <Pressable style={[styles.container,{width}]} onPress={handlePress}>
-            <View style={[isSelected ? styles.button : styles.inactiveButton]}>
-                <Text style={[styles.dayNumberText, {color: isSelected ? Colors.light.background[100] : Colors.light.text[30]}]}>{item.day}</Text>
-                <Text style={[styles.weekdayText, {color: isSelected ? Colors.light.background[100] : Colors.light.text[30]}]}>{item.weekday}</Text>
+        <Pressable
+            style={[styles.container, {width}, isInaccessible && styles.inaccessibleContainer]}
+            onPress={handlePress}
+            disabled={isInaccessible}
+        >
+            <View style={[isSelected ? styles.button : styles.inactiveButton, isInaccessible && styles.inaccessibleButton]}>
+                <Text style={[styles.dayNumberText, {color: isSelected ? Colors.light.background[100] : Colors.light.text[30]}, isInaccessible && styles.inaccessibleText]}>{item.day}</Text>
+                <Text style={[styles.weekdayText, {color: isSelected ? Colors.light.background[100] : Colors.light.text[30]}, isInaccessible && styles.inaccessibleText]}>{item.weekday}</Text>
             </View>
         </Pressable>
     );
@@ -54,6 +57,11 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         gap:4,
     },
+    inaccessibleContainer: {
+        opacity: 0.4,
+    },
+    inaccessibleButton: {
+    },
     dayNumberText: {
         fontFamily: 'Inter_700Bold',
         fontSize: 16,
@@ -65,5 +73,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 16,
         opacity:0.8,
+    },
+    inaccessibleText: {
+        color: Colors.light.text[30],
     },
 });
