@@ -1,12 +1,17 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
+import * as ImagePicker from 'expo-image-picker';
 import { CreateTopicButton } from '@/components/CreateTopicButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { axiosPrivate } from '@/utils/api';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Image, Alert, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import mime from 'mime';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTopics } from '@/utils/topicsContext';
 
 interface CreateTopicForm {
   title: string;
@@ -14,21 +19,55 @@ interface CreateTopicForm {
 }
 
 export default function CreateTopic() {
+  const { fetchUserTopics } = useTopics();
   const { control, handleSubmit } = useForm<CreateTopicForm>();
   const insets = useSafeAreaInsets();
+  const [image, setImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
 
   const onSubmit = async (data: CreateTopicForm) => {
     try {
-      await axiosPrivate.post('/users/me/topics/', data);
+      const form = new FormData();
+      form.append('title', data.title);
+      form.append('description', data.description);
+      if (image) {
+        form.append('topic_image', {
+          uri: image,
+          name: image?.split('/').pop() || 'topic_image.jpg',
+          type: mime.getType(image!) || 'image/jpeg',
+        } as any);
+      }
+      await axiosPrivate.post('/users/me/topics/', form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      fetchUserTopics!();
       router.back();
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error creating topic:', error);
     }
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom}] }>
-      <KeyboardAvoidingView style={styles.body} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <View style={styles.container}>
+      <KeyboardAwareScrollView enableOnAndroid={true}style={styles.body} contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
@@ -53,20 +92,10 @@ export default function CreateTopic() {
           )}
         />
 
-        <View style={styles.pictureBlock}>
-          <Text style={styles.label}>Imagem</Text>
-          <Pressable style={styles.uploadArea}>
-            <View style={styles.uploadContent}>
-              <Text style={styles.uploadCta}>Clique para fazer upload</Text>
-              <Text style={styles.uploadHint}>SVG, PNG, JPG ou GIF (máx. 800x400px)</Text>
-            </View>
-          </Pressable>
-        </View>
-
         <Controller
           control={control}
           name="description"
-          rules={{ maxLength: 100 }}
+          rules={{ maxLength: 120 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Descrição"
@@ -76,15 +105,29 @@ export default function CreateTopic() {
               value={value}
               multiline
               numberOfLines={4}
-              maxLength={100}
+              maxLength={120}
             />
           )}
         />
 
+        <View style={styles.pictureBlock}>
+          <Text style={styles.label}>Imagem</Text>
+          <Pressable style={[styles.uploadArea, image && styles.uploadAreaWithImage]} onPress={pickImage}>
+            {image ? (
+              <Image source={{ uri: image }} style={styles.previewImage} resizeMode="cover"/>
+            ) : (
+              <View style={styles.uploadContent}>
+                <Text style={styles.uploadCta}>Clique para fazer upload</Text>
+                <Text style={styles.uploadHint}>SVG, PNG, JPG ou GIF </Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+
         <View style={styles.footer}>
           <CreateTopicButton onPress={handleSubmit(onSubmit)} />
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -92,7 +135,7 @@ export default function CreateTopic() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[95],
   },
   body: {
     flex: 1,
@@ -133,17 +176,25 @@ const styles = StyleSheet.create({
   uploadArea: {
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: Colors.light.background[80],
+    borderColor: Colors.light.background[70],
     borderRadius: 8,
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.light.background[100],
     marginBottom: 24,
   },
+  uploadAreaWithImage: {
+    padding: 0,
+    borderStyle: 'solid',
+    borderWidth: 0.5,
+    aspectRatio: 1,
+    width: '100%',
+  },
   uploadContent: {
+    justifyContent: 'center',
     alignItems: 'center',
     gap: 4,
+    height:120,
   },
   uploadCta: {
     fontFamily: 'Inter_600SemiBold',
@@ -153,6 +204,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     color: Colors.light.text[30],
     fontSize: 12,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    resizeMode: 'cover',
   },
   textAreaContainer: {},
   textArea: {},

@@ -34,6 +34,7 @@ export default function EmailScreen() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Email'
                             placeholder="Email"
                             onBlur={onBlur}
                             onChangeText={onChange}

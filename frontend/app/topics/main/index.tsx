@@ -31,12 +31,12 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[95],
     overflow: 'visible',
     gap:12,
   },
   header: {
-    padding:16,
+    paddingHorizontal:16,
     paddingTop:12,
     paddingBottom:0,
     gap:12,

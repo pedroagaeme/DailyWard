@@ -34,8 +34,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         topic_id = self.kwargs.get('topic_pk') 
         topic = Topic.objects.get(pk=topic_id)
-        post = serializer.save(posted_by=self.request.user, topic=topic)
-#create your views here.
+        serializer.save(posted_by=self.request.user, topic=topic)
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()

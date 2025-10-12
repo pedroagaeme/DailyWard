@@ -30,6 +30,7 @@ export default function Register() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Nome'
                             placeholder="Nome"
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -49,6 +50,7 @@ export default function Register() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Sobrenome'
                             placeholder="Sobrenome"
                             onBlur={onBlur}
                             onChangeText={onChange}

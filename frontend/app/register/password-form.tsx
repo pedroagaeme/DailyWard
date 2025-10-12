@@ -30,6 +30,7 @@ export default function PasswordForm() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Senha'
                             placeholder="Senha"
                             secureTextEntry
                             onBlur={onBlur}

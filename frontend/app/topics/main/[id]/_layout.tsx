@@ -19,7 +19,7 @@ export default function Layout() {
 
   // Define button action based on focused tab
   const handleButtonPress = () => {
-    router.push("/create-post");
+    router.push("/topics/create-post");
   };
 
   return (
@@ -29,15 +29,15 @@ export default function Layout() {
         <AddIcon width={32} height={32}  />
       </Pressable>
       <TabList style={[styles.navbar, styles.shadowNavbar, {bottom:insets.bottom}]}>
-        <TabTrigger name="posts" href="/topics/[id]" asChild>
+        <TabTrigger name="posts" href="/topics/main/[id]" asChild>
           <CustomTabButton Icon={HomeIcon}>
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="resources" href="/topics/[id]/resources"  asChild>
+        <TabTrigger name="resources" href="/topics/main/[id]/resources"  asChild>
           <CustomTabButton Icon={ResourcesIcon}>
           </CustomTabButton>
         </TabTrigger>
-        <TabTrigger name="participants" href="/topics/[id]/participants" asChild>
+        <TabTrigger name="participants" href="/topics/main/[id]/participants" asChild>
           <CustomTabButton Icon={ContactsIcon}>
             Participantes
           </CustomTabButton>

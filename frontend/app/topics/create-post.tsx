@@ -1,35 +1,54 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { CreateTopicButton } from '@/components/CreateTopicButton';
+import { AddImageToPostButton } from '@/components/AddImageToPostButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { axiosPrivate } from '@/utils/api';
 import { useAuth } from '@/utils/authContext';
+import { useTopics } from '@/utils/topicsContext';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Pressable, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreatePostPage() {
-  const topicId = "1" // TODO: get from route params
+  const { topicState } = useTopics();
   const { authState } = useAuth();
   const { control, handleSubmit } = useForm();
+  const [image, setImage] = useState<string | null>(null);
+  const topicId = topicState?.id;
 
-  const onSubmit = (data:any) => {
-    axiosPrivate.post(`/users/me/topics/${topicId}/posts/`, data)
-      .then(response => {
-        console.log('Post created:', response.data);
-      })
-      .then(() => router.back())
-      .catch(error => {
-        console.error('Error creating post:', error);
-      });
-      
+  const onSubmit = async (data:any) => {
+    if (!topicId) {
+      console.error('No topic selected');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('contentText', data.contentText);
+    if (image) {
+      formData.append('contentPic', {
+        uri: image,
+        name: image?.split('/').pop() || 'post_image.jpg',
+        type: 'image/jpeg',
+      } as any);
+    }
+
+    const response = await axiosPrivate.post(`/users/me/topics/${topicId}/posts/`, formData, 
+      {headers: {'Content-Type': 'multipart/form-data'}}
+    );
+
+    if (response.status === 201) {
+      console.log('Post created:', response.data);
+      router.back();
+    } else {
+      console.error('Error creating post:', response);
+    }
   };
 
   return (
     <View style={[styles.container]}>
       <SafeAreaView style={styles.body}>
-        <KeyboardAvoidingView style={{flex:1, gap: 16}} behavior="padding">
+        <KeyboardAvoidingView style={{flex:1,gap: 16}} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <View style={styles.headerRow}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
               <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
@@ -53,16 +72,19 @@ export default function CreatePostPage() {
                     onBlur={onBlur}
                     value={value}
                     multiline
-                    numberOfLines={6}
-                    borderless = {true}
+                    borderless={true}
+                    additionalElements={[image ? <Image key={1} source={{ uri: image }} style={styles.imagePreview} /> : null]}
                   />
                 )}
                 rules={{ required: true }}
               />
             </View>
-            <View style={styles.footer} >
-              <CreateTopicButton onPress={handleSubmit(onSubmit)} />
-            </View>
+        </View>
+        <View style={styles.footer} >
+          <AddImageToPostButton setImage={setImage} />
+          <Pressable onPress={handleSubmit(onSubmit)} style={styles.createPostButton}>
+            <Text style={styles.createPostButtonText}>Enviar</Text>
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
       </SafeAreaView>
@@ -78,7 +100,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flex:1,
-    paddingHorizontal: 16,
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',
@@ -92,8 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 16,
-    marginBottom: 16,
+    padding:16
   },
   backButton: {
     width: 32,
@@ -130,9 +150,9 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     flex:1,
+    paddingHorizontal: 16,
     backgroundColor: Colors.light.background[100],
     gap:8,
-    justifyContent:'space-between',
   },
   input: {
     flex:1,
@@ -143,9 +163,34 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   footer: {
-    justifyContent:'flex-end',
-    alignItems:'center',
+    paddingHorizontal: 16,
+    borderTopWidth: 0.2,
+    borderTopColor: Colors.light.background[70],
     flexDirection:'row',
-    marginBottom: 8,
+    justifyContent:'space-between',
+    alignItems:'center',
+    paddingBottom: 4,
+    paddingTop: 12,
+    gap: 12,
+  },
+  createPostButton: {
+    backgroundColor: Colors.light.primary,
+    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    alignItems:'center',
+  },
+  createPostButtonText: {
+    fontFamily:'Inter_500Medium',
+    fontSize: 16,
+    lineHeight: 20,
+    color: Colors.light.background[100],
+  },
+  imagePreview: {
+    marginVertical: 8,
+    width: '100%',
+    height: undefined,
+    aspectRatio: 16 / 9,
+    borderRadius: 16,
   },
 });

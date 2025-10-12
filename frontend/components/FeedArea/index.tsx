@@ -29,17 +29,18 @@ interface Props {
     marginVertical?: number;
     marginHorizontal?: number;
   };
+  noHorizontalPadding?: boolean;
 }
 
-const gapBetweenItems = 16;
+const gapBetweenItems = 8;
 const flatListPaddingHorizontal = 16; // FlatList horizontal padding
 
-export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 1, navbarInset = false, separator}: Props) 
+export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 1, navbarInset = false, separator, noHorizontalPadding = false}: Props) 
   {
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
   const {width:windowWidth} = Dimensions.get('window');
-  const itemWidth = (windowWidth - (flatListPaddingHorizontal * 2) - (gapBetweenItems * (numColumns - 1))) / (numColumns);
+  const itemWidth = (windowWidth - (noHorizontalPadding ? 0 : flatListPaddingHorizontal * 2) - (gapBetweenItems * (numColumns - 1))) / (numColumns);
   
   const ItemSeparator = () => {
     if (!separator?.enabled) return null;
@@ -75,8 +76,8 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
         contentContainerStyle={[styles.flatListWrapper, {
           paddingTop:topPadding + additionalPadding.top, 
           paddingBottom:bottomPadding + additionalPadding.bottom
-        }]}
-        columnWrapperStyle={numColumns > 1 ? { gap: 16 } : undefined} // Adds horizontal gap between items in a row if multiple columns
+        }, noHorizontalPadding ? {} : {paddingHorizontal: flatListPaddingHorizontal}]} // Apply horizontal padding only if noHorizontalPadding is false
+        columnWrapperStyle={numColumns > 1 ? { gap: gapBetweenItems } : undefined} // Adds horizontal gap between items in a row if multiple columns
         showsVerticalScrollIndicator={false}
       />
     </MaskedView>
@@ -85,7 +86,6 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
 
 const styles = StyleSheet.create({
   flatListWrapper: {
-    paddingHorizontal: flatListPaddingHorizontal,
   },
   itemWrapper: {
   },

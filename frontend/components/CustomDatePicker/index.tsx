@@ -88,9 +88,7 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
 
 const styles = StyleSheet.create({
     wrapper: {
-        paddingBottom:8,
-        borderBottomWidth:1.5,
-        borderColor: Colors.light.background[90],
+        paddingBottom:12,
     },
     text: {
         fontFamily: 'Inter_500Medium',

@@ -13,12 +13,15 @@ export const Colors = {
       95: '#f8f9f9',  
       90: '#eeeeee',  
       80: '#e1e2e2',
+      70: '#909698',
     },
     text: {
       5: '#1E293B',   
       30: '#475569',  
     },
-    primary: '#557fad', 
+    primary: '#557fad',
+    secondary: '#F0F7FF',
+    accent: '#E1EFFF',
     error: '#ba1a1a',
   },
   dark: {

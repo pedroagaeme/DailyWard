@@ -9,7 +9,7 @@ import { useTopics } from '@/utils/topicsContext';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FeedArea } from '../../../components/FeedArea';
+import { FeedArea } from '../../../../components/FeedArea';
 
 export default function Posts() {
   const { topicState } = useTopics();
@@ -18,11 +18,11 @@ export default function Posts() {
 
   const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>({
-    date: DateTime.now(), 
+    date: DateTime.now().startOf('day'), 
     ...toSegmentedDate(DateTime.now())
   });
 
-  const debouncedChosenDate = useDebounce(chosenDate, 500);
+  const debouncedChosenDate = useDebounce(chosenDate.date.toISODate(), 500);
 
   useEffect(() => {
     // Fetch posts from the backend
@@ -30,7 +30,7 @@ export default function Posts() {
       try {
         if(!topicId || !debouncedChosenDate) return;
         const response = await axiosPrivate.get(
-          `/users/me/topics/${topicId}/posts/${debouncedChosenDate?.date.toISODate()}/`
+          `/users/me/topics/${topicId}/posts/${debouncedChosenDate}/`
         );
         setPosts(response.data);
       }
@@ -39,9 +39,10 @@ export default function Posts() {
       }
     };
 
+    console.log('Fetching posts for date:', debouncedChosenDate);
     fetchPosts();
 
-  }, [debouncedChosenDate, topicId]);
+  }, [topicId, debouncedChosenDate]);
 
   return (
       <View style={styles.container}>
@@ -61,13 +62,8 @@ export default function Posts() {
           fadedEdges={{top:false, bottom:false}} 
           immersiveScreen={{top:false, bottom:true}} 
           navbarInset={true}
-          separator={{
-            enabled: true,
-            color: Colors.light.background[90],
-            height: 1,
-            marginVertical: 0,
-            marginHorizontal: 10,
-          }}
+          additionalPadding={{top: 12, bottom: 4}}
+          noHorizontalPadding={true}
         />
       </View>
     );
@@ -77,11 +73,13 @@ const styles = StyleSheet.create({
   container: {
     flex:1,
     justifyContent:'space-between',
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[90],
     overflow: 'visible',
   },
   header: {
+    backgroundColor: Colors.light.background[100],
     paddingTop:8,
     gap: 16,
+    elevation: 2,
   },
 });

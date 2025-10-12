@@ -34,6 +34,7 @@ export default function Login() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Email'
                             placeholder="Email"
                             returnKeyType="next"
                             onSubmitEditing={() => passwordRef.current?.focus()}
@@ -53,6 +54,7 @@ export default function Login() {
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
+                            title='Senha'
                             placeholder="Senha"
                             secureTextEntry
                             onBlur={onBlur}

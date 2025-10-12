@@ -34,10 +34,11 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 # Set the working directory
 WORKDIR /app
 
-# Copy application code (excluding entrypoint.sh)
+# Copy application code
 COPY --chown=appuser:appuser . .
 
 # Make entrypoint script executable
+COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Set environment variables to optimize Python

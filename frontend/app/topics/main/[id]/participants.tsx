@@ -8,7 +8,6 @@ import { ParticipantsIcon } from "@/assets/images/participants-icon";
 
 
 export default function Members() {
-
     return (
       <ScrollView contentContainerStyle={{flexGrow:1}}>
         <View style={styles.container}>

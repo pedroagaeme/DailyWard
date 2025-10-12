@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         gap:4,
     },
     inaccessibleContainer: {
-        opacity: 0.4,
+        opacity: 0,
     },
     inaccessibleButton: {
     },

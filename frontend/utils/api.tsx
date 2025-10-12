@@ -5,16 +5,10 @@ import { getAccessToken, getRefreshToken, storeTokens } from './tokens';
 
 export const axiosPublic = axios.create({
     baseURL: `${BASE_API_URL}`,
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 export const axiosPrivate = axios.create({
     baseURL: `${BASE_API_URL}`,
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 const refreshToken = async () => {
@@ -41,6 +35,8 @@ axiosPrivate.interceptors.request.use(async (config) => {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
     }
+
+    
     return config;
 });
 

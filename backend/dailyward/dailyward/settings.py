@@ -98,14 +98,13 @@ DATABASES = {
 }
 
 # Azure Storage settings for media files
-
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.azure_storage.AzureStorage",
         "OPTIONS": {
             "account_name": os.environ.get("AZURE_ACCOUNT_NAME"),
             "account_key": os.environ.get("AZURE_ACCOUNT_KEY"),
-            "container_name": os.environ.get("AZURE_CONTAINER_NAME"),
+            "azure_container": os.environ.get("AZURE_CONTAINER_NAME"),
             "timeout": 20,
             "expiration_secs": 500,
         },

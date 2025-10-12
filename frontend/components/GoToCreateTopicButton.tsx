@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 
 export function GoToCreateTopicButton() {
     const handlePress = () => {
-        router.push('/create-topic');
+        router.push('/topics/create-topic');
     };
     return (
         <Pressable style={styles.button} onPress={handlePress}>
