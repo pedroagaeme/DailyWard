@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path, register_converter
-from topics.views import TopicViewSet
+from topics.views import ParticipantViewSet, TopicViewSet, join_topic_by_code
 from posts.views import PostViewSet, PostsByDayAPIView
 from resources.views import ResourceViewSet
 from rest_framework_nested import routers
@@ -27,12 +27,15 @@ router.register(r'topics', TopicViewSet, basename='topic')
 
 topics_router = routers.NestedSimpleRouter(router, r'topics', lookup='topic')
 topics_router.register(r'posts', PostViewSet)
+topics_router.register(r'participants', ParticipantViewSet, basename='participant')
+topics_router.register(r'resources', ResourceViewSet, basename='resource')
 
 register_converter(DateConverter, 'date')
-
+    
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/users/me/topics/<int:topic_pk>/posts/<date:date_iso>/', PostsByDayAPIView.as_view(), name='topic-post-archive'),
+    path('api/v1/users/me/topics/join/', join_topic_by_code, name='join-topic-by-code'),
     path('api/v1/users/me/', include(router.urls)),
     path('api/v1/users/me/', include(topics_router.urls)),
     path('api/v1/auth/', include('users.urls'))

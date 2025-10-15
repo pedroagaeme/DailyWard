@@ -14,7 +14,8 @@ import {
 import { FadedOverlayContainer } from './FadedOverlayContainer';
 
 interface Props {
-  items:FeedItem[], 
+  items:FeedItem[],
+  listHeaderComponent?: React.ReactElement,
   renderItem:ListRenderItem<any>, 
   fadedEdges:InsetToggle, 
   immersiveScreen:InsetToggle, 
@@ -35,7 +36,18 @@ interface Props {
 const gapBetweenItems = 8;
 const flatListPaddingHorizontal = 16; // FlatList horizontal padding
 
-export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overlayHeight = 0, additionalPadding = {top:0, bottom: 0}, numColumns = 1, navbarInset = false, separator, noHorizontalPadding = false}: Props) 
+export function FeedArea({
+  items,
+  listHeaderComponent,
+  renderItem, 
+  fadedEdges, 
+  immersiveScreen, 
+  overlayHeight = 0, 
+  additionalPadding = {top:0, bottom: 0}, 
+  numColumns = 1, 
+  navbarInset = false, 
+  separator, 
+  noHorizontalPadding = false}: Props) 
   {
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
@@ -68,6 +80,7 @@ export function FeedArea({items, renderItem, fadedEdges, immersiveScreen, overla
   return (
     <MaskedView  style={{flex:1}} maskElement={<FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}/>}>
       <FlatList
+        ListHeaderComponent={listHeaderComponent}
         numColumns={numColumns}
         data={items}
         renderItem={renderItemWithPadding}

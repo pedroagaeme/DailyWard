@@ -26,7 +26,7 @@ export default function CreatePostPage() {
     const formData = new FormData();
     formData.append('contentText', data.contentText);
     if (image) {
-      formData.append('contentPic', {
+      formData.append('contentPicUrl', {
         uri: image,
         name: image?.split('/').pop() || 'post_image.jpg',
         type: 'image/jpeg',

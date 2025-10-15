@@ -9,7 +9,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password', 'confirm_password']
+        fields = ['email', 'first_name', 'last_name', 'password', 'confirm_password', 'profile_pic']
 
     def validate(self, attrs):
         password = attrs.get('password', '')

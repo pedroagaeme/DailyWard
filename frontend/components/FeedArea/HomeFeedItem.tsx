@@ -6,22 +6,23 @@ import { ListRenderItem, Pressable, StyleSheet, Text, View, Image } from 'react-
 export interface HomeFeedItem extends FeedItem {
   title: string;
   description?: string;
-  topicImage: string;
+  topicImageUrl: string;
   createdAt: string;
+  code: string;
 }
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   const { enterTopic } = useTopics();
 
   const handlePress = () => {
-    enterTopic!(item.id, item.title, item.createdAt);
+    enterTopic!(item.code, item.id, item.title, item.createdAt);
   };
 
   return(
     <Pressable onPress={handlePress}>
       <View style={styles.itemContainer}>
         <View style={styles.imageContainer}>
-          <Image style={styles.picture}  source={item.topicImage ? { uri: item.topicImage } : require('@/assets/images/default-topic-image.png')}/>
+          <Image style={styles.picture}  source={item.topicImageUrl ? { uri: item.topicImageUrl } : require('@/assets/images/default-topic-image.png')}/>
           <View style={styles.pictureOverlay} />
         </View>
         <View style={styles.contentArea}>

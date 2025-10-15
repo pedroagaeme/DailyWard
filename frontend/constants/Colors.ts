@@ -11,12 +11,13 @@ export const Colors = {
     background: {
       100: '#ffffff', 
       95: '#f8f9f9',  
-      90: '#eeeeee',  
+      90: '#eff0f0',  
       80: '#e1e2e2',
-      70: '#909698',
+      70: '#bebfbf',
     },
     text: {
-      5: '#1E293B',   
+      5: '#1E293B',
+      15: '#334155',
       30: '#475569',  
     },
     primary: '#557fad',

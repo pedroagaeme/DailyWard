@@ -4,9 +4,10 @@ from users.models import User
 # Create your models here.
 
 class Topic(models.Model):
+    code = models.CharField(max_length=8, unique=True)
     title = models.CharField(max_length=75)
     description = models.TextField(blank=True)
-    topic_image = models.ImageField(upload_to='topic_images/', null=True, blank=True)
+    topic_image_url = models.ImageField(upload_to='topic_images/', null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_topics", null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,44 +1,62 @@
-import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
+import { View, ListRenderItem, StyleSheet, Text, Image } from 'react-native';
 import { FeedItem } from '@/constants/FeedItem';
 import { Colors } from '@/constants/Colors';
+import { DefaultProfileIcon } from '../DefaultProfileIcon';
 
+//{"id": 2, "joinedAt": "2025-10-08T23:17:26.947351Z", "role": "admin", "user": 1, "userFullName": "Teste Teste", "userProfilePic": null}]
 export interface ParticipantsFeedItem extends FeedItem {
-  fullName: string;
-  isContact: boolean;
-  lastMessage?: string;
+  userFullName: string;
+  userProfilePic: string;
+  role: string;
+  joinedAt: string;
 }
 export const renderParticipantsFeedItem: ListRenderItem<ParticipantsFeedItem> = ({item}) => (
-  <View style={[styles.itemContainer, styles.shadow]}>
-    <View style={styles.headerRow}>
-      <Text style={styles.posterName}>{item.fullName}</Text>
+  <View style={styles.card}>
+    <View style={styles.row}>
+      {item.userProfilePic ? 
+        <Image source={{ uri: item.userProfilePic }} style={styles.profilePic} />
+        : <DefaultProfileIcon fullName={item.userFullName} />
+      }
+      <View style={styles.textSection}>
+        <Text style={styles.fullName}>{item.userFullName}</Text>
+      </View>
     </View>
   </View>
 );
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding:24,
-    marginBottom: 16,
+  card: {
+    borderRadius: 16,
+    marginTop: 16,
+    paddingHorizontal: 16,
   },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  headerRow: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
   },
-  posterName: {
-    fontFamily:'Inter_600SemiBold',
-    fontSize: 16,
-  color: Colors.light.text[30],
+  profilePic: {
+    width: 44,
+    height: 44,
+    borderRadius: 24,
+    backgroundColor: Colors.light.background[90],
+    borderWidth: 0.5,
+    borderColor: Colors.light.background[70],
+  },
+  textSection: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 4,
+  },
+  fullName: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 17,
+    color: Colors.light.text[30],
+  },
+  lastMessage: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 13,
+    color: Colors.light.text[30],
+    opacity: 0.85,
   },
 });

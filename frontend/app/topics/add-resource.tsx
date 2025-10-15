@@ -1,78 +1,81 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import * as ImagePicker from 'expo-image-picker';
-import { CreateTopicButton } from '@/components/CreateTopicButton';
+import * as DocumentPicker from 'expo-document-picker';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { axiosPrivate } from '@/utils/api';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Image, Alert, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
-import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTopics } from '@/utils/topicsContext';
 
-interface CreateTopicForm {
+interface CreateResourceForm {
   title: string;
   description: string;
 }
 
-export default function CreateTopic() {
-  const { fetchUserTopics } = useTopics();
-  const { control, handleSubmit } = useForm<CreateTopicForm>();
+export default function AddResource() {
+  const { topicState } = useTopics();
+  const { control, handleSubmit } = useForm<CreateResourceForm>();
   const insets = useSafeAreaInsets();
-  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<any>(null);
 
-  const pickImage = async () => {
+  const pickDocument = async () => {
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        setImage(result.assets[0].uri);
+        setFile(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      Alert.alert('Error', 'Failed to pick document');
     }
   };
 
-  const onSubmit = async (data: CreateTopicForm) => {
+  const onSubmit = async (data: CreateResourceForm) => {
     try {
       const form = new FormData();
       form.append('title', data.title);
       form.append('description', data.description);
-      if (image) {
-        form.append('topicImageUrl', {
-          uri: image,
-          name: image?.split('/').pop() || 'topic_image.jpg',
-          type: mime.getType(image!) || 'image/jpeg',
+      
+      if (file) {
+        form.append('resourceType', 'file');
+        form.append('fileUrl', {
+          uri: file.uri,
+          name: file.name,
+          type: file.mimeType,
         } as any);
+        form.append('filename', file.name);
+      } else {
+        form.append('resourceType', 'announcement');
       }
-      await axiosPrivate.post('/users/me/topics/', form, {
+      
+      await axiosPrivate.post(`/users/me/topics/${topicState?.id}/resources/`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      fetchUserTopics!();
+      
       router.back();
-    } catch (error:any) {
-      console.error('Error creating topic:', error);
+    } catch (error: any) {
+      console.error('Error creating resource:', error);
+      Alert.alert('Error', 'Failed to create resource');
     }
   };
 
   return (
     <View style={styles.container}>
-      <KeyboardAwareScrollView enableOnAndroid={true}style={styles.body} contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
           </Pressable>
-          <Text style={styles.sectionTitle}>Criar Tópico</Text>
+          <Text style={styles.sectionTitle}>Adicionar Recurso</Text>
           <View style={{ width: 24, height: 24 }} />
         </View>
 
@@ -83,7 +86,7 @@ export default function CreateTopic() {
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
-              placeholder="Dê um título ao tópico"
+              placeholder="Dê um título ao recurso"
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -95,37 +98,42 @@ export default function CreateTopic() {
         <Controller
           control={control}
           name="description"
-          rules={{ maxLength: 120 }}
+          rules={{ maxLength: 200 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Descrição"
-              placeholder="Conte-nos mais sobre o seu tópico"
+              placeholder="Conte-nos mais sobre o seu recurso"
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
               multiline
               numberOfLines={4}
-              maxLength={120}
+              maxLength={200}
             />
           )}
         />
 
-        <View style={styles.pictureBlock}>
-          <Text style={styles.label}>Imagem</Text>
-          <Pressable style={[styles.uploadArea, image && styles.uploadAreaWithImage]} onPress={pickImage}>
-            {image ? (
-              <Image source={{ uri: image }} style={styles.previewImage} resizeMode="cover"/>
+        <View style={styles.fileUploadBlock}>
+          <Text style={styles.label}>Arquivo</Text>
+          <Pressable style={styles.uploadArea} onPress={pickDocument}>
+            {file ? (
+              <View style={styles.fileInfo}>
+                <Text style={styles.fileName} numberOfLines={1}>{file.name}</Text>
+                <Text style={styles.fileSize}>{(file.size / 1024 / 1024).toFixed(2)} MB</Text>
+              </View>
             ) : (
               <View style={styles.uploadContent}>
                 <Text style={styles.uploadCta}>Clique para fazer upload</Text>
-                <Text style={styles.uploadHint}>SVG, PNG, JPG ou GIF </Text>
+                <Text style={styles.uploadHint}>Qualquer tipo de arquivo</Text>
               </View>
             )}
           </Pressable>
         </View>
 
         <View style={styles.footer}>
-          <CreateTopicButton onPress={handleSubmit(onSubmit)} />
+          <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
+            <Text style={styles.buttonText}>Enviar</Text>
+          </Pressable>
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -170,7 +178,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text[5],
   },
-  pictureBlock: {
+  fileUploadBlock: {
     gap: 8,
   },
   uploadArea: {
@@ -182,19 +190,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-  },
-  uploadAreaWithImage: {
-    padding: 0,
-    borderStyle: 'solid',
-    borderWidth: 0.5,
-    aspectRatio: 1,
-    width: '100%',
+    height: 120,
   },
   uploadContent: {
     justifyContent: 'center',
     alignItems: 'center',
     gap: 4,
-    height:120,
   },
   uploadCta: {
     fontFamily: 'Inter_600SemiBold',
@@ -205,19 +206,38 @@ const styles = StyleSheet.create({
     color: Colors.light.text[30],
     fontSize: 12,
   },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-    resizeMode: 'cover',
+  fileInfo: {
+    alignItems: 'center',
+    gap: 4,
   },
-  textAreaContainer: {},
-  textArea: {},
+  fileName: {
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.light.text[5],
+    fontSize: 14,
+  },
+  fileSize: {
+    fontFamily: 'Inter_400Regular',
+    color: Colors.light.text[30],
+    fontSize: 12,
+  },
   footer: {
     marginTop: 'auto',
     marginBottom: 8,
     alignItems: 'center',
   },
+  button: {
+    flexDirection: 'row',
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
+  },
+  buttonText: {
+    fontFamily: 'Inter_500Medium',
+    color: Colors.light.background[100],
+    fontSize: 18,
+    lineHeight: 28,
+  },
 });
-
-

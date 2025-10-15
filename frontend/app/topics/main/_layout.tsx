@@ -2,7 +2,6 @@ import { DailyWardLogoCompact } from '@/assets/images/dailyward-logo-compact';
 import { HomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
 import { LogoutButton } from '@/components/LogoutButton';
 import { Colors } from '@/constants/Colors';
-import { axiosPrivate } from '@/utils/api';
 import { useTopics } from '@/utils/topicsContext';
 import { DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
 import { ScrollView } from 'react-native';
@@ -10,6 +9,7 @@ import { Drawer } from 'expo-router/drawer';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DefaultProfileIcon } from '@/components/DefaultProfileIcon';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { topics, topicState, enterTopic, exitTopic } = useTopics();
@@ -62,7 +62,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
                 fontFamily: 'Inter_500Medium', 
                 fontSize: 16 }}
               onPress={() => {
-                enterTopic!(topic.id, topic.title, topic.createdAt);
+                enterTopic!(topic.code, topic.id, topic.title, topic.createdAt);
               }}
             />
           ))}
@@ -102,7 +102,7 @@ export const DrawerLayout = () => {
           options={{
             drawerLabel: 'Tópicos',
             title: 'Tópicos',
-            headerStyle: { backgroundColor: Colors.light.background[95]},
+            headerStyle: { backgroundColor: Colors.light.background[90]},
             headerTitle: () => (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <DailyWardLogoCompact width={32} height={32} />
@@ -112,7 +112,9 @@ export const DrawerLayout = () => {
               </View>
             ),
             headerRight: () => (
-              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.background[90], marginRight: 16 }} />
+              <View style={{marginRight: 16 }}>
+                <DefaultProfileIcon fullName="User Name" viewStyleProps={{width: 36}} />
+              </View>
             ),
           }} 
         />

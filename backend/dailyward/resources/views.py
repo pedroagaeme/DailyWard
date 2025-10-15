@@ -3,6 +3,7 @@ from .permissions import IsAuthor, IsAuthorOrTopicAdmin, IsTopicParticipant
 from rest_framework import viewsets, permissions
 from .models import Resource
 from .serializers import ResourceSerializer
+from topics.models import Topic
 
 # Create your views here.
 
@@ -21,8 +22,9 @@ class ResourceViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         topic_id = self.kwargs.get('topic_pk')          
-        return Resource.objects.filter(topic=topic_id)
+        return Resource.objects.filter(topic=topic_id).order_by('-created_at')
     
     def perform_create(self, serializer):
-        topic = self.kwargs.get('topic_pk')
+        topic_id = self.kwargs.get('topic_pk')
+        topic = Topic.objects.get(pk=topic_id)
         serializer.save(uploaded_by=self.request.user, topic=topic)

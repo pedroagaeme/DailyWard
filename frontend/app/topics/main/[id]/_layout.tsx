@@ -17,29 +17,33 @@ export default function Layout() {
   // Get the focused tab name from segments
   const focusedTab = segments[segments.length - 1];
 
-  // Define button action based on focused tab
   const handleButtonPress = () => {
+    console.log(focusedTab);
     router.push("/topics/create-post");
   };
 
   return (
     <Tabs>
       <TabSlot />
-      <Pressable onPress={handleButtonPress} style={[styles.button, styles.shadowNavbar, {bottom:insets.bottom}]}>
-        <AddIcon width={32} height={32}  />
-      </Pressable>
+      {(focusedTab === '[id]' || focusedTab === undefined) && (
+        <Pressable onPress={handleButtonPress} style={[styles.button, styles.shadowNavbar, {bottom:insets.bottom + 100}]}>
+          <AddIcon width={32} height={32}  />
+        </Pressable>
+      )}
       <TabList style={[styles.navbar, styles.shadowNavbar, {bottom:insets.bottom}]}>
         <TabTrigger name="posts" href="/topics/main/[id]" asChild>
           <CustomTabButton Icon={HomeIcon}>
+            Início
           </CustomTabButton>
         </TabTrigger>
         <TabTrigger name="resources" href="/topics/main/[id]/resources"  asChild>
           <CustomTabButton Icon={ResourcesIcon}>
+            Recursos
           </CustomTabButton>
         </TabTrigger>
         <TabTrigger name="participants" href="/topics/main/[id]/participants" asChild>
           <CustomTabButton Icon={ContactsIcon}>
-            Participantes
+            Particip...
           </CustomTabButton>
         </TabTrigger>
       </TabList>
@@ -51,12 +55,15 @@ const styles = StyleSheet.create({
   navbar: {
     position: "absolute",
     alignItems:"center",
-    marginLeft:20,
-    marginRight:100,
-    padding: 16,
+    alignSelf: 'center',
+    marginHorizontal: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    marginBottom: 4,
+    maxWidth: 260,
     flexDirection:'row',
     justifyContent:'space-around',
-    borderRadius:40,
+    borderRadius:16,
     backgroundColor: Colors.light.primary,
   },
   button: {
@@ -65,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems:"center",
     right:20,
     padding: 16,
-    borderRadius:40,
+    borderRadius: 20,
     backgroundColor: Colors.light.primary,
   },
   shadowNavbar: {

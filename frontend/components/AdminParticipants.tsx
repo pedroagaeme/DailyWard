@@ -1,27 +1,15 @@
 import { Colors } from '@/constants/Colors';
-import { InviteToContactsIcon } from "@/assets/images/invite-to-contacts";
-import { View, StyleSheet, Text, FlatList} from 'react-native';
+import { View, StyleSheet, Text, FlatList, Dimensions} from 'react-native';
+import { ParticipantsFeedItem } from './FeedArea/ParticipantsFeedItem';
+import { DefaultProfileIcon } from './DefaultProfileIcon';
 
-interface AdminParticipant {
-    name: string;
-    profilePicUrl?: string;
-}
-
-export function AdminParticipants() {
-    const participants: AdminParticipant[] = [
-        { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
-        { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
-        { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
-        { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
-        { name: 'John Doe', profilePicUrl: 'https://example.com/john.jpg' },
-        { name: 'Jane Smith', profilePicUrl: 'https://example.com/jane.jpg' },
-    ];
-
-    const renderAdminParticipant = ({ item }: { item: AdminParticipant }) => (
-        <View style={styles.card}>
-            <View style={styles.profilePic} />
-            <Text style={styles.text} numberOfLines={2}>{item.name}</Text>
-            <InviteToContactsIcon width={24} height={24} />
+export function AdminParticipants({participants}: {participants: ParticipantsFeedItem[]}) {
+    const windowWidth = Dimensions.get('window').width;
+    const cardWidth = windowWidth / 3 ; 
+    const renderAdminParticipant = ({ item }: { item: ParticipantsFeedItem }) => (
+        <View style={[styles.card, { width: cardWidth }]}>
+            <DefaultProfileIcon fullName={item.userFullName} viewStyleProps={{ ...styles.profilePic, width: cardWidth - 20 }} />
+            <Text style={styles.text} numberOfLines={2}>{item.userFullName}</Text>
         </View>
     );
     return (
@@ -38,35 +26,27 @@ export function AdminParticipants() {
 
 const styles = StyleSheet.create({
     container: {
+        marginTop: 20,
+        marginBottom: 24,
         paddingHorizontal:16,
         gap: 16,
     },
     card: {
         overflow: 'hidden',
         alignItems: 'center',
-        width: 128,
-        gap:12,
-        backgroundColor: Colors.light.background[100],
-        borderRadius: 24,
-        paddingBottom: 24,
-        borderWidth: 1,
+        gap: 12,
         borderColor: Colors.light.background[90],
     },
     text: {
-        marginHorizontal: 20,
-        marginBottom: 4,
         textAlign: 'center',
-        fontFamily: 'Inter_700Bold',
-        fontSize: 14,
-        lineHeight: 18,
-        letterSpacing: 0.25,
-        color: Colors.light.text[5],
+        fontFamily: 'Inter_600SemiBold',
+        fontSize: 16,
+        lineHeight: 20,
+        letterSpacing: 0.2,
+        color: Colors.light.text[15]
     },
     profilePic: {
-        width: '100%',
+        borderRadius: 24,
         aspectRatio: 1,
-        backgroundColor: Colors.light.background[95],
-        borderBottomWidth: 1,
-        borderColor: Colors.light.background[90],
     }
 })

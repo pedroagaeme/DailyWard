@@ -7,13 +7,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, verbose_name=("Email Adress"))
     first_name = models.CharField(max_length=100, verbose_name=("First Name"))
     last_name = models.CharField(max_length=100, verbose_name=("Last Name")) 
-    profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
     USERNAME_FIELD = "email"  
     REQUIRED_FIELDS = ["first_name", "last_name"]

@@ -1,14 +1,17 @@
 import { InviteCodeIcon } from "@/assets/images/invite-code-icon";
 import { Colors } from "@/constants/Colors";
+import { useTopics } from "@/utils/topicsContext";
 import { View, StyleSheet, Text } from "react-native";
 
 export function TopicCodeArea() {
+    const { topicState } = useTopics();
+    const code = topicState?.code;
     return (
         <View style={[styles.card, styles.cardShadow]}>
             <InviteCodeIcon height={70} width={70} />
             <View style={styles.textSection}>
                 <Text style={styles.sectionTitle}>Código de Convite:</Text>
-                <Text style={styles.codeText}>XJ9K-2LMN</Text>
+                <Text style={styles.codeText} selectable={true}>{code}</Text>
             </View>
         </View>
     )

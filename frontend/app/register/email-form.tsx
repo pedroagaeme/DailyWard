@@ -20,6 +20,9 @@ export default function EmailScreen() {
         if (!result?.error) {
             router.push({pathname: '/register/verify-email'});
         }
+        else {
+            console.error(result.error);
+        }
     };
 
     return (
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: Colors.light.background[95],
+        backgroundColor: Colors.light.background[90],
     },
     header: {
         width: '100%',

@@ -6,7 +6,7 @@ import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';
 import { LoginFormData } from '@/constants/FormTypes';
 import { Link } from 'expo-router';
-import { useAuth } from '../utils/authContext';
+import { useAuth } from '@/utils/authContext';
 
 export default function Login() {
     const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: Colors.light.background[95],
+        backgroundColor: Colors.light.background[90],
     },
     header: {
         width: '100%',

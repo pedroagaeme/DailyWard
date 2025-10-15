@@ -7,9 +7,10 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { axiosPrivate } from '@/utils/api';
 import { useTopics } from '@/utils/topicsContext';
 import { DateTime } from 'luxon';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FeedArea } from '../../../../components/FeedArea';
+import { useFocusEffect } from 'expo-router';
 
 export default function Posts() {
   const { topicState } = useTopics();
@@ -24,25 +25,27 @@ export default function Posts() {
 
   const debouncedChosenDate = useDebounce(chosenDate.date.toISODate(), 500);
 
-  useEffect(() => {
-    // Fetch posts from the backend
-    const fetchPosts = async () => {
-      try {
-        if(!topicId || !debouncedChosenDate) return;
-        const response = await axiosPrivate.get(
-          `/users/me/topics/${topicId}/posts/${debouncedChosenDate}/`
-        );
-        setPosts(response.data);
-      }
-      catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
+  useFocusEffect(
+    useCallback(
+      () => {
+      // Fetch posts from the backend
+      const fetchPosts = async () => {
+        try {
+          if(!topicId || !debouncedChosenDate) return;
+          const response = await axiosPrivate.get(
+            `/users/me/topics/${topicId}/posts/${debouncedChosenDate}/`
+          );
+          setPosts(response.data);
+        }
+        catch (error) {
+          console.error('Error fetching posts:', error);
+        }
+      };
 
-    console.log('Fetching posts for date:', debouncedChosenDate);
-    fetchPosts();
-
-  }, [topicId, debouncedChosenDate]);
+      console.log('Fetching posts for date:', debouncedChosenDate);
+      fetchPosts();
+      }, [topicId, debouncedChosenDate])
+  );
 
   return (
       <View style={styles.container}>

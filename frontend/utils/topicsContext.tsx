@@ -1,13 +1,13 @@
 import { HomeFeedItem } from "@/components/FeedArea/HomeFeedItem";
-import { useRouter } from "expo-router";
+import { router } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from "react";
 import { axiosPrivate } from "./api";
 
 interface TopicsContextType {
     topics?: HomeFeedItem[];
-    topicState?: { id: string; title: string; creationDate: string };
+    topicState?: { code: string, id: string; title: string; creationDate: string };
     fetchUserTopics?: () => void;
-    enterTopic?: (id: string, title: string, creationDate: string) => void;
+    enterTopic?: (code: string, id: string, title: string, creationDate: string) => void;
     exitTopic?: () => void;
 }
 
@@ -20,11 +20,12 @@ export const TopicsProvider = ({ children }: {
 }) => {
 
     const [topics, setTopics] = useState<HomeFeedItem[]>([]);
-    const [topicState, setTopicState] = useState<{ id: string; title: string; creationDate: string } | undefined>(undefined);
+    const [topicState, setTopicState] = useState<{ code:string, id: string; title: string; creationDate: string } | undefined>(undefined);
     
     const fetchUserTopics = async () => {
       try {
           const response = await axiosPrivate.get(`/users/me/topics/`);
+          console.log('Fetched user topics:', response.data);
           if (response.status === 200) {
             setTopics!(response.data.results);
           }
@@ -33,11 +34,9 @@ export const TopicsProvider = ({ children }: {
       }
       };
 
-    const router = useRouter();
-
-    const enterTopic = (id: string, title: string, creationDate: string) => {
-        setTopicState({ id, title, creationDate });
-        router.push(`/topics/main/[id]`);
+    const enterTopic = (code: string, id: string, title: string, creationDate: string) => {
+        setTopicState({code, id, title, creationDate });
+        router.push(`/topics/main/${id}`);
     };
 
     const exitTopic = () => {

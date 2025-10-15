@@ -1,45 +1,86 @@
 import { AddContactsButton } from "@/components/AddContactsButton";
 import { Colors } from "@/constants/Colors";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
 import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
 import { AdminParticipants } from "@/components/AdminParticipants";
 import { ParticipantsIcon } from "@/assets/images/participants-icon";
+import { ParticipantsFeedItem, renderParticipantsFeedItem } from "@/components/FeedArea/ParticipantsFeedItem";
+import { FeedArea } from "@/components/FeedArea";
+import { useEffect, useState } from "react";
+import { useTopics } from "@/utils/topicsContext";
+import { axiosPrivate } from "@/utils/api";
 
-
-export default function Members() {
-    return (
-      <ScrollView contentContainerStyle={{flexGrow:1}}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.sectionTitle}>Participantes</Text>
-            <TopicCodeArea />
-            <AddContactsButton />
-          </View>
-          <View style={styles.section}>
-            <View style={styles.row}>
-              <AdminIcon width={28} height={28} />
-              <Text style={styles.subsectionTitle}>Administradores</Text>
-            </View>
-            <AdminParticipants />
-          </View>
-          <View style={styles.section}>
-              <View style={styles.row}>
-                <ParticipantsIcon width={28} height={28} />
-                <Text style={styles.subsectionTitle}>Outros Participantes</Text>
-              </View>
-          </View>
-          
+function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[]}) {
+  const adminParticipants = participants.filter(p => p.role === 'admin');
+  return (
+    <ScrollView contentContainerStyle={{flexGrow:1}}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.sectionTitle}>Participantes</Text>
+          <TopicCodeArea />
         </View>
-      </ScrollView>
-    );
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <AdminIcon width={28} height={28} />
+            <Text style={styles.subsectionTitle}>Administradores</Text>
+          </View>
+          <AdminParticipants participants={adminParticipants} />
+        </View>
+        <View style={styles.section}>
+            <View style={styles.row}>
+              <ParticipantsIcon width={28} height={28} />
+              <Text style={styles.subsectionTitle}>Todos os Participantes</Text>
+            </View>
+        </View>
+        
+      </View>
+    </ScrollView>
+  );
+}
+
+
+export default function Participants() {
+  const [participants, setParticipants] = useState<ParticipantsFeedItem[]>([]);
+  const { topicState } = useTopics();
+  const topicId = topicState?.id;
+  
+  useEffect(() => {
+    async function fetchParticipants() {
+      try {
+        if (!topicId) return;
+        const response = await axiosPrivate.get(`/users/me/topics/${topicId}/participants/`);
+        console.log('Fetched participants:', response.data.results);
+        setParticipants(response.data.results);
+      } catch (error) {
+        console.error('Error fetching participants:', error);
+      }
+    }
+
+    fetchParticipants();
+  }, [topicId]);
+
+  return (
+    <View style={styles.container}>
+      <FeedArea 
+        items={participants} 
+        renderItem={renderParticipantsFeedItem}
+        listHeaderComponent={<ParticipantsHeader participants={participants} />}
+        fadedEdges={{top: false, bottom: false}}
+        immersiveScreen={{top: false, bottom: true}}
+        additionalPadding={{top: 0, bottom: 20}}
+        noHorizontalPadding={true}
+        navbarInset={true}
+      />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex:1,
     backgroundColor: Colors.light.background[100],
-    gap:32,
+    marginBottom: 8,
     overflow: 'visible'
   },
   header: {
@@ -47,10 +88,9 @@ const styles = StyleSheet.create({
     alignItems:'flex-start',
     paddingTop:8,
     gap:24,
-    paddingBottom:8,
+    paddingBottom:32,
   },
   section: {
-    gap:16,
   },
   sectionTitle: {
     fontFamily:'Inter_600SemiBold',

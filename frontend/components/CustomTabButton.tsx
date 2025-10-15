@@ -2,6 +2,7 @@ import { SvgProps } from "react-native-svg";
 import * as React from "react";
 import { Pressable, View, Text, StyleSheet } from "react-native";
 import { TabTriggerSlotProps } from "expo-router/ui";
+import { Colors } from "@/constants/Colors";
 
 interface CustomTabButtonProps extends React.PropsWithChildren, TabTriggerSlotProps {
 	Icon: ((props:SvgProps) => React.JSX.Element);
@@ -15,7 +16,8 @@ export const CustomTabButton = React.forwardRef<View, CustomTabButtonProps>(
 				{...props}
 				style={[styles.button, props.isFocused && styles.focusedButton]}
 			>
-				<Icon width={32} height={32} />
+				<Icon width={24} height={24} />
+				<Text style={[styles.text]}>{props.children}</Text>
 			</Pressable>
 		);
 	}
@@ -27,11 +29,15 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
 		opacity:0.6,
+		gap: 4,
     },
 	focusedButton: {
 		opacity:1,
 	},
-	focusedText: {
-		opacity:1,
-	}
+	text: {
+		fontFamily: 'Inter_500Medium',
+		color: Colors.light.background[100],
+		fontSize: 12,
+		lineHeight: 16,
+	},
 });

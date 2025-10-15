@@ -1,28 +1,50 @@
+import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
-import { ListRenderItem, StyleSheet, Text, View, Image } from 'react-native';
+import { ListRenderItem, StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { DefaultProfileIcon } from '../DefaultProfileIcon';
 
 export interface TopicFeedItem extends FeedItem {
   posterName: string;
   contentText: string;
   createdAt: string;
   posterProfilePicUrl: string,
-  contentPic: string;
+  contentPicUrl: string;
 }
-export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
-  <View style={styles.itemContainer}>
-    <View style={styles.headerRow}>
-      <View style={styles.profileSection}>
-        <View style={styles.profilePic}/>
-        <Text style={styles.posterName}>{item.posterName}</Text>
+
+function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
+  const handlePress = () => {
+    router.push({
+      pathname: '/topics/see-post',
+      params: {
+        id: item.id,
+        posterName: item.posterName,
+        contentText: item.contentText,
+        createdAt: item.createdAt,
+        posterProfilePicUrl: item.posterProfilePicUrl,
+        contentPic: item.contentPicUrl
+      }
+    });
+  };
+  return(
+    <Pressable style={styles.itemContainer} onPress={handlePress}>
+      <View style={styles.headerRow}>
+        <View style={styles.profileSection}>
+          <DefaultProfileIcon fullName={item.posterName} viewStyleProps={{width:40}}/>
+          <Text style={styles.posterName}>{item.posterName}</Text>
+        </View>
+        <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       </View>
-      <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-    </View>
-    <View style={styles.contentArea}>
-    {item.contentText && <Text style={styles.contentText} numberOfLines={3}>{item.contentText}</Text>}
-    {item.contentPic && <Image source={{ uri: item.contentPic }} style={styles.contentPic} />}
-    </View>
-  </View>
+      <View style={styles.contentArea}>
+      {item.contentText && <Text style={styles.contentText} numberOfLines={3}>{item.contentText}</Text>}
+      {item.contentPicUrl && <Image source={{ uri: item.contentPicUrl }} style={styles.contentPic} />}
+      </View>
+    </Pressable>
+  )
+}
+
+export const renderTopicFeedItem: ListRenderItem<TopicFeedItem> = ({item}) => (
+  <TopicFeedItemButton item={item} />
 );
 
 const styles = StyleSheet.create({
@@ -48,12 +70,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap:12,
-  },
-  profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.light.background[90],
   },
   posterName: {
     fontFamily:'Inter_600SemiBold',

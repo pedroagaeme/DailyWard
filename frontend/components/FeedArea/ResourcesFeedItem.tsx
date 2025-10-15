@@ -1,31 +1,90 @@
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
-import { ListRenderItem, StyleSheet, Text, View } from 'react-native';
+import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
+import { router } from 'expo-router';
 
 export interface ResourcesFeedItem extends FeedItem {
     title: string;
-    type?: string;
+    resourceType?: string;
     description?: string;
+    posterName?: string;
+    createdAt?: string;
+    fileUrl?: string;
+    filename?: string;
+}
+
+const formatDate = (dateString?: string) => {
+  if (!dateString) return 'Data não disponível';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+
+  // Calculate different time units (always round down using Math.floor)
+  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  // For times less than 24 hours, show hours, minutes, or "menos de um minuto"
+  if (diffTime < 24 * 60 * 60 * 1000) {
+    if (diffHours > 0) {
+      return `${diffHours} hora${diffHours > 1 ? 's' : ''} atrás`;
+    } else if (diffMinutes > 0) {
+      return `${diffMinutes} minuto${diffMinutes > 1 ? 's' : ''} atrás`;
+    } else {
+      return ' < 1 minuto atrás';
+    }
+  }
+  
+  // For times 24 hours or more
+  if (diffDays === 1) return '1 dia atrás';
+  if (diffDays < 7) return `${diffDays} dias atrás`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? 's' : ''} atrás`;
+  return `${Math.floor(diffDays / 30)} mês${Math.floor(diffDays / 30) > 1 ? 'es' : ''} atrás`;
+};
+
+function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
+  const handlePress = () => {
+    router.push({
+      pathname: '/topics/see-resource',
+      params: {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        resourceType: item.resourceType,
+        posterName: item.posterName,
+        createdAt: item.createdAt,
+        fileUrl: item.fileUrl,
+        filename: item.filename,
+      }
+    });
+  };
+
+  return (
+    <Pressable onPress={handlePress}>
+      <View style={styles.itemContainer}>
+        <View>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.descriptionText}>{item.description || 'Sem descrição'}</Text>
+        </View>
+        <View style={styles.footerRow}>
+          <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
+            <View style={styles.posterProfilePic}>
+              {/* Placeholder for profile picture */}
+            </View>
+            <View style={styles.nameAndDateContainer}>
+              <Text style={styles.posterName}>{item.posterName || 'Usuário'}</Text>
+              <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
 }
 
 export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item}) => (
-  <View style={styles.itemContainer}>
-    <View>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.descriptionText}>{item.description}</Text>
-    </View>
-    <View style={styles.footerRow}>
-      <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
-        <View style={styles.posterProfilePic}>
-          {/* Placeholder for profile picture */}
-        </View>
-        <View style={styles.nameAndDateContainer}>
-          <Text style={styles.posterName}>{item.title}</Text>
-          <Text style={styles.dateText}>2 dias atrás</Text>
-        </View>
-      </View>
-    </View>
-  </View>
+  <ResourcesFeedItemButton item={item} />
 );
 
 const styles = StyleSheet.create({
@@ -37,6 +96,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.background[80],
     gap:25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   footerRow: {
     gap:12,

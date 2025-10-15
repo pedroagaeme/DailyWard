@@ -21,7 +21,7 @@ class RegisterUserView(GenericAPIView):
             send_code_to_user(user['email'])
             return Response({
                 'data': user,
-                'message': f'A'
+                'message': f'User {user["first_name"]} registered successfully. Please verify your email.'
             }, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

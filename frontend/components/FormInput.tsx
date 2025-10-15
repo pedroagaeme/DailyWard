@@ -16,8 +16,8 @@ export function FormInput({title, ref, errors, borderless = false, additionalEle
             <ScrollView 
                 style={[
                     styles.inputFieldContainer, borderless ? 
-                        { borderWidth: 0, paddingHorizontal: 0} : 
-                        {borderWidth: 0.5}
+                        { borderWidth: 0, paddingHorizontal: 0, backgroundColor: 'transparent'} : 
+                        {borderWidth: 1}
                 ]}
                 showsVerticalScrollIndicator={false}
             >
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 4,
-        backgroundColor: Colors.light.background[100],
+        backgroundColor: Colors.light.background[95],
     },
     input: {
         fontSize: 16,

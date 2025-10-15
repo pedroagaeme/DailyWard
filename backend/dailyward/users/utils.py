@@ -14,7 +14,6 @@ def send_code_to_user(email):
     otp_code = generateOTP()
     print(otp_code)
     user = User.objects.get(email=email)
-    current_site = ""
     email_body= f"abcd {otp_code}"
     from_email = settings.DEFAULT_FROM_EMAIL
 
