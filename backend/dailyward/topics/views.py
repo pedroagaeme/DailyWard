@@ -17,7 +17,7 @@ class TopicViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         # Show topics where user is a participant
-        return Topic.objects.filter(participant__user=user)
+        return Topic.objects.filter(participant__user=user).order_by('-created_at')
 
     def perform_create(self, serializer):
         code = generate_topic_code()

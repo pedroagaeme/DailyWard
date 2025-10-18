@@ -1,11 +1,13 @@
 import { TopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
-import { StyleSheet, View, Text, Image, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { useTopics } from '@/utils/topicsContext';
-import { DefaultProfileIcon } from '@/components/DefaultProfileIcon';
+import { CustomImage, CustomProfileImage } from '@/components/Image/ImageComponent';
+import { axiosPrivate } from '@/utils/api';
+import { useEffect, useState } from 'react';
 
 export default function SeePostScreen() {
     const router = useRouter();
@@ -13,20 +15,44 @@ export default function SeePostScreen() {
     const params = useLocalSearchParams();
     const { topicState } = useTopics();
     const topicTitle = topicState?.title;
+    const postId = params.id as string;
+    
+    const [item, setItem] = useState<TopicFeedItem | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Parse params to TopicFeedItem
-    const item: TopicFeedItem | undefined = params && typeof params === 'object' ? {
-        posterName: params.posterName as string,
-        contentText: params.contentText as string,
-        createdAt: params.createdAt as string,
-        posterProfilePicUrl: params.posterProfilePicUrl as string,
-        contentPic: params.contentPic as string,
-        id: params.id as string,
-    } : undefined;
+    useEffect(() => {
+        const fetchPost = async () => {
+            if (!postId || !topicState?.id) return;
+            
+            try {
+                setLoading(true);
+                const response = await axiosPrivate.get(`/users/me/topics/${topicState.id}/posts/${postId}/`);
+                setItem(response.data);
+            } catch (err) {
+                console.error('Error fetching post:', err);
+                setError('Erro ao carregar post');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    if (!item) {
+        fetchPost();
+    }, [postId, topicState?.id]);
+
+    if (loading) {
         return (
-        <View style={styles.centered}><Text>Post não encontrado.</Text></View>
+            <View style={[styles.fullScreenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+                <ActivityIndicator size="large" color={Colors.light.primary} />
+            </View>
+        );
+    }
+
+    if (error || !item) {
+        return (
+            <View style={[styles.fullScreenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Text>{error || 'Post não encontrado.'}</Text>
+            </View>
         );
     }
 
@@ -41,7 +67,7 @@ export default function SeePostScreen() {
           </View>
           <View style={styles.postHeaderRow}>
               <View style={styles.profileSection}>
-              <DefaultProfileIcon fullName={item.posterName} viewStyleProps={{width:40}}/>
+              <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={{width:40, borderRadius: 20}}/>
               <Text style={styles.posterName}>{item.posterName}</Text>
               </View>
               <View >
@@ -59,7 +85,7 @@ export default function SeePostScreen() {
         showsVerticalScrollIndicator={false}
         >
         {item.contentText && <Text style={styles.contentText}>{item.contentText}</Text>}
-        {item.contentPic && <Image source={{ uri: item.contentPic }} style={styles.contentPic} />}
+        {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
         </ScrollView>
         </View>
     );
@@ -70,7 +96,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.background[100],
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingTop: 12,
     gap: 20,
   },
   centered: {

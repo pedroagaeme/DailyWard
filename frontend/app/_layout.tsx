@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider, useAuth } from '../utils/authContext';
 import { TopicsProvider } from '@/utils/topicsContext';
+import {NavigationBar} from '@zoontek/react-native-navigation-bar';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -29,6 +30,7 @@ export default function RootLayout() {
     if (loaded || error) {
       SplashScreen.hideAsync();
     }
+    
   }, [loaded, error]);
 
   if (!loaded && !error) {
@@ -36,6 +38,8 @@ export default function RootLayout() {
   }
   
   return (
+    <>
+    <NavigationBar barStyle='dark-content'/>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <RegisterFormProvider>
@@ -44,15 +48,16 @@ export default function RootLayout() {
           </TopicsProvider>
         </RegisterFormProvider>
       </AuthProvider>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </ThemeProvider>
+    </>
   );
 }
 
 function AppContent() {
   const { authState } = useAuth();
   return (
-    <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
       <Stack.Protected guard={!!authState?.isAuthenticated}>
         <Stack.Screen name="topics/main" options={{ headerShown: false }} />
         <Stack.Screen name="topics/create-post" options={{ headerShown: false }} />

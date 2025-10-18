@@ -6,12 +6,13 @@ import { Colors } from '@/constants/Colors';
 import { axiosPrivate } from '@/utils/api';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Image, Alert, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTopics } from '@/utils/topicsContext';
+import { CustomImage } from '@/components/Image/ImageComponent';
 
 interface CreateTopicForm {
   title: string;
@@ -114,7 +115,7 @@ export default function CreateTopic() {
           <Text style={styles.label}>Imagem</Text>
           <Pressable style={[styles.uploadArea, image && styles.uploadAreaWithImage]} onPress={pickImage}>
             {image ? (
-              <Image source={{ uri: image }} style={styles.previewImage} resizeMode="cover"/>
+              <CustomImage source={image} style={styles.previewImage} />
             ) : (
               <View style={styles.uploadContent}>
                 <Text style={styles.uploadCta}>Clique para fazer upload</Text>

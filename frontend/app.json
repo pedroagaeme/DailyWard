@@ -19,7 +19,8 @@
         "foregroundImage": "./assets/images/dailyward-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.pedroagaeme.DailyWard"
     },
     "web": {
       "bundler": "metro",
@@ -35,8 +36,22 @@
           "backgroundColor": "#ffffff"
         }
       ],
+      [
+        "@zoontek/react-native-navigation-bar",
+        {
+          "android": {
+            "enforceNavigationBarContrast": false
+          }
+        }
+      ],
       "expo-font",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "89302489-7105-45c7-a32d-b717372e8e12"
+      }
+    }
   }
 }

@@ -16,6 +16,11 @@ services:
       retries: 10
       start_period: 30s
 
+  memcached:
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+
   django-dailyward-api:
     build: .
     container_name: dailyward-api-dev
@@ -40,6 +45,9 @@ services:
       AZURE_ACCOUNT_NAME: ${AZURE_ACCOUNT_NAME}
       AZURE_ACCOUNT_KEY: ${AZURE_ACCOUNT_KEY}
       AZURE_CONTAINER_NAME: ${AZURE_CONTAINER_NAME}
+      MEMCACHE_HOST: memcached
+      MEMCACHE_PORT: 11211
+
 
 volumes:
   postgres_data_dev:

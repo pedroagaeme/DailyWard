@@ -2,15 +2,24 @@ import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { CustomProfileImage } from '../Image/ImageComponent';
+
+export interface ResourceFile {
+    id: number;
+    filename: string;
+    fileSize?: number;
+    mimeType?: string;
+    created_at: string;
+}
 
 export interface ResourcesFeedItem extends FeedItem {
     title: string;
     resourceType?: string;
     description?: string;
     posterName?: string;
+    posterProfilePicUrl?: string;
     createdAt?: string;
-    fileUrl?: string;
-    filename?: string;
+    files?: ResourceFile[];
 }
 
 const formatDate = (dateString?: string) => {
@@ -32,7 +41,7 @@ const formatDate = (dateString?: string) => {
     } else if (diffMinutes > 0) {
       return `${diffMinutes} minuto${diffMinutes > 1 ? 's' : ''} atrás`;
     } else {
-      return ' < 1 minuto atrás';
+      return 'Agora';
     }
   }
   
@@ -48,14 +57,7 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
     router.push({
       pathname: '/topics/see-resource',
       params: {
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        resourceType: item.resourceType,
-        posterName: item.posterName,
-        createdAt: item.createdAt,
-        fileUrl: item.fileUrl,
-        filename: item.filename,
+        id: item.id
       }
     });
   };
@@ -64,14 +66,23 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
     <Pressable onPress={handlePress}>
       <View style={styles.itemContainer}>
         <View>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.descriptionText}>{item.description || 'Sem descrição'}</Text>
+          <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+          {item.description &&
+            <Text style={styles.descriptionText} numberOfLines={3}>{item.description}</Text>
+          }
+          {item.files && item.files.length > 0 && (
+            <Text style={styles.fileCountText}>
+              {item.files.length} arquivo{item.files.length > 1 ? 's' : ''}
+            </Text>
+          )}
         </View>
         <View style={styles.footerRow}>
           <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
-            <View style={styles.posterProfilePic}>
-              {/* Placeholder for profile picture */}
-            </View>
+            <CustomProfileImage 
+              source={item.posterProfilePicUrl}
+              fullName={item.posterName || 'Usuário'}
+              style={styles.posterProfilePic}
+            />
             <View style={styles.nameAndDateContainer}>
               <Text style={styles.posterName}>{item.posterName || 'Usuário'}</Text>
               <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
@@ -95,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.light.background[80],
-    gap:25,
+    gap:20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -119,7 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.light.text[5],
     lineHeight: 20,
-    marginBottom: 10,
   },
   nameAndDateContainer: {
     gap: 5,
@@ -132,16 +142,22 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   descriptionText: {
+    marginTop:10,
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 18,
     color: Colors.light.text[30],
   },
+  fileCountText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+    color: Colors.light.primary,
+    marginTop: 4,
+  },
   posterProfilePic: {
     width: 35,
     aspectRatio: 1,
     borderRadius: 50,
-    backgroundColor: Colors.light.background[90],
   },
   typeBadge: {
     borderRadius: 12,

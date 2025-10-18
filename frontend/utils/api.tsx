@@ -1,7 +1,6 @@
 import axios from 'axios';
-const BASE_API_URL = 'https://dailyward.app/api/v1';
 import { getAccessToken, getRefreshToken, storeTokens } from './tokens';
-
+const BASE_API_URL = 'https://dailyward.api/api/v1';
 
 export const axiosPublic = axios.create({
     baseURL: `${BASE_API_URL}`,

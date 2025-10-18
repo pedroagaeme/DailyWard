@@ -2,20 +2,17 @@ from django.db import models
 from topics.models import Topic
 from users.models import User
 
-# Create your models here.
-CATEGORY_CHOICES = [
-    ('announcement', 'Announcement'),
-    ('file', 'File'),
-    ('image', 'Image'),
-    ('video', 'Video'),
-]
-
 class Resource(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, default='')
-    resource_type = models.CharField(choices=CATEGORY_CHOICES, default='file', max_length=12)
-    file_url = models.FileField(upload_to='resources/', blank=True, null=True)
-    filename = models.CharField(max_length=255, blank=True, null=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, default='', null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class ResourceFile(models.Model):
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE, related_name='files')
+    file_url = models.FileField(upload_to='resources/')
+    filename = models.CharField(max_length=255)
+    file_size = models.BigIntegerField(blank=True, null=True)
+    mime_type = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

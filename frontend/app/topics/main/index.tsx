@@ -7,11 +7,12 @@ import { useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { AddIcon } from '@/assets/images/add-icon';
 import { GoToRouteButton } from '@/components/GoToRouteButton';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
   const topics: HomeFeedItem[] = useTopics()?.topics || [];
   const [ModalVisible, setModalVisible] = useState(false);
-  
+  const insets = useSafeAreaInsets();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -31,7 +32,7 @@ export default function Home() {
           numColumns={2}
       />
       <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible} children={
-        <View style={styles.modal}>
+        <View style={[styles.modal, {paddingBottom: insets.bottom + 20}]}>
           <GoToRouteButton
             route="/topics/join"
             style={{}}
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   profilePic: {
   },
   modal: {
-    backgroundColor: Colors.light.background[95],
+    backgroundColor: Colors.light.background[100],
     padding: 24,
     gap: 28,
     borderTopLeftRadius: 20,

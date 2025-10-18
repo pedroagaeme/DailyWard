@@ -1,9 +1,8 @@
-import { View, ListRenderItem, StyleSheet, Text, Image } from 'react-native';
+import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
 import { FeedItem } from '@/constants/FeedItem';
 import { Colors } from '@/constants/Colors';
-import { DefaultProfileIcon } from '../DefaultProfileIcon';
+import { CustomProfileImage } from '../Image/ImageComponent';
 
-//{"id": 2, "joinedAt": "2025-10-08T23:17:26.947351Z", "role": "admin", "user": 1, "userFullName": "Teste Teste", "userProfilePic": null}]
 export interface ParticipantsFeedItem extends FeedItem {
   userFullName: string;
   userProfilePic: string;
@@ -13,10 +12,11 @@ export interface ParticipantsFeedItem extends FeedItem {
 export const renderParticipantsFeedItem: ListRenderItem<ParticipantsFeedItem> = ({item}) => (
   <View style={styles.card}>
     <View style={styles.row}>
-      {item.userProfilePic ? 
-        <Image source={{ uri: item.userProfilePic }} style={styles.profilePic} />
-        : <DefaultProfileIcon fullName={item.userFullName} />
-      }
+      <CustomProfileImage 
+        source={item.userProfilePic} 
+        fullName={item.userFullName}
+        style={styles.profilePic} 
+      />
       <View style={styles.textSection}>
         <Text style={styles.fullName}>{item.userFullName}</Text>
       </View>
@@ -39,9 +39,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 24,
-    backgroundColor: Colors.light.background[90],
-    borderWidth: 0.5,
-    borderColor: Colors.light.background[70],
   },
   textSection: {
     flex: 1,

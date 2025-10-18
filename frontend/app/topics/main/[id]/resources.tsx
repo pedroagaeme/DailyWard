@@ -18,7 +18,6 @@ export default function Resources() {
         try {
             const response = await axiosPrivate.get(`/users/me/topics/${topicId}/resources/`);
             if (response.status === 200) {
-              console.log('Fetched resources:', response.data);
               setResources(response.data.results || response.data);
             }
         } catch (error) {
@@ -49,7 +48,7 @@ export default function Resources() {
         renderItem={renderResourcesFeedItem}
         fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
-        additionalPadding={{top: 0, bottom: 0}}
+        additionalPadding={{top: 0, bottom: 16}}
         navbarInset={true}
       />
     </View>

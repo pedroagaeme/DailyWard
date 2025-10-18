@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
-import { ListRenderItem, StyleSheet, Text, View, Image, Pressable } from 'react-native';
-import { DefaultProfileIcon } from '../DefaultProfileIcon';
+import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
+import { CustomImage, CustomProfileImage } from '../Image/ImageComponent';
 
 export interface TopicFeedItem extends FeedItem {
   posterName: string;
@@ -17,12 +17,7 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
     router.push({
       pathname: '/topics/see-post',
       params: {
-        id: item.id,
-        posterName: item.posterName,
-        contentText: item.contentText,
-        createdAt: item.createdAt,
-        posterProfilePicUrl: item.posterProfilePicUrl,
-        contentPic: item.contentPicUrl
+        id: item.id
       }
     });
   };
@@ -30,14 +25,18 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
     <Pressable style={styles.itemContainer} onPress={handlePress}>
       <View style={styles.headerRow}>
         <View style={styles.profileSection}>
-          <DefaultProfileIcon fullName={item.posterName} viewStyleProps={{width:40}}/>
+          <CustomProfileImage 
+            source={item.posterProfilePicUrl} 
+            fullName={item.posterName} 
+            style={{width:40, borderRadius: 20}}
+          />
           <Text style={styles.posterName}>{item.posterName}</Text>
         </View>
         <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       </View>
       <View style={styles.contentArea}>
       {item.contentText && <Text style={styles.contentText} numberOfLines={3}>{item.contentText}</Text>}
-      {item.contentPicUrl && <Image source={{ uri: item.contentPicUrl }} style={styles.contentPic} />}
+      {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
       </View>
     </Pressable>
   )

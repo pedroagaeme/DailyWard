@@ -8,16 +8,18 @@ import { useTopics } from '@/utils/topicsContext';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CustomImage, CustomProfileImage } from '@/components/Image/ImageComponent';
 
 export default function CreatePostPage() {
   const { topicState } = useTopics();
   const { authState } = useAuth();
   const { control, handleSubmit } = useForm();
+  const  insets  = useSafeAreaInsets(); 
   const [image, setImage] = useState<string | null>(null);
   const topicId = topicState?.id;
-
+  
   const onSubmit = async (data:any) => {
     if (!topicId) {
       console.error('No topic selected');
@@ -47,7 +49,7 @@ export default function CreatePostPage() {
 
   return (
     <View style={[styles.container]}>
-      <SafeAreaView style={styles.body}>
+      <View style={[styles.body, {paddingBottom: insets.bottom || 16, paddingTop: insets.top || 16}]}>
         <KeyboardAvoidingView style={{flex:1,gap: 16}} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <View style={styles.headerRow}>
             <Pressable onPress={() => router.back()} style={styles.backButton}>
@@ -59,7 +61,10 @@ export default function CreatePostPage() {
           <View style={styles.postContainer}>
             <View style={styles.contentContainer}>
               <View style={styles.profileSection}>
-              <View style={styles.profilePic} />
+                <CustomProfileImage 
+                  source={undefined} 
+                  fullName={(authState?.profile?.name || '')} 
+                  style={{width:48, borderRadius: 24}}/>
                 <Text style={styles.posterName}>{authState?.profile?.name}</Text>
               </View>
               <Controller
@@ -67,13 +72,14 @@ export default function CreatePostPage() {
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <FormInput
+                    autoFocus
                     placeholder="Escreva sua postagem..."
                     onChangeText={onChange}
                     onBlur={onBlur}
                     value={value}
                     multiline
                     borderless={true}
-                    additionalElements={[image ? <Image key={1} source={{ uri: image }} style={styles.imagePreview} /> : null]}
+                    additionalElements={[image ? <CustomImage key={1} source={image} style={styles.imagePreview} /> : null]}
                   />
                 )}
                 rules={{ required: true }}
@@ -87,7 +93,7 @@ export default function CreatePostPage() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
@@ -187,7 +193,6 @@ const styles = StyleSheet.create({
     color: Colors.light.background[100],
   },
   imagePreview: {
-    marginVertical: 8,
     width: '100%',
     height: undefined,
     aspectRatio: 16 / 9,

@@ -9,7 +9,9 @@ import { Drawer } from 'expo-router/drawer';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DefaultProfileIcon } from '@/components/DefaultProfileIcon';
+import { DefaultProfileIcon } from '@/components/Image/DefaultProfileIcon';
+import { CustomProfileImage } from '@/components/Image/ImageComponent';
+import { useAuth } from '@/utils/authContext';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { topics, topicState, enterTopic, exitTopic } = useTopics();
@@ -85,6 +87,7 @@ export default function Layout() {
 }
 
 export const DrawerLayout = () => {
+  const { authState } = useAuth();
   const { topicState } = useTopics();
   const selectedItemTitle = topicState?.title;
   return (
@@ -113,7 +116,7 @@ export const DrawerLayout = () => {
             ),
             headerRight: () => (
               <View style={{marginRight: 16 }}>
-                <DefaultProfileIcon fullName="User Name" viewStyleProps={{width: 36}} />
+                <CustomProfileImage source={null} fullName={authState?.profile?.name || 'Usuário'} style={{width: 36, borderRadius: 18, backgroundColor: Colors.light.background[80]  }}/>
               </View>
             ),
           }} 

@@ -26,6 +26,7 @@ export function FormInput({title, ref, errors, borderless = false, additionalEle
                     ref={ref}
                     style={styles.input}
                     underlineColorAndroid={'transparent'}
+                    placeholderTextColor={Colors.light.text[30]}
                 />
                 {additionalElements}
             </ScrollView>

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path, register_converter
 from topics.views import ParticipantViewSet, TopicViewSet, join_topic_by_code
 from posts.views import PostViewSet, PostsByDayAPIView
-from resources.views import ResourceViewSet
+from resources.views import ResourceViewSet, ResourceFileDownloadView
 from rest_framework_nested import routers
 from .converters import DateConverter
 
@@ -36,6 +36,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/users/me/topics/<int:topic_pk>/posts/<date:date_iso>/', PostsByDayAPIView.as_view(), name='topic-post-archive'),
     path('api/v1/users/me/topics/join/', join_topic_by_code, name='join-topic-by-code'),
+    path('api/v1/users/me/topics/<int:topic_pk>/resources/<int:resource_pk>/files/<int:file_pk>/download/', ResourceFileDownloadView.as_view(), name='resource-file-download'),
     path('api/v1/users/me/', include(router.urls)),
     path('api/v1/users/me/', include(topics_router.urls)),
     path('api/v1/auth/', include('users.urls'))

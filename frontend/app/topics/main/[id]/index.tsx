@@ -11,12 +11,14 @@ import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FeedArea } from '../../../../components/FeedArea';
 import { useFocusEffect } from 'expo-router';
+import { useCalendars } from 'expo-localization';
 
 export default function Posts() {
   const { topicState } = useTopics();
   const topicId = topicState?.id;
   const topicCreationDate = topicState?.creationDate;
-
+  const calendars = useCalendars();
+  const calendar = calendars[0];
   const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>({
     date: DateTime.now().startOf('day'), 
@@ -32,13 +34,21 @@ export default function Posts() {
       const fetchPosts = async () => {
         try {
           if(!topicId || !debouncedChosenDate) return;
+          
           const response = await axiosPrivate.get(
             `/users/me/topics/${topicId}/posts/${debouncedChosenDate}/`
+            ,{
+              headers: {
+                'X-User-Timezone': calendar.timeZone || 'UTC',
+              },
+            }
           );
           setPosts(response.data);
         }
         catch (error) {
           console.error('Error fetching posts:', error);
+          // Set empty posts on error to avoid showing stale data
+          setPosts([]);
         }
       };
 

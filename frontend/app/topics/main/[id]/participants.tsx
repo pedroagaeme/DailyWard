@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
   container: {
     flex:1,
     backgroundColor: Colors.light.background[100],
-    marginBottom: 8,
     overflow: 'visible'
   },
   header: {

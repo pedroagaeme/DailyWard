@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTopics } from '@/utils/topicsContext';
+import { FileCard } from '@/components/FileCard';
 
 interface CreateResourceForm {
   title: string;
@@ -20,22 +21,37 @@ export default function AddResource() {
   const { topicState } = useTopics();
   const { control, handleSubmit } = useForm<CreateResourceForm>();
   const insets = useSafeAreaInsets();
-  const [file, setFile] = useState<any>(null);
+  const [files, setFiles] = useState<any[]>([]);
 
-  const pickDocument = async () => {
+  const pickDocuments = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: '*/*',
         copyToCacheDirectory: true,
+        multiple: true,
       });
 
-      if (!result.canceled && result.assets[0]) {
-        setFile(result.assets[0]);
+      if (!result.canceled && result.assets.length > 0) {
+        setFiles(prev => [...prev, ...result.assets]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick document');
+      Alert.alert('Error', 'Failed to pick documents');
     }
   };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Convert picked files to ResourceFile format for FileCard
+  const convertToResourceFile = (file: any, index: number) => ({
+    id: index,
+    fileUrl: file.uri,
+    filename: file.name,
+    fileSize: file.size,
+    mimeType: file.mimeType,
+    created_at: new Date().toISOString(),
+  });
 
   const onSubmit = async (data: CreateResourceForm) => {
     try {
@@ -43,14 +59,15 @@ export default function AddResource() {
       form.append('title', data.title);
       form.append('description', data.description);
       
-      if (file) {
+      if (files.length > 0) {
         form.append('resourceType', 'file');
-        form.append('fileUrl', {
-          uri: file.uri,
-          name: file.name,
-          type: file.mimeType,
-        } as any);
-        form.append('filename', file.name);
+        files.forEach((file, index) => {
+          form.append('files', {
+            uri: file.uri,
+            name: file.name,
+            type: file.mimeType,
+          } as any);
+        });
       } else {
         form.append('resourceType', 'announcement');
       }
@@ -98,7 +115,8 @@ export default function AddResource() {
         <Controller
           control={control}
           name="description"
-          rules={{ maxLength: 200 }}
+          rules={{ maxLength: 800}}
+          defaultValue=''
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Descrição"
@@ -108,26 +126,33 @@ export default function AddResource() {
               value={value}
               multiline
               numberOfLines={4}
-              maxLength={200}
+              maxLength={800}
             />
           )}
         />
 
         <View style={styles.fileUploadBlock}>
-          <Text style={styles.label}>Arquivo</Text>
-          <Pressable style={styles.uploadArea} onPress={pickDocument}>
-            {file ? (
-              <View style={styles.fileInfo}>
-                <Text style={styles.fileName} numberOfLines={1}>{file.name}</Text>
-                <Text style={styles.fileSize}>{(file.size / 1024 / 1024).toFixed(2)} MB</Text>
-              </View>
-            ) : (
-              <View style={styles.uploadContent}>
-                <Text style={styles.uploadCta}>Clique para fazer upload</Text>
-                <Text style={styles.uploadHint}>Qualquer tipo de arquivo</Text>
-              </View>
-            )}
+          <Text style={styles.label}>Adicionar Arquivos</Text>
+          <Pressable style={styles.uploadArea} onPress={pickDocuments}>
+            <View style={styles.uploadContent}>
+              <Text style={styles.uploadCta}>Clique para adicionar arquivos</Text>
+              <Text style={styles.uploadHint}>Você pode selecionar múltiplos arquivos</Text>
+            </View>
           </Pressable>
+          
+          {files.length > 0 && (
+            <View style={styles.filesList}>
+              <Text style={styles.filesListTitle}>Arquivos selecionados ({files.length})</Text>
+              {files.map((file, index) => (
+                <View key={index} style={styles.fileCardContainer}>
+                  <FileCard 
+                    file={convertToResourceFile(file, index)} 
+                    onPress={() => {}} // Disable file opening during upload
+                  />
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.footer}>
@@ -189,7 +214,6 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
     height: 120,
   },
   uploadContent: {
@@ -226,6 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
+    marginTop: 24,
     flexDirection: 'row',
     backgroundColor: Colors.light.primary,
     paddingVertical: 12,
@@ -239,5 +264,35 @@ const styles = StyleSheet.create({
     color: Colors.light.background[100],
     fontSize: 18,
     lineHeight: 28,
+  },
+  filesList: {
+    marginTop: 12,
+    gap: 12,
+  },
+  filesListTitle: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    color: Colors.light.text[5],
+    marginBottom: 8,
+  },
+  fileCardContainer: {
+    position: 'relative',
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ff4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  removeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

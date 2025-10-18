@@ -1,7 +1,8 @@
 import { Colors } from '@/constants/Colors';
 import { FeedItem } from '@/constants/FeedItem';
 import { useTopics } from '@/utils/topicsContext';
-import { ListRenderItem, Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
+import { CustomImage } from '../Image/ImageComponent';
 
 export interface HomeFeedItem extends FeedItem {
   title: string;
@@ -22,8 +23,12 @@ function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
     <Pressable onPress={handlePress}>
       <View style={styles.itemContainer}>
         <View style={styles.imageContainer}>
-          <Image style={styles.picture}  source={item.topicImageUrl ? { uri: item.topicImageUrl } : require('@/assets/images/default-topic-image.png')}/>
-          <View style={styles.pictureOverlay} />
+          <CustomImage 
+            source={item.topicImageUrl}
+            fallbackSource={require('@/assets/images/default-topic-image.png')}
+            style={styles.picture}
+            overlayStyle={styles.pictureOverlay}
+          />
         </View>
         <View style={styles.contentArea}>
           <Text style={styles.title} numberOfLines={1}>{item.title}</Text>

@@ -1,14 +1,18 @@
 import { Colors } from '@/constants/Colors';
 import { View, StyleSheet, Text, FlatList, Dimensions} from 'react-native';
+import { CustomProfileImage } from './Image/ImageComponent';
 import { ParticipantsFeedItem } from './FeedArea/ParticipantsFeedItem';
-import { DefaultProfileIcon } from './DefaultProfileIcon';
 
 export function AdminParticipants({participants}: {participants: ParticipantsFeedItem[]}) {
     const windowWidth = Dimensions.get('window').width;
     const cardWidth = windowWidth / 3 ; 
     const renderAdminParticipant = ({ item }: { item: ParticipantsFeedItem }) => (
         <View style={[styles.card, { width: cardWidth }]}>
-            <DefaultProfileIcon fullName={item.userFullName} viewStyleProps={{ ...styles.profilePic, width: cardWidth - 20 }} />
+            <CustomProfileImage 
+                source={item.userProfilePic} 
+                fullName={item.userFullName} 
+                style={{ ...styles.profilePic, width: cardWidth - 20 }} 
+            />
             <Text style={styles.text} numberOfLines={2}>{item.userFullName}</Text>
         </View>
     );

@@ -29,7 +29,7 @@ export function BottomSheetModal({
     }, [ModalVisible]);
 
     const closeModal = () => {
-        slideAnim.value = withTiming(250, { duration: 150, easing: Easing.in(Easing.ease) }, () => {
+        slideAnim.value = withTiming(250, { duration: 200, easing: Easing.in(Easing.ease) }, () => {
             runOnJS(setModalVisible)(false);
         });
     };
@@ -43,9 +43,9 @@ export function BottomSheetModal({
         >
             <Pressable
                 onPress={closeModal}
-                style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
             >
-                <Animated.View style={[{ flex: 1, justifyContent: 'flex-end' }, animatedStyle]}>
+                <Animated.View style={[{ flex: 1, justifyContent: 'flex-end'}, animatedStyle]}>
                     <BottomSheetCloseContext.Provider value={closeModal}>
                         {children}
                     </BottomSheetCloseContext.Provider>
