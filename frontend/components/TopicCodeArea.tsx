@@ -1,6 +1,6 @@
 import { InviteCodeIcon } from "@/assets/images/invite-code-icon";
 import { Colors } from "@/constants/Colors";
-import { useTopics } from "@/utils/topicsContext";
+import { useTopics } from "@/contexts";
 import { View, StyleSheet, Text } from "react-native";
 
 export function TopicCodeArea() {

@@ -4,9 +4,9 @@ import { Colors } from '@/constants/Colors';
 import { useForm, Controller } from 'react-hook-form';
 import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';
-import { LoginFormData } from '@/constants/FormTypes';
+import { LoginFormData } from '@/types';
 import { Link } from 'expo-router';
-import { useAuth } from '@/utils/authContext';
+import { useAuth } from '@/contexts';
 
 export default function Login() {
     const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();

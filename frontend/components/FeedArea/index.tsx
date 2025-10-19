@@ -1,6 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { FeedItem } from '@/constants/FeedItem';
-import { heightInsets, InsetToggle } from '@/constants/HeightInsets';
+import { FeedItem, HeightInsets, InsetToggle } from '@/types';
 import { useFeedAreaInsets } from '@/hooks/useFeedAreaInsets';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
@@ -11,7 +10,7 @@ import {
   StyleSheet,
   View
 } from "react-native";
-import { FadedOverlayContainer } from './FadedOverlayContainer';
+import { FadedOverlayContainer } from './components/FadedOverlayContainer';
 
 interface Props {
   items:FeedItem[],
@@ -20,7 +19,7 @@ interface Props {
   fadedEdges:InsetToggle, 
   immersiveScreen:InsetToggle, 
   overlayHeight?:number,
-  additionalPadding?:heightInsets,
+  additionalPadding?:HeightInsets,
   numColumns?:number,
   navbarInset?:boolean,
   separator?: {

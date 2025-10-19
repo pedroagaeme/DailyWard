@@ -1,14 +1,7 @@
 import { View, ListRenderItem, StyleSheet, Text } from 'react-native';
-import { FeedItem } from '@/constants/FeedItem';
 import { Colors } from '@/constants/Colors';
-import { CustomProfileImage } from '../Image/ImageComponent';
-
-export interface ParticipantsFeedItem extends FeedItem {
-  userFullName: string;
-  userProfilePic: string;
-  role: string;
-  joinedAt: string;
-}
+import { CustomProfileImage } from '@/components/CustomImage';
+import { ParticipantsFeedItem } from '@/types';
 export const renderParticipantsFeedItem: ListRenderItem<ParticipantsFeedItem> = ({item}) => (
   <View style={styles.card}>
     <View style={styles.row}>

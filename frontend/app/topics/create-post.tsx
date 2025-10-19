@@ -2,15 +2,15 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { AddImageToPostButton } from '@/components/AddImageToPostButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { axiosPrivate } from '@/utils/api';
-import { useAuth } from '@/utils/authContext';
-import { useTopics } from '@/utils/topicsContext';
+import { PostService } from '@/services';
+import { useAuth } from '@/contexts';
+import { useTopics } from '@/contexts';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CustomImage, CustomProfileImage } from '@/components/Image/ImageComponent';
+import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 
 export default function CreatePostPage() {
   const { topicState } = useTopics();
@@ -25,25 +25,17 @@ export default function CreatePostPage() {
       console.error('No topic selected');
       return;
     }
-    const formData = new FormData();
-    formData.append('contentText', data.contentText);
-    if (image) {
-      formData.append('contentPicUrl', {
-        uri: image,
-        name: image?.split('/').pop() || 'post_image.jpg',
-        type: 'image/jpeg',
-      } as any);
-    }
 
-    const response = await axiosPrivate.post(`/users/me/topics/${topicId}/posts/`, formData, 
-      {headers: {'Content-Type': 'multipart/form-data'}}
-    );
+    const result = await PostService.createPost(topicId, {
+      contentText: data.contentText,
+      contentPicUrl: image || undefined
+    });
 
-    if (response.status === 201) {
-      console.log('Post created:', response.data);
+    if (result && result.status === 201) {
+      console.log('Post created:', result.data);
       router.back();
     } else {
-      console.error('Error creating post:', response);
+      console.error('Error creating post:', result);
     }
   };
 

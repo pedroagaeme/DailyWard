@@ -1,10 +1,5 @@
 import { DateTime } from "luxon";
-
-export interface SegmentedDate {
-    monthYear: string;
-    day: string;
-    weekday: string | null;
-};
+import { SegmentedDate } from "@/types";
 
 function captitalizeFirstLetter(s:string) {
     return s.charAt(0).toUpperCase() + s.slice(1);

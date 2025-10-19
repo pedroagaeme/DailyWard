@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text, Pressable, FlatList } from "react-native";
-import { SegmentedDate, toSegmentedDate } from "@/constants/SegmentedDate";
+import { SegmentedDate } from "@/types";
+import { toSegmentedDate } from "@/constants/SegmentedDate";
 import { DateTime } from "luxon";
 import { Colors } from "@/constants/Colors";
 

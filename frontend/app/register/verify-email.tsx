@@ -3,9 +3,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { OtpInputField } from '@/components/OtpInputField';
-import { axiosPrivate } from '@/utils/api';
-import { useAuth } from '@/utils/authContext';
-import { useRegisterForm } from '@/utils/registerFormContext';
+import { VerificationService } from '@/services';
+import { useAuth } from '@/contexts';
+import { useRegisterForm } from '@/contexts';
 import { useState } from 'react';
 
 type VerifyEmailFormData = {
@@ -20,14 +20,11 @@ export default function VerifyEmail() {
 
 
 	const onSubmit = async (data: VerifyEmailFormData) => {
-		try {
-            const response = await axiosPrivate.post('/auth/verify-email/', data);
-            if (response.status === 200) {
-                onLogin!({email: formData.email, password: formData.password});
-            }
-        }
-        catch (error) {
-            console.error('Error verifying email:', error);
+		const result = await VerificationService.verifyEmail(data.otp);
+        if (result && result.status === 200) {
+            onLogin!({email: formData.email, password: formData.password});
+        } else {
+            console.error('Error verifying email:', result);
         }
 	};
 

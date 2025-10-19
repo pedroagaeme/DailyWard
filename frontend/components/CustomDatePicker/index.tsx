@@ -3,7 +3,7 @@ import { toSegmentedDate } from "@/constants/SegmentedDate";
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, StyleSheet, Text, View, ViewToken } from "react-native";
-import { DateItem, DateItemButton } from "./DateItem";
+import { DateItem, DateItemButton } from "./components/DateItem";
 
 interface CustomDatePickerProps {
     chosenDate:DateItem | undefined, 

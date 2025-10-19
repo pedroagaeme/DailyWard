@@ -1,18 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ImageProps, ViewStyle } from 'react-native';
 import FastImage, { FastImageProps } from 'react-native-fast-image';
-import { DefaultProfileIcon } from './DefaultProfileIcon';
-
-export interface CustomImageViewProps {
-  containerStyle?: ViewStyle;
-  showOverlay?: boolean;
-  overlayStyle?: ViewStyle;
-}
-
-export interface CustomImageProps extends Omit<FastImageProps, 'source'>, CustomImageViewProps {
-  source: string | null | undefined;
-  fallbackSource?: any; // For require() imports
-}
+import { DefaultProfileIcon } from './components/DefaultProfileIcon';
+import { CustomImageViewProps, CustomImageProps, CustomProfileImageProps } from '@/types';
 
 export function CustomImage({
   source,
@@ -36,10 +26,6 @@ export function CustomImage({
   );
 }
 
-export interface CustomProfileImageProps extends Omit<CustomImageProps, 'source'> {
-  source?: string | null | undefined;
-  fullName: string;
-}
 
 export function CustomProfileImage({
   source,

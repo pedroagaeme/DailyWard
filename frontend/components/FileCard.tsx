@@ -1,7 +1,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { openFile } from '@/utils/fileHandling';
+import { openFile } from '@/services';
 import { Colors } from '@/constants/Colors';
-import { ResourceFile } from './FeedArea/ResourcesFeedItem';
+import { ResourceFile } from '@/types';
 
 export function FileCard({ 
     file, 

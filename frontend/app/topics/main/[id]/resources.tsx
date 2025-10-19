@@ -1,37 +1,35 @@
 import { FeedArea } from "@/components/FeedArea";
-import { ResourcesFeedItem, renderResourcesFeedItem } from "@/components/FeedArea/ResourcesFeedItem";
+import { renderResourcesFeedItem } from "@/components/FeedArea/components/ResourcesFeedItem";
+import { ResourcesFeedItem } from "@/types";
 import { Colors } from "@/constants/Colors";
-import { useTopics } from "@/utils/topicsContext";
-import { axiosPrivate } from "@/utils/api";
+import { useTopics } from "@/contexts";
+import { useInfiniteResources } from "@/hooks/useInfiniteResources";
 import { AddIcon } from "@/assets/images/add-icon";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 
 
 export default function Resources() {
     const { topicState } = useTopics();
-    const [resources, setResources] = useState<ResourcesFeedItem[]>([]);
+    const topicId = topicState?.id;
 
-    const fetchTopicResources = async (topicId: string) => {
-        try {
-            const response = await axiosPrivate.get(`/users/me/topics/${topicId}/resources/`);
-            if (response.status === 200) {
-              setResources(response.data.results || response.data);
-            }
-        } catch (error) {
-            console.error('Error fetching topic resources:', error);
-        }
-    };
+    const {
+        data,
+        isLoading,
+        isError,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteResources({
+        topicId: topicId || '',
+        enabled: !!topicId,
+    });
 
-    useFocusEffect(
-      useCallback(() => {
-        if (topicState?.id) {
-          fetchTopicResources(topicState.id);
-        } 
-      }, [topicState?.id])
-    );
+    // Flatten all pages of data
+    const resources = data?.pages.flatMap((page: any) => page.data) || [];
     
     return (
     <View style={styles.container}>

@@ -2,14 +2,14 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import * as DocumentPicker from 'expo-document-picker';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { axiosPrivate } from '@/utils/api';
+import { ResourceService } from '@/services';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/utils/topicsContext';
+import { useTopics } from '@/contexts';
 import { FileCard } from '@/components/FileCard';
 
 interface CreateResourceForm {
@@ -54,33 +54,22 @@ export default function AddResource() {
   });
 
   const onSubmit = async (data: CreateResourceForm) => {
-    try {
-      const form = new FormData();
-      form.append('title', data.title);
-      form.append('description', data.description);
-      
-      if (files.length > 0) {
-        form.append('resourceType', 'file');
-        files.forEach((file, index) => {
-          form.append('files', {
-            uri: file.uri,
-            name: file.name,
-            type: file.mimeType,
-          } as any);
-        });
-      } else {
-        form.append('resourceType', 'announcement');
-      }
-      
-      await axiosPrivate.post(`/users/me/topics/${topicState?.id}/resources/`, form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
+    if (!topicState?.id) {
+      Alert.alert('Error', 'No topic selected');
+      return;
+    }
+
+    const result = await ResourceService.createResource(topicState.id, {
+      title: data.title,
+      description: data.description,
+      resourceType: files.length > 0 ? 'file' : 'announcement',
+      files: files.length > 0 ? files : undefined
+    });
+    
+    if (result && result.status === 201) {
       router.back();
-    } catch (error: any) {
-      console.error('Error creating resource:', error);
+    } else {
+      console.error('Error creating resource:', result);
       Alert.alert('Error', 'Failed to create resource');
     }
   };

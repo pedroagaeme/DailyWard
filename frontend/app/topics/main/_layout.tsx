@@ -1,17 +1,17 @@
 import { DailyWardLogoCompact } from '@/assets/images/dailyward-logo-compact';
-import { HomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
+import { HomeFeedItem } from '@/types';
 import { LogoutButton } from '@/components/LogoutButton';
 import { Colors } from '@/constants/Colors';
-import { useTopics } from '@/utils/topicsContext';
+import { useTopics } from '@/contexts';
 import { DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
 import { ScrollView } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DefaultProfileIcon } from '@/components/Image/DefaultProfileIcon';
-import { CustomProfileImage } from '@/components/Image/ImageComponent';
-import { useAuth } from '@/utils/authContext';
+import { DefaultProfileIcon } from '@/components/CustomImage/components/DefaultProfileIcon';
+import { CustomProfileImage } from '@/components/CustomImage';
+import { useAuth } from '@/contexts';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { topics, topicState, enterTopic, exitTopic } = useTopics();

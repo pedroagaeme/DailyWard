@@ -1,8 +1,10 @@
 import { FeedArea } from '@/components/FeedArea';
-import { HomeFeedItem, renderHomeFeedItem } from '@/components/FeedArea/HomeFeedItem';
+import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedItem';
+import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTopics } from '@/utils/topicsContext';
+import { useTopics } from '@/contexts';
+import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
 import { useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { AddIcon } from '@/assets/images/add-icon';
@@ -10,9 +12,23 @@ import { GoToRouteButton } from '@/components/GoToRouteButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
-  const topics: HomeFeedItem[] = useTopics()?.topics || [];
   const [ModalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTopics({
+    enabled: true,
+  });
+
+  // Flatten all pages of data
+  const topics = data?.pages.flatMap((page: any) => page.data) || [];
   return (
     <View style={styles.container}>
       <View style={styles.header}>

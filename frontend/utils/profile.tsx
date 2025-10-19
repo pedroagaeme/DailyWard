@@ -1,10 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-
-export interface UserProfile {
-    name: string | null;
-    email: string | null;
-    avatarUrl?: string | null;
-}
+import { UserProfile } from "@/types";
 
 export const getProfile = async () => {
     const profile = await SecureStore.getItemAsync('userProfile');

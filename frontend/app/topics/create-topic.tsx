@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { CreateTopicButton } from '@/components/CreateTopicButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { axiosPrivate } from '@/utils/api';
+import { TopicService } from '@/services';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
@@ -11,8 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/utils/topicsContext';
-import { CustomImage } from '@/components/Image/ImageComponent';
+import { useTopics } from '@/contexts';
+import { CustomImage } from '@/components/CustomImage';
 
 interface CreateTopicForm {
   title: string;
@@ -43,26 +43,21 @@ export default function CreateTopic() {
   };
 
   const onSubmit = async (data: CreateTopicForm) => {
-    try {
-      const form = new FormData();
-      form.append('title', data.title);
-      form.append('description', data.description);
-      if (image) {
-        form.append('topicImageUrl', {
-          uri: image,
-          name: image?.split('/').pop() || 'topic_image.jpg',
-          type: mime.getType(image!) || 'image/jpeg',
-        } as any);
-      }
-      await axiosPrivate.post('/users/me/topics/', form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+    const result = await TopicService.createTopic({
+      title: data.title,
+      description: data.description,
+      topicImageUrl: image ? {
+        uri: image,
+        name: image.split('/').pop() || 'topic_image.jpg',
+        type: mime.getType(image) || 'image/jpeg',
+      } : undefined
+    });
+
+    if (result && result.status === 201) {
       fetchUserTopics!();
       router.back();
-    } catch (error:any) {
-      console.error('Error creating topic:', error);
+    } else {
+      console.error('Error creating topic:', result);
     }
   };
 

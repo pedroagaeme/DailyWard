@@ -5,11 +5,11 @@ import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
 import { AdminParticipants } from "@/components/AdminParticipants";
 import { ParticipantsIcon } from "@/assets/images/participants-icon";
-import { ParticipantsFeedItem, renderParticipantsFeedItem } from "@/components/FeedArea/ParticipantsFeedItem";
+import { renderParticipantsFeedItem } from "@/components/FeedArea/components/ParticipantsFeedItem";
+import { ParticipantsFeedItem } from "@/types";
 import { FeedArea } from "@/components/FeedArea";
-import { useEffect, useState } from "react";
-import { useTopics } from "@/utils/topicsContext";
-import { axiosPrivate } from "@/utils/api";
+import { useTopics } from "@/contexts";
+import { useInfiniteParticipants } from "@/hooks/useInfiniteParticipants";
 
 function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[]}) {
   const adminParticipants = participants.filter(p => p.role === 'admin');
@@ -41,24 +41,24 @@ function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[
 
 
 export default function Participants() {
-  const [participants, setParticipants] = useState<ParticipantsFeedItem[]>([]);
   const { topicState } = useTopics();
   const topicId = topicState?.id;
-  
-  useEffect(() => {
-    async function fetchParticipants() {
-      try {
-        if (!topicId) return;
-        const response = await axiosPrivate.get(`/users/me/topics/${topicId}/participants/`);
-        console.log('Fetched participants:', response.data.results);
-        setParticipants(response.data.results);
-      } catch (error) {
-        console.error('Error fetching participants:', error);
-      }
-    }
 
-    fetchParticipants();
-  }, [topicId]);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteParticipants({
+    topicId: topicId || '',
+    enabled: !!topicId,
+  });
+
+  // Flatten all pages of data
+  const participants = data?.pages.flatMap((page: any) => page.data) || [];
 
   return (
     <View style={styles.container}>

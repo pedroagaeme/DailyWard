@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { View, StyleSheet, Text, FlatList, Dimensions} from 'react-native';
-import { CustomProfileImage } from './Image/ImageComponent';
-import { ParticipantsFeedItem } from './FeedArea/ParticipantsFeedItem';
+import { CustomProfileImage } from './CustomImage';
+import { ParticipantsFeedItem } from '@/components/FeedArea/components/ParticipantsFeedItem';
 
 export function AdminParticipants({participants}: {participants: ParticipantsFeedItem[]}) {
     const windowWidth = Dimensions.get('window').width;

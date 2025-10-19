@@ -1,15 +1,7 @@
-import { HomeFeedItem } from "@/components/FeedArea/HomeFeedItem";
 import { router } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from "react";
-import { axiosPrivate } from "./api";
-
-interface TopicsContextType {
-    topics?: HomeFeedItem[];
-    topicState?: { code: string, id: string; title: string; creationDate: string };
-    fetchUserTopics?: () => void;
-    enterTopic?: (code: string, id: string, title: string, creationDate: string) => void;
-    exitTopic?: () => void;
-}
+import { HomeFeedItem, TopicsContextType } from "@/types";
+import { TopicService } from "@/services";
 
 const TopicsContext = createContext<TopicsContextType>({});
 
@@ -23,16 +15,9 @@ export const TopicsProvider = ({ children }: {
     const [topicState, setTopicState] = useState<{ code:string, id: string; title: string; creationDate: string } | undefined>(undefined);
     
     const fetchUserTopics = async () => {
-      try {
-          const response = await axiosPrivate.get(`/users/me/topics/`);
-          console.log('Fetched user topics:', response.data);
-          if (response.status === 200) {
-            setTopics!(response.data.results);
-          }
-      } catch (error) {
-          console.error('Error fetching user topics:', error);
-      }
-      };
+      const topics = await TopicService.fetchUserTopics();
+      setTopics(topics);
+    };
 
     const enterTopic = (code: string, id: string, title: string, creationDate: string) => {
         setTopicState({code, id, title, creationDate });

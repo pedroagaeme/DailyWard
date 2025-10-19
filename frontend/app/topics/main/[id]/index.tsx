@@ -1,11 +1,12 @@
 import { CustomDatePicker } from '@/components/CustomDatePicker';
-import { DateItem } from '@/components/CustomDatePicker/DateItem';
-import { TopicFeedItem, renderTopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
+import { DateItem } from '@/components/CustomDatePicker/components/DateItem';
+import { renderTopicFeedItem } from '@/components/FeedArea/components/TopicFeedItem';
+import { TopicFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
 import { toSegmentedDate } from '@/constants/SegmentedDate';
 import { useDebounce } from '@/hooks/useDebounce';
-import { axiosPrivate } from '@/utils/api';
-import { useTopics } from '@/utils/topicsContext';
+import { useInfinitePosts } from '@/hooks/useInfinitePosts';
+import { useTopics } from '@/contexts';
 import { DateTime } from 'luxon';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -19,7 +20,6 @@ export default function Posts() {
   const topicCreationDate = topicState?.creationDate;
   const calendars = useCalendars();
   const calendar = calendars[0];
-  const [posts, setPosts] = useState<TopicFeedItem[]>([])
   const [chosenDate, setChosenDate] = useState<DateItem>({
     date: DateTime.now().startOf('day'), 
     ...toSegmentedDate(DateTime.now())
@@ -27,35 +27,23 @@ export default function Posts() {
 
   const debouncedChosenDate = useDebounce(chosenDate.date.toISODate(), 500);
 
-  useFocusEffect(
-    useCallback(
-      () => {
-      // Fetch posts from the backend
-      const fetchPosts = async () => {
-        try {
-          if(!topicId || !debouncedChosenDate) return;
-          
-          const response = await axiosPrivate.get(
-            `/users/me/topics/${topicId}/posts/${debouncedChosenDate}/`
-            ,{
-              headers: {
-                'X-User-Timezone': calendar.timeZone || 'UTC',
-              },
-            }
-          );
-          setPosts(response.data);
-        }
-        catch (error) {
-          console.error('Error fetching posts:', error);
-          // Set empty posts on error to avoid showing stale data
-          setPosts([]);
-        }
-      };
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfinitePosts({
+    topicId: topicId || '',
+    date: debouncedChosenDate || '',
+    timezone: calendar.timeZone || 'UTC',
+    enabled: !!topicId && !!debouncedChosenDate,
+  });
 
-      console.log('Fetching posts for date:', debouncedChosenDate);
-      fetchPosts();
-      }, [topicId, debouncedChosenDate])
-  );
+  // Flatten all pages of data
+  const posts = data?.pages.flatMap((page: any) => page.data) || [];
 
   return (
       <View style={styles.container}>

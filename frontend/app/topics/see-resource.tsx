@@ -1,13 +1,13 @@
-import { ResourcesFeedItem } from '@/components/FeedArea/ResourcesFeedItem';
-import { StyleSheet, View, Text, Pressable, ScrollView, Alert, Linking, ActivityIndicator } from 'react-native';
+import { ResourcesFeedItem } from '@/types';
+import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { useTopics } from '@/utils/topicsContext';
-import { CustomProfileImage } from '@/components/Image/ImageComponent';
+import { useTopics } from '@/contexts';
+import { CustomProfileImage } from '@/components/CustomImage';
 import { FileCard } from '@/components/FileCard';
-import { axiosPrivate } from '@/utils/api';
+import { ResourceService } from '@/services';
 import { useEffect, useState } from 'react';
 
 export default function SeeResourceScreen() {
@@ -17,6 +17,7 @@ export default function SeeResourceScreen() {
   const { topicState } = useTopics();
   const topicTitle = topicState?.title;
   const resourceId = params.id as string;
+  const topicId = topicState?.id;
   
   const [item, setItem] = useState<ResourcesFeedItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,12 +25,12 @@ export default function SeeResourceScreen() {
 
   useEffect(() => {
     const fetchResource = async () => {
-      if (!resourceId || !topicState?.id) return;
+      if (!resourceId || !topicId) return;
       
       try {
         setLoading(true);
-        const response = await axiosPrivate.get(`/users/me/topics/${topicState.id}/resources/${resourceId}/`);
-        setItem(response.data);
+        const resource = await ResourceService.fetchResourceById(topicId, resourceId);
+        setItem(resource);
       } catch (err) {
         console.error('Error fetching resource:', err);
         setError('Erro ao carregar recurso');

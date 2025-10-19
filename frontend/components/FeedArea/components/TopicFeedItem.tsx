@@ -1,16 +1,8 @@
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
-import { CustomImage, CustomProfileImage } from '../Image/ImageComponent';
-
-export interface TopicFeedItem extends FeedItem {
-  posterName: string;
-  contentText: string;
-  createdAt: string;
-  posterProfilePicUrl: string,
-  contentPicUrl: string;
-}
+import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
+import { TopicFeedItem } from '@/types';
 
 function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
   const handlePress = () => {

@@ -1,13 +1,13 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { axiosPrivate } from '@/utils/api';
+import { TopicService } from '@/services';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/utils/topicsContext';
+import { useTopics } from '@/contexts';
 
 interface JoinTopicForm {
   code: string;
@@ -19,17 +19,13 @@ export default function JoinTopic() {
   const insets = useSafeAreaInsets();
 
   const onSubmit = async (data: JoinTopicForm) => {
-    try {
-      const response = await axiosPrivate.post('/users/me/topics/join/', {
-        code: data.code.toUpperCase()
-      });
-      
-      if (response.status === 200) {
-        fetchUserTopics!();
-        router.back();
-      }
-    } catch (error: any) {
-      console.error('Error joining topic:', error);
+    const result = await TopicService.joinTopic(data.code);
+    
+    if (result && result.status === 200) {
+      fetchUserTopics!();
+      router.back();
+    } else {
+      console.error('Error joining topic:', result);
     }
   };
 

@@ -1,16 +1,8 @@
 import { Colors } from '@/constants/Colors';
-import { FeedItem } from '@/constants/FeedItem';
-import { useTopics } from '@/utils/topicsContext';
+import { useTopics } from '@/contexts';
 import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
-import { CustomImage } from '../Image/ImageComponent';
-
-export interface HomeFeedItem extends FeedItem {
-  title: string;
-  description?: string;
-  topicImageUrl: string;
-  createdAt: string;
-  code: string;
-}
+import { CustomImage } from '@/components/CustomImage';
+import { HomeFeedItem } from '@/types';
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   const { enterTopic } = useTopics();

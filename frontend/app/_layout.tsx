@@ -1,5 +1,5 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { RegisterFormProvider } from '@/utils/registerFormContext';
+import { RegisterFormProvider } from '@/contexts';
 import {
     Inter_400Regular,
     Inter_500Medium,
@@ -13,9 +13,20 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider, useAuth } from '../utils/authContext';
-import { TopicsProvider } from '@/utils/topicsContext';
+import { AuthProvider, useAuth } from '../contexts';
+import { TopicsProvider } from '@/contexts';
 import {NavigationBar} from '@zoontek/react-native-navigation-bar';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+    },
+  },
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -40,16 +51,18 @@ export default function RootLayout() {
   return (
     <>
     <NavigationBar barStyle='dark-content'/>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <RegisterFormProvider>
-          <TopicsProvider>
-            <AppContent />
-          </TopicsProvider>
-        </RegisterFormProvider>
-      </AuthProvider>
-      <StatusBar style="dark" />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <AuthProvider>
+          <RegisterFormProvider>
+            <TopicsProvider>
+              <AppContent />
+            </TopicsProvider>
+          </RegisterFormProvider>
+        </AuthProvider>
+        <StatusBar style="dark" />
+      </ThemeProvider>
+    </QueryClientProvider>
     </>
   );
 }

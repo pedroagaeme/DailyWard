@@ -1,12 +1,12 @@
-import { TopicFeedItem } from '@/components/FeedArea/TopicFeedItem';
+import { TopicFeedItem } from '@/types';
 import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { useTopics } from '@/utils/topicsContext';
-import { CustomImage, CustomProfileImage } from '@/components/Image/ImageComponent';
-import { axiosPrivate } from '@/utils/api';
+import { useTopics } from '@/contexts';
+import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
+import { PostService } from '@/services';
 import { useEffect, useState } from 'react';
 
 export default function SeePostScreen() {
@@ -16,6 +16,7 @@ export default function SeePostScreen() {
     const { topicState } = useTopics();
     const topicTitle = topicState?.title;
     const postId = params.id as string;
+    const topicId = topicState?.id;
     
     const [item, setItem] = useState<TopicFeedItem | null>(null);
     const [loading, setLoading] = useState(true);
@@ -23,12 +24,12 @@ export default function SeePostScreen() {
 
     useEffect(() => {
         const fetchPost = async () => {
-            if (!postId || !topicState?.id) return;
+            if (!postId || !topicId) return;
             
             try {
                 setLoading(true);
-                const response = await axiosPrivate.get(`/users/me/topics/${topicState.id}/posts/${postId}/`);
-                setItem(response.data);
+                const post = await PostService.fetchPostById(topicId, postId);
+                setItem(post);
             } catch (err) {
                 console.error('Error fetching post:', err);
                 setError('Erro ao carregar post');

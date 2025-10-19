@@ -5,8 +5,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useRef } from 'react';
 import { FormInput } from '@/components/FormInput';;
 import { Link, router } from 'expo-router';
-import { RegisterFormData } from '@/constants/FormTypes';
-import { useRegisterForm } from '@/utils/registerFormContext';
+import { RegisterFormData } from '@/types';
+import { useRegisterForm } from '@/contexts';
 
 export default function Register() {
     const { control, handleSubmit, formState: {errors} } = useForm<RegisterFormData>();

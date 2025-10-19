@@ -1,26 +1,8 @@
 import { Colors } from '@/constants/Colors';
-import { FeedItem } from '@/constants/FeedItem';
 import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { CustomProfileImage } from '../Image/ImageComponent';
-
-export interface ResourceFile {
-    id: number;
-    filename: string;
-    fileSize?: number;
-    mimeType?: string;
-    created_at: string;
-}
-
-export interface ResourcesFeedItem extends FeedItem {
-    title: string;
-    resourceType?: string;
-    description?: string;
-    posterName?: string;
-    posterProfilePicUrl?: string;
-    createdAt?: string;
-    files?: ResourceFile[];
-}
+import { CustomProfileImage } from '@/components/CustomImage';
+import { ResourcesFeedItem } from '@/types';
 
 const formatDate = (dateString?: string) => {
   if (!dateString) return 'Data não disponível';

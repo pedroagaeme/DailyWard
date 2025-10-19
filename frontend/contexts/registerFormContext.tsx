@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { RegisterFormData } from "@/constants/FormTypes";
+import { RegisterFormData } from "@/types";
 
 const RegisterFormContext = createContext<{getFormData?: () => RegisterFormData, updateFormData?: (data: RegisterFormData) => void }>({});
 
