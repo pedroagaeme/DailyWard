@@ -1,5 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { openFile } from '@/services';
+import { openFile } from '@/services/fileHandling';
 import { Colors } from '@/constants/Colors';
 import { ResourceFile } from '@/types';
 

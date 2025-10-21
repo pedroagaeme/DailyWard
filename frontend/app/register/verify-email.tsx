@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { OtpInputField } from '@/components/OtpInputField';
-import { VerificationService } from '@/services';
+import { VerificationService } from '@/services/verificationService';
 import { useAuth } from '@/contexts';
 import { useRegisterForm } from '@/contexts';
 import { useState } from 'react';

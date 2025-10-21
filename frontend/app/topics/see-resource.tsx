@@ -7,7 +7,7 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { useTopics } from '@/contexts';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { FileCard } from '@/components/FileCard';
-import { ResourceService } from '@/services';
+import { ResourceService } from '@/services/resourceService';
 import { useEffect, useState } from 'react';
 
 export default function SeeResourceScreen() {

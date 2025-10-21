@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { CreateTopicButton } from '@/components/CreateTopicButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { TopicService } from '@/services';
+import { TopicService } from '@/services/topicService';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
@@ -20,7 +20,6 @@ interface CreateTopicForm {
 }
 
 export default function CreateTopic() {
-  const { fetchUserTopics } = useTopics();
   const { control, handleSubmit } = useForm<CreateTopicForm>();
   const insets = useSafeAreaInsets();
   const [image, setImage] = useState<string | null>(null);
@@ -54,7 +53,6 @@ export default function CreateTopic() {
     });
 
     if (result && result.status === 201) {
-      fetchUserTopics!();
       router.back();
     } else {
       console.error('Error creating topic:', result);

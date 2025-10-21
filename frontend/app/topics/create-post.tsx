@@ -2,7 +2,7 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { AddImageToPostButton } from '@/components/AddImageToPostButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { PostService } from '@/services';
+import { PostService } from '@/services/postService';
 import { useAuth } from '@/contexts';
 import { useTopics } from '@/contexts';
 import { router } from 'expo-router';

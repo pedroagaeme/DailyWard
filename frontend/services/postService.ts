@@ -46,7 +46,12 @@ export class PostService {
     }
   }
 
-  static async fetchPosts(topicId: string, date: string, timezone?: string): Promise<TopicFeedItem[]> {
+  static async fetchPosts(topicId: string, date: string, timezone?: string, page: number = 1): Promise<{
+    results: TopicFeedItem[];
+    count: number;
+    next: string | null;
+    previous: string | null;
+  }> {
     try {
       const headers: Record<string, string> = {};
       if (timezone) {
@@ -54,14 +59,18 @@ export class PostService {
       }
 
       const response = await axiosPrivate.get(
-        `/users/me/topics/${topicId}/posts/${date}/`,
+        `/users/me/topics/${topicId}/posts/${date}/?page=${page}`,
         { headers }
       );
-
       return response.data;
     } catch (error) {
       console.error('Error fetching posts:', error);
-      return [];
+      return {
+        results: [],
+        count: 0,
+        next: null,
+        previous: null,
+      };
     }
   }
 

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { RegisterFormData, LoginFormData, UserProfile, AuthProps } from "@/types";
-import { AuthService } from "@/services";
+import { AuthService } from "@/services/authService";
 
 const AuthContext = createContext<AuthProps>({});
 

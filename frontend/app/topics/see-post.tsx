@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { useTopics } from '@/contexts';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
-import { PostService } from '@/services';
+import { PostService } from '@/services/postService';
 import { useEffect, useState } from 'react';
 
 export default function SeePostScreen() {

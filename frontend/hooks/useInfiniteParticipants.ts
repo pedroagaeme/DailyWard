@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ParticipantService } from '@/services';
+import { ParticipantService } from '@/services/participantService';
 import { ParticipantsFeedItem } from '@/types';
 
 interface UseInfiniteParticipantsParams {
@@ -8,27 +8,29 @@ interface UseInfiniteParticipantsParams {
 }
 
 interface ParticipantsPage {
-  data: ParticipantsFeedItem[];
-  nextCursor?: number;
-  hasNextPage: boolean;
+  results: ParticipantsFeedItem[];
+  count: number;
+  next: string | null;
+  previous: string | null;
 }
 
-export function useInfiniteParticipants({ topicId, enabled = true }: UseInfiniteParticipantsParams) {
+export function useInfiniteParticipants({ 
+  topicId, 
+  enabled = true 
+}: UseInfiniteParticipantsParams) {
   return useInfiniteQuery<ParticipantsPage>({
     queryKey: ['participants', topicId],
-    queryFn: async ({ pageParam = 0 }) => {
-      // For now, we'll fetch all participants since the API doesn't support pagination
-      // In the future, you can modify this to support pagination with pageParam
-      const participants = await ParticipantService.fetchParticipants(topicId);
-      return {
-        data: participants,
-        nextCursor: participants.length > 0 ? pageParam + 1 : undefined,
-        hasNextPage: false, // Set to true when pagination is implemented
-      };
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await ParticipantService.fetchParticipants(topicId, pageParam as number);
+      return response;
     },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage, allPages) => {
+      // If there's a next page, return the next page number
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
     enabled: enabled && !!topicId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 0,
+    gcTime: 0,
   });
 }

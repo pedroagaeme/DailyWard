@@ -8,27 +8,18 @@ import {
   FlatList,
   ListRenderItem,
   StyleSheet,
-  View
+  View,
+  FlatListProps,
+  RefreshControl
 } from "react-native";
 import { FadedOverlayContainer } from './components/FadedOverlayContainer';
 
-interface Props {
-  items:FeedItem[],
-  listHeaderComponent?: React.ReactElement,
-  renderItem:ListRenderItem<any>, 
+interface Props extends FlatListProps<any> {
   fadedEdges:InsetToggle, 
   immersiveScreen:InsetToggle, 
   overlayHeight?:number,
   additionalPadding?:HeightInsets,
-  numColumns?:number,
   navbarInset?:boolean,
-  separator?: {
-    enabled?: boolean;
-    color?: string;
-    height?: number;
-    marginVertical?: number;
-    marginHorizontal?: number;
-  };
   noHorizontalPadding?: boolean;
 }
 
@@ -36,54 +27,34 @@ const gapBetweenItems = 8;
 const flatListPaddingHorizontal = 16; // FlatList horizontal padding
 
 export function FeedArea({
-  items,
-  listHeaderComponent,
-  renderItem, 
   fadedEdges, 
   immersiveScreen, 
   overlayHeight = 0, 
   additionalPadding = {top:0, bottom: 0}, 
-  numColumns = 1, 
-  navbarInset = false, 
-  separator, 
-  noHorizontalPadding = false}: Props) 
+  navbarInset = false,    noHorizontalPadding = false,
+  ...flatListProps
+}: Props) 
   {
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset});
   const {width:windowWidth} = Dimensions.get('window');
+  const numColumns = flatListProps.numColumns || 1;
   const itemWidth = (windowWidth - (noHorizontalPadding ? 0 : flatListPaddingHorizontal * 2) - (gapBetweenItems * (numColumns - 1))) / (numColumns);
   
-  const ItemSeparator = () => {
-    if (!separator?.enabled) return null;
-    
-    return (
-      <View style={
-        {
-          backgroundColor: separator.color || Colors.light.background[95],
-          height: separator.height || 1,
-          marginVertical: separator.marginVertical || 0,
-          marginHorizontal: separator.marginHorizontal || 0,
-        }
-      } />
-    );
-  };
-
   const renderItemWithPadding = (info: any) => {
     return (
       <View style={[styles.itemWrapper, {width: itemWidth}]}>
-        {renderItem(info)}
+        {flatListProps.renderItem?.(info)}
       </View>
     );
   };
+  console.log('flatListProps');
   
   return (
     <MaskedView  style={{flex:1}} maskElement={<FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}/>}>
       <FlatList
-        ListHeaderComponent={listHeaderComponent}
-        numColumns={numColumns}
-        data={items}
+        {...flatListProps}
         renderItem={renderItemWithPadding}
-        ItemSeparatorComponent={ItemSeparator}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={[styles.flatListWrapper, {
           paddingTop:topPadding + additionalPadding.top, 

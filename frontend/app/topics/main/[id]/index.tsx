@@ -1,18 +1,17 @@
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { DateItem } from '@/components/CustomDatePicker/components/DateItem';
 import { renderTopicFeedItem } from '@/components/FeedArea/components/TopicFeedItem';
-import { TopicFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
 import { toSegmentedDate } from '@/constants/SegmentedDate';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useInfinitePosts } from '@/hooks/useInfinitePosts';
 import { useTopics } from '@/contexts';
 import { DateTime } from 'luxon';
-import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, RefreshControl, StyleSheet, View } from 'react-native';
 import { FeedArea } from '../../../../components/FeedArea';
-import { useFocusEffect } from 'expo-router';
 import { useCalendars } from 'expo-localization';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 export default function Posts() {
   const { topicState } = useTopics();
@@ -35,15 +34,16 @@ export default function Posts() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfinitePosts({
     topicId: topicId || '',
     date: debouncedChosenDate || '',
     timezone: calendar.timeZone || 'UTC',
     enabled: !!topicId && !!debouncedChosenDate,
   });
-
-  // Flatten all pages of data
-  const posts = data?.pages.flatMap((page: any) => page.data) || [];
+  useRefreshOnFocus(refetch);
+  // Flatten all pages of data and filter out undefined items
+  const posts = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
 
   return (
       <View style={styles.container}>
@@ -58,13 +58,25 @@ export default function Posts() {
           </View>
         </View>
         <FeedArea 
-          items={posts} 
+          data={posts} 
           renderItem={renderTopicFeedItem} 
           fadedEdges={{top:false, bottom:false}} 
           immersiveScreen={{top:false, bottom:true}} 
           navbarInset={true}
           additionalPadding={{top: 12, bottom: 4}}
           noHorizontalPadding={true}
+          refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
+          onEndReachedThreshold={0.2}
+          onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+          ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              color="blue"
+              size="small"
+              style={{ marginBottom: 5 }}
+            />
+          ) : null
+        }
         />
       </View>
     );

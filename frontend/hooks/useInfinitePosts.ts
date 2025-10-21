@@ -1,36 +1,40 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { PostService } from '@/services';
-import { TopicFeedItem } from '@/types';
+import { PostService } from '@/services/postService';
+import { TopicFeedItem } from '@/types/feed';
 
-interface UseInfinitePostsParams {
+export interface PostsPage {
+  results: TopicFeedItem[];
+  count: number;
+  next: string | null;
+  previous: string | null;
+}
+
+export interface UseInfinitePostsParams {
   topicId: string;
   date: string;
   timezone?: string;
   enabled?: boolean;
 }
 
-interface PostsPage {
-  data: TopicFeedItem[];
-  nextCursor?: number;
-  hasNextPage: boolean;
-}
-
-export function useInfinitePosts({ topicId, date, timezone, enabled = true }: UseInfinitePostsParams) {
+export function useInfinitePosts({ 
+  topicId, 
+  date, 
+  timezone, 
+  enabled = true 
+}: UseInfinitePostsParams) {
   return useInfiniteQuery<PostsPage>({
     queryKey: ['posts', topicId, date, timezone],
-    queryFn: async ({ pageParam = 0 }) => {
-      // For now, we'll fetch all posts for the date since the API doesn't support pagination
-      // In the future, you can modify this to support pagination with pageParam
-      const posts = await PostService.fetchPosts(topicId, date, timezone);
-      return {
-        data: posts,
-        nextCursor: posts.length > 0 ? pageParam + 1 : undefined,
-        hasNextPage: false, // Set to true when pagination is implemented
-      };
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await PostService.fetchPosts(topicId, date, timezone, pageParam as number);
+      return response;
     },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage, allPages) => {
+      // If there's a next page, return the next page number
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
     enabled: enabled && !!topicId && !!date,
-    staleTime: 1000 * 60 * 2, // 2 minutes
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
+    gcTime: 0,
   });
 }

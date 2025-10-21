@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
-import { createContext, useContext, useEffect, useState } from "react";
-import { HomeFeedItem, TopicsContextType } from "@/types";
-import { TopicService } from "@/services";
+import { createContext, useContext, useState } from "react";
+import { TopicsContextType } from "@/types";
 
 const TopicsContext = createContext<TopicsContextType>({});
 
@@ -10,14 +9,8 @@ export const useTopics = () => {return useContext(TopicsContext)};
 export const TopicsProvider = ({ children }: { 
     children: React.ReactNode,
 }) => {
-
-    const [topics, setTopics] = useState<HomeFeedItem[]>([]);
     const [topicState, setTopicState] = useState<{ code:string, id: string; title: string; creationDate: string } | undefined>(undefined);
     
-    const fetchUserTopics = async () => {
-      const topics = await TopicService.fetchUserTopics();
-      setTopics(topics);
-    };
 
     const enterTopic = (code: string, id: string, title: string, creationDate: string) => {
         setTopicState({code, id, title, creationDate });
@@ -30,7 +23,7 @@ export const TopicsProvider = ({ children }: {
     }
 
     return (
-        <TopicsContext.Provider value={{ topics, topicState, enterTopic, exitTopic, fetchUserTopics}}>
+        <TopicsContext.Provider value={{ topicState, enterTopic, exitTopic}}>
             {children}
         </TopicsContext.Provider>
     );

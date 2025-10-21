@@ -1,7 +1,7 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { TopicService } from '@/services';
+import { TopicService } from '@/services/topicService';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
@@ -14,7 +14,6 @@ interface JoinTopicForm {
 }
 
 export default function JoinTopic() {
-  const { fetchUserTopics } = useTopics();
   const { control, handleSubmit, formState: { errors } } = useForm<JoinTopicForm>();
   const insets = useSafeAreaInsets();
 
@@ -22,7 +21,6 @@ export default function JoinTopic() {
     const result = await TopicService.joinTopic(data.code);
     
     if (result && result.status === 200) {
-      fetchUserTopics!();
       router.back();
     } else {
       console.error('Error joining topic:', result);

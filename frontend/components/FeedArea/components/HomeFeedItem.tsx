@@ -10,7 +10,7 @@ function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
   const handlePress = () => {
     enterTopic!(item.code, item.id, item.title, item.createdAt);
   };
-
+  
   return(
     <Pressable onPress={handlePress}>
       <View style={styles.itemContainer}>

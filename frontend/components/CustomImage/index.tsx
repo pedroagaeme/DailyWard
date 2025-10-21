@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, ImageProps, ViewStyle } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { DefaultProfileIcon } from './components/DefaultProfileIcon';
-import { CustomImageViewProps, CustomImageProps, CustomProfileImageProps } from '@/types';
+import { CustomImageProps, CustomProfileImageProps } from '@/types';
 
 export function CustomImage({
   source,
@@ -12,14 +12,17 @@ export function CustomImage({
   overlayStyle,
   ...imageProps
 }: CustomImageProps) {
-  const imageSource = (source ? { uri: source, cache: FastImage.cacheControl.immutable} : fallbackSource)
+  const imageSource: FastImageProps['source'] = (source ? { 
+    uri: source, 
+    cache: FastImage.cacheControl.immutable,
+  } : fallbackSource)
   const imageStyle = imageProps.style as any;
-  const borderRadius = imageStyle?.borderRadius || containerStyle?.borderRadius || undefined;
+  const borderRadius = imageStyle?.borderRadius || containerStyle?.borderRadius || 0;
 
   return (
     <View style={containerStyle}>
       <FastImage source={imageSource} {...imageProps} />
-      {showOverlay && borderRadius && (
+      {showOverlay && (
         <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
       )}
     </View>
@@ -46,7 +49,7 @@ export function CustomProfileImage({
           fullName={fullName} 
           viewStyleProps={imageStyle}
         />
-        {showOverlay && borderRadius && (
+        {showOverlay && (
           <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
         )}
       </View>

@@ -4,17 +4,20 @@ import { LogoutButton } from '@/components/LogoutButton';
 import { Colors } from '@/constants/Colors';
 import { useTopics } from '@/contexts';
 import { DrawerContentComponentProps, DrawerItem } from '@react-navigation/drawer';
-import { ScrollView } from 'react-native';
+import { SectionList } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DefaultProfileIcon } from '@/components/CustomImage/components/DefaultProfileIcon';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { useAuth } from '@/contexts';
+import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
+import { ActivityIndicator } from 'react-native';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const { topics, topicState, enterTopic, exitTopic } = useTopics();
+  const { topicState, enterTopic, exitTopic } = useTopics();
+  const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteTopics({ enabled: true });
+  const topics = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
   const selectedItem = topicState?.id;
   const insets = useSafeAreaInsets();
 
@@ -25,22 +28,33 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
     }
   }, [props.state.index]);
 
-  return (
-    <View style={{flex: 1, backgroundColor: Colors.light.background[95]}}>
-      <ScrollView 
-        style={{flex: 1}}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 8}}
-        showsVerticalScrollIndicator={false}
-        bounces={true}
-        keyboardShouldPersistTaps="handled"
-        removeClippedSubviews={false}
-        >
-        
-        <View style={{ padding: 8, gap: 4, paddingTop: insets.top, paddingBottom: insets.bottom}}>
-          <View style={{ padding: 12, gap: 12}}>
+  // Create sections data for SectionList
+  const sections = [
+    {
+      title: 'header',
+      data: [{}], // Empty data array for header section
+    },
+    {
+      title: 'navigation',
+      data: [{}], // Empty data array for navigation section
+    },
+    {
+      title: 'topics',
+      data: topics,
+    }
+  ];
+
+  const renderItem = ({ item, section }: { item: any, section: any }) => {
+    switch (section.title) {
+      case 'header':
+        return (
+          <View style={{ padding: 12, gap: 12, paddingTop: insets.top }}>
             <LogoutButton />
             <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.light.text[5] }}>Bem-vindo(a)!</Text>
           </View>
+        );
+      case 'navigation':
+        return (
           <DrawerItem
             label="Início"
             focused={!selectedItem}
@@ -51,36 +65,68 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
               fontSize: 16 
             }}
           />
-          <View style={{padding: 12}}>
-            <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 16, color: Colors.light.text[5] }}>Seus Tópicos</Text>
-          </View>
-          {topics?.map((topic: HomeFeedItem) => (
-            <DrawerItem
-              key={topic.id}
-              focused={ String(selectedItem) === String(topic.id) }
-              label={topic.title}
-              labelStyle={{ 
-                color: String(selectedItem) === String(topic.id) ? Colors.light.primary : Colors.light.text[30], 
-                fontFamily: 'Inter_500Medium', 
-                fontSize: 16 }}
-              onPress={() => {
-                enterTopic!(topic.code, topic.id, topic.title, topic.createdAt);
-              }}
-            />
-          ))}
+        );
+      case 'topics':
+        return (
+          <DrawerItem
+            key={item.id}
+            focused={ String(selectedItem) === String(item.id) }
+            label={item.title}
+            labelStyle={{ 
+              color: String(selectedItem) === String(item.id) ? Colors.light.primary : Colors.light.text[30], 
+              fontFamily: 'Inter_500Medium', 
+              fontSize: 16 }}
+            onPress={() => {
+              enterTopic!(item.code, item.id, item.title, item.createdAt);
+            }}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderSectionHeader = ({ section }: { section: any }) => {
+    if (section.title === 'topics') {
+      return (
+        <View style={{padding: 12}}>
+          <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 16, color: Colors.light.text[5] }}>Seus Tópicos</Text>
         </View>
-      </ScrollView>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <View style={{flex: 1, backgroundColor: Colors.light.background[95]}}>
+      <SectionList
+        sections={sections}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+        contentContainerStyle={{paddingBottom: insets.bottom, paddingTop: 12, paddingHorizontal: 8}}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        keyboardShouldPersistTaps="handled"
+        removeClippedSubviews={false}
+        scrollEventThrottle={16}
+        onEndReachedThreshold={0.1}
+        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              color="blue"
+              size="small"
+              style={{ marginBottom: 5 }}
+            />
+          ) : null
+        }
+      />
     </View>
   );
 }
 
 export default function Layout() {
-  const {fetchUserTopics } = useTopics();
-  
-  useEffect(() => {
-    fetchUserTopics!();
-  }, []);
-
   return (
     <DrawerLayout />
   );
@@ -90,6 +136,7 @@ export const DrawerLayout = () => {
   const { authState } = useAuth();
   const { topicState } = useTopics();
   const selectedItemTitle = topicState?.title;
+  
   return (
     <Drawer
         screenOptions={{

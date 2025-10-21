@@ -6,9 +6,10 @@ import { useTopics } from "@/contexts";
 import { useInfiniteResources } from "@/hooks/useInfiniteResources";
 import { AddIcon } from "@/assets/images/add-icon";
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useCallback } from "react";
+import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo } from "react";
 import { useFocusEffect } from "expo-router";
+import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 
 
 export default function Resources() {
@@ -23,13 +24,15 @@ export default function Resources() {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
+        refetch
     } = useInfiniteResources({
         topicId: topicId || '',
         enabled: !!topicId,
     });
 
-    // Flatten all pages of data
-    const resources = data?.pages.flatMap((page: any) => page.data) || [];
+    useRefreshOnFocus(refetch);
+    // Flatten all pages of data and filter out undefined items
+    const resources = useMemo(() => data?.pages.flatMap((page: any) => page.results || []) || [], [data]) ;
     
     return (
     <View style={styles.container}>
@@ -42,12 +45,24 @@ export default function Resources() {
         </View>
       </View>
       <FeedArea
-        items={resources || []}
+        data={resources}
         renderItem={renderResourcesFeedItem}
         fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 16}}
         navbarInset={true}
+        refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
+        onEndReachedThreshold={0.2}
+        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              color="blue"
+              size="small"
+              style={{ marginBottom: 5 }}
+            />
+          ) : null
+        }
       />
     </View>
     );

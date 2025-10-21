@@ -2,14 +2,15 @@ import { FeedArea } from '@/components/FeedArea';
 import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedItem';
 import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useTopics } from '@/contexts';
 import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
-import { useState } from 'react';
+import { use, useMemo, useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { AddIcon } from '@/assets/images/add-icon';
 import { GoToRouteButton } from '@/components/GoToRouteButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 export default function Home() {
   const [ModalVisible, setModalVisible] = useState(false);
@@ -23,12 +24,13 @@ export default function Home() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteTopics({
     enabled: true,
   });
-
+  useRefreshOnFocus(refetch);
   // Flatten all pages of data
-  const topics = data?.pages.flatMap((page: any) => page.data) || [];
+  const topics = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -40,12 +42,24 @@ export default function Home() {
         </View>
       </View>
       <FeedArea 
-          items={topics} 
-          renderItem={renderHomeFeedItem} 
-          immersiveScreen={{top:false, bottom:true}}
-          fadedEdges={{top:false, bottom:false}}
-          additionalPadding={{top:12, bottom:0}}
-          numColumns={2}
+        data={topics} 
+        renderItem={renderHomeFeedItem} 
+        immersiveScreen={{top:false, bottom:true}}
+        fadedEdges={{top:false, bottom:false}}
+        additionalPadding={{top:12, bottom:0}}
+        numColumns={2}
+        refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
+        onEndReachedThreshold={0.2}
+        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              color="blue"
+              size="small"
+              style={{ marginBottom: 5 }}
+            />
+          ) : null
+        }
       />
       <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible} children={
         <View style={[styles.modal, {paddingBottom: insets.bottom + 20}]}>

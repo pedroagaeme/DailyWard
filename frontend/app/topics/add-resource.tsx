@@ -2,7 +2,7 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import * as DocumentPicker from 'expo-document-picker';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
-import { ResourceService } from '@/services';
+import { ResourceService } from '@/services/resourceService';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';

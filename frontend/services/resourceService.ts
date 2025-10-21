@@ -54,13 +54,23 @@ export class ResourceService {
     }
   }
 
-  static async fetchResources(topicId: string): Promise<ResourcesFeedItem[]> {
+  static async fetchResources(topicId: string, page: number = 1): Promise<{
+    results: ResourcesFeedItem[];
+    count: number;
+    next: string | null;
+    previous: string | null;
+  }> {
     try {
-      const response = await axiosPrivate.get(`/users/me/topics/${topicId}/resources/`);
+      const response = await axiosPrivate.get(`/users/me/topics/${topicId}/resources/?page=${page}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching resources:', error);
-      return [];
+      return {
+        results: [],
+        count: 0,
+        next: null,
+        previous: null,
+      };
     }
   }
 

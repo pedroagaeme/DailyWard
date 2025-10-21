@@ -1,5 +1,5 @@
 import pytz
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, generics
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
 from django.utils.dateparse import parse_date
@@ -9,7 +9,6 @@ from .models import Post
 from .serializers import PostSerializer
 from .permissions import IsTopicParticipant, IsAuthor, IsAuthorOrTopicAdmin
 from topics.models import Topic
-from rest_framework.views import APIView
 from datetime import datetime 
 from django.utils import timezone
 
@@ -39,13 +38,16 @@ class PostViewSet(viewsets.ModelViewSet):
         topic = Topic.objects.get(pk=topic_id)
         serializer.save(posted_by=self.request.user, topic=topic)
 
-class PostsByDayAPIView(APIView):
+class PostsByDayAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTopicParticipant]
-    
-    def get(self, request, topic_pk, date_iso):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        topic_pk = self.kwargs.get('topic_pk')
+        date_iso = self.kwargs.get('date_iso')
         # Get timezone from request header
-        user_tz_name = request.headers.get('X-User-Timezone', 'UTC')
-        
+        user_tz_name = self.request.headers.get('X-User-Timezone', 'UTC')
+
         try:
             user_tz = pytz.timezone(user_tz_name)
         except pytz.UnknownTimeZoneError:
@@ -62,11 +64,8 @@ class PostsByDayAPIView(APIView):
         )
         
         # Filter posts created during this day in user's timezone
-        posts = Post.objects.filter(
+        return Post.objects.filter(
             topic_id=topic_pk,
             created_at__gte=start_of_day,
             created_at__lte=end_of_day
         ).order_by('-created_at')
-        
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)

@@ -1,6 +1,6 @@
 import { AddContactsButton } from "@/components/AddContactsButton";
 import { Colors } from "@/constants/Colors";
-import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
+import { StyleSheet, Text, View, ScrollView, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
 import { AdminParticipants } from "@/components/AdminParticipants";
@@ -10,6 +10,8 @@ import { ParticipantsFeedItem } from "@/types";
 import { FeedArea } from "@/components/FeedArea";
 import { useTopics } from "@/contexts";
 import { useInfiniteParticipants } from "@/hooks/useInfiniteParticipants";
+import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
+import { useMemo } from "react";
 
 function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[]}) {
   const adminParticipants = participants.filter(p => p.role === 'admin');
@@ -52,25 +54,39 @@ export default function Participants() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteParticipants({
     topicId: topicId || '',
     enabled: !!topicId,
   });
 
-  // Flatten all pages of data
-  const participants = data?.pages.flatMap((page: any) => page.data) || [];
+  useRefreshOnFocus(refetch);
+  // Flatten all pages of data and filter out undefined items
+  const participants = useMemo(() => data?.pages.flatMap((page: any) => page.results)|| [], [data])  ;
 
   return (
     <View style={styles.container}>
       <FeedArea 
-        items={participants} 
+        data={participants} 
         renderItem={renderParticipantsFeedItem}
-        listHeaderComponent={<ParticipantsHeader participants={participants} />}
+        ListHeaderComponent={<ParticipantsHeader participants={participants} />}
         fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 20}}
         noHorizontalPadding={true}
         navbarInset={true}
+        refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
+        onEndReachedThreshold={0.2}
+        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              color="blue"
+              size="small"
+              style={{ marginBottom: 5 }}
+            />
+          ) : null
+        }
       />
     </View>
   );
