@@ -105,14 +105,9 @@ const styles = StyleSheet.create({
         marginBottom: 4,
       },
       fileSize: {
-        fontFamily: 'Inter_400Regular',
+        fontFamily: 'Inter_500Medium',
         fontSize: 12,
-        color: Colors.light.text[30],
-      },
-      fileType: {
-        fontFamily: 'Inter_400Regular',
-        fontSize: 14,
-        color: Colors.light.text[30],
+        color: Colors.light.primary,
       },
       downloadButton: {
         padding: 8,

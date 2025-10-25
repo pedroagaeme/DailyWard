@@ -11,6 +11,11 @@ export interface TopicCreateResponse {
   data: any;
 }
 
+export interface TopicGetResponse {
+  status: number;
+  data: any;
+}
+
 export class TopicService {
   static async fetchUserTopics(page: number = 1): Promise<{
     results: HomeFeedItem[];
@@ -88,6 +93,19 @@ export class TopicService {
       };
     } catch (error) {
       console.error('Error creating topic:', error);
+      return null;
+    }
+  }
+
+  static async getTopic(id: string): Promise<TopicGetResponse | null> {
+    try {
+      const response = await axiosPrivate.get(`/users/me/topics/${id}/`);
+      return {
+        status: response.status,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error getting topic:', error);
       return null;
     }
   }

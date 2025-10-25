@@ -8,19 +8,21 @@ import { ParticipantsIcon } from "@/assets/images/participants-icon";
 import { renderParticipantsFeedItem } from "@/components/FeedArea/components/ParticipantsFeedItem";
 import { ParticipantsFeedItem } from "@/types";
 import { FeedArea } from "@/components/FeedArea";
-import { useTopics } from "@/contexts";
 import { useInfiniteParticipants } from "@/hooks/useInfiniteParticipants";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import { useMemo } from "react";
+import { ParticipantsHeader } from "@/components/ParticipantsHeader";
+import { useRoute } from "@react-navigation/native";
+import { useTopicInfo } from "@/hooks/useTopicInfo";
+import { useGlobalSearchParams } from "expo-router";
 
-function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[]}) {
+function ParticipantsContent({participants, code}: {participants: ParticipantsFeedItem[], code: string}) {
   const adminParticipants = participants.filter(p => p.role === 'admin');
   return (
     <ScrollView contentContainerStyle={{flexGrow:1}}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.sectionTitle}>Participantes</Text>
-          <TopicCodeArea />
+          <TopicCodeArea code={code || ''} />
         </View>
         <View style={styles.section}>
           <View style={styles.row}>
@@ -43,8 +45,11 @@ function ParticipantsHeader({participants}: {participants: ParticipantsFeedItem[
 
 
 export default function Participants() {
-  const { topicState } = useTopics();
-  const topicId = topicState?.id;
+  const globalParams = useGlobalSearchParams();
+  const topicId = globalParams.topicId as string || '';
+  const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
+  const topicTitle = topicInfo?.data.title;
+  const code = topicInfo?.data.code;
 
   const {
     data,
@@ -66,10 +71,11 @@ export default function Participants() {
 
   return (
     <View style={styles.container}>
+      <ParticipantsHeader title={topicTitle || 'Carregando...'} />
       <FeedArea 
         data={participants} 
         renderItem={renderParticipantsFeedItem}
-        ListHeaderComponent={<ParticipantsHeader participants={participants} />}
+        ListHeaderComponent={<ParticipantsContent participants={participants} code={code || ''} />}
         fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 20}}
@@ -95,7 +101,7 @@ export default function Participants() {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[90],
     overflow: 'visible'
   },
   header: {

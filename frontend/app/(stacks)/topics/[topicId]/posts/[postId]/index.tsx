@@ -1,22 +1,21 @@
 import { TopicFeedItem } from '@/types';
 import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { useTopics } from '@/contexts';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { PostService } from '@/services/postService';
+import { SeePostHeader } from '@/components/SeePostHeader';
 import { useEffect, useState } from 'react';
+import { useTopicInfo } from '@/hooks/useTopicInfo';
 
 export default function SeePostScreen() {
-    const router = useRouter();
     const insets = useSafeAreaInsets();
-    const params = useLocalSearchParams();
-    const { topicState } = useTopics();
-    const topicTitle = topicState?.title;
-    const postId = params.id as string;
-    const topicId = topicState?.id;
+    const params = useGlobalSearchParams();
+    const topicId = params.topicId as string || '';
+    const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
+    const topicTitle = topicInfo?.data.title;
+    const postId = params.postId as string || '';
     
     const [item, setItem] = useState<TopicFeedItem | null>(null);
     const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default function SeePostScreen() {
         };
 
         fetchPost();
-    }, [postId, topicState?.id]);
+    }, [postId, topicId]);
 
     if (loading) {
         return (
@@ -58,36 +57,32 @@ export default function SeePostScreen() {
     }
 
     return (
-        <View style={[styles.fullScreenContainer, { paddingTop: insets.top}]}>
-          <View style={styles.headerRow}>
-            <Pressable onPress={() => router.back()} style={styles.backButton}>
-              <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
-            </Pressable>
-            <Text style={styles.sectionTitle}>{topicTitle}</Text>
-            <View style={{ width: 24, height: 24 }} />
-          </View>
-          <View style={styles.postHeaderRow}>
-              <View style={styles.profileSection}>
-              <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={{width:40, borderRadius: 20}}/>
-              <Text style={styles.posterName}>{item.posterName}</Text>
+        <View style={styles.fullScreenContainer}>
+          <SeePostHeader title={topicTitle} />
+          <View style={styles.postContainer}>
+              <View style={styles.postHeaderRow}>
+                  <View style={styles.profileSection}>
+                  <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={{width:40, borderRadius: 20}}/>
+                  <Text style={styles.posterName}>{item.posterName}</Text>
+                  </View>
+                  <View >
+                      <Text style={styles.hourText}>
+                          {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                      <Text style={styles.dateText}>
+                          {new Date(item.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </Text>
+                  </View>
               </View>
-              <View >
-                  <Text style={styles.hourText}>
-                      {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Text>
-                  <Text style={styles.dateText}>
-                      {new Date(item.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                  </Text>
-              </View>
+            <ScrollView 
+            style={{ flex: 1 }} 
+            contentContainerStyle={[styles.contentArea, { paddingBottom: insets.bottom }]} 
+            showsVerticalScrollIndicator={false}
+            >
+            {item.contentText && <Text style={styles.contentText}>{item.contentText}</Text>}
+            {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
+            </ScrollView>
           </View>
-        <ScrollView 
-        style={{ flex: 1 }} 
-        contentContainerStyle={[styles.contentArea, { paddingBottom: insets.bottom }]} 
-        showsVerticalScrollIndicator={false}
-        >
-        {item.contentText && <Text style={styles.contentText}>{item.contentText}</Text>}
-        {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
-        </ScrollView>
         </View>
     );
 }
@@ -96,6 +91,9 @@ const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
     backgroundColor: Colors.light.background[100],
+  },
+  postContainer: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 12,
     gap: 20,

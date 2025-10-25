@@ -1,24 +1,26 @@
 import { ResourcesFeedItem } from '@/types';
 import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
-import { useTopics } from '@/contexts';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { FileCard } from '@/components/FileCard';
 import { ResourceService } from '@/services/resourceService';
 import { useEffect, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { useTopicInfo } from '@/hooks/useTopicInfo';
 
 export default function SeeResourceScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams();
-  const { topicState } = useTopics();
-  const topicTitle = topicState?.title;
-  const resourceId = params.id as string;
-  const topicId = topicState?.id;
+  const route = useRoute();
   
+  const resourceId = (route.params as { resourceId: string })?.resourceId || '';
+  const topicId = (route.params as { topicId: string })?.topicId || '';
+  const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
+  const topicTitle = topicInfo?.data.title;
+
   const [item, setItem] = useState<ResourcesFeedItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function SeeResourceScreen() {
     };
 
     fetchResource();
-  }, [resourceId, topicState?.id]);
+  }, [resourceId, topicId]);
 
   if (loading) {
     return (
@@ -108,7 +110,7 @@ export default function SeeResourceScreen() {
                    file={file} 
                    resourceId={item.id}
                    fileId={file.id.toString()}
-                   topicId={topicState?.id}
+                   topicId={topicId}
                  />
                ))}
              </View>
@@ -121,7 +123,7 @@ export default function SeeResourceScreen() {
 const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[95],
     paddingHorizontal: 20,
     paddingTop: 12,
     gap: 20,

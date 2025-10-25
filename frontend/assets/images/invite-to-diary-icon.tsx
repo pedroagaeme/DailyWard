@@ -1,6 +1,11 @@
 import Svg, { Path, SvgProps } from "react-native-svg";
 import { Colors } from "@/constants/Colors";
-export const InviteToDiaryIcon = (props:SvgProps) => (
+
+interface InviteToDiaryIconProps extends SvgProps {
+  color?: string;
+}
+
+export const InviteToDiaryIcon = ({ color = Colors.light.text[30], ...props }: InviteToDiaryIconProps) => (
   <Svg
     width={24}
     height={24}
@@ -10,7 +15,7 @@ export const InviteToDiaryIcon = (props:SvgProps) => (
   >
     <Path
       d="M18.5 19.5H14.5"
-      stroke={Colors.light.text[30]}
+      stroke={color}
       strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"

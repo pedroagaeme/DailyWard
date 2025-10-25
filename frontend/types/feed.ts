@@ -14,6 +14,7 @@ export interface HomeFeedItem extends FeedItem {
 
 // Topic feed item for posts
 export interface TopicFeedItem extends FeedItem {
+  id: string;
   posterName: string;
   contentText: string;
   createdAt: string;
@@ -32,6 +33,7 @@ export interface ResourceFile {
 
 // Resources feed item
 export interface ResourcesFeedItem extends FeedItem {
+  id: string;
   title: string;
   resourceType?: string;
   description?: string;

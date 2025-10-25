@@ -35,7 +35,7 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
         setItems(validDates);
 
         setChosenDate({date:currentDate, ...toSegmentedDate(currentDate)});
-    }, []);
+    }, [topicCreationDate.toISO()]);
 
     const renderDateItem = ({item, index}:{item:DateItem, index:number}) => (
         <DateItemButton 
@@ -65,9 +65,6 @@ export function CustomDatePicker({chosenDate, setChosenDate, topicCreationDate}:
         }
     return (
         <View style={styles.wrapper}>
-            <View style={styles.monthYearContainer}>
-                <Text style={styles.monthYearText}>{chosenDate?.monthYear} </Text>
-            </View>
             <FlatList
                 ref={dateFlatListRef}
                 horizontal={true}
@@ -94,16 +91,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter_500Medium',
         fontSize: 16,
         color: Colors.light.text[30],
-    },
-    monthYearContainer: {
-        flexDirection:'row',
-        paddingHorizontal:16,
-        paddingBottom:4,
-    },
-    monthYearText: {
-        fontFamily: 'Inter_500Medium',
-        fontSize: 14,
-        color: Colors.light.text[30],
-        opacity:0.7,
     },
 })

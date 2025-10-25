@@ -3,7 +3,6 @@ import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedIte
 import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
 import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { useTopics } from '@/contexts';
 import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
 import { use, useMemo, useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
@@ -11,6 +10,7 @@ import { AddIcon } from '@/assets/images/add-icon';
 import { GoToRouteButton } from '@/components/GoToRouteButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
+import { HomeHeader } from '@/components/HomeHeader';
 
 export default function Home() {
   const [ModalVisible, setModalVisible] = useState(false);
@@ -33,7 +33,8 @@ export default function Home() {
   const topics = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <HomeHeader />
+      <View style={styles.topicsHeader}>
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Tópicos</Text>
           <Pressable onPress={() => setModalVisible(true)} style={styles.button}>
@@ -89,9 +90,8 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     gap:12,
   },
-  header: {
+  topicsHeader: {
     paddingHorizontal:16,
-    paddingTop:12,
     paddingBottom:0,
     gap:12,
   },

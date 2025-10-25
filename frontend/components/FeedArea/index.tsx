@@ -48,7 +48,6 @@ export function FeedArea({
       </View>
     );
   };
-  console.log('flatListProps');
   
   return (
     <MaskedView  style={{flex:1}} maskElement={<FadedOverlayContainer fadedEdges={fadedEdges} overlayHeight={overlayHeight}/>}>

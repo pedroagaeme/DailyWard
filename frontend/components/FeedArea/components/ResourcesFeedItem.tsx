@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native';
-import { router } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { ResourcesFeedItem } from '@/types';
 
@@ -35,11 +35,13 @@ const formatDate = (dateString?: string) => {
 };
 
 function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
+  const { topicId } = useGlobalSearchParams();
   const handlePress = () => {
     router.push({
-      pathname: '/topics/see-resource',
+      pathname: '/topics/[topicId]/resources/[resourceId]',
       params: {
-        id: item.id
+        resourceId: item.id,
+        topicId: topicId
       }
     });
   };
@@ -82,7 +84,7 @@ export const renderResourcesFeedItem: ListRenderItem<ResourcesFeedItem> = ({item
 
 const styles = StyleSheet.create({
   itemContainer: {
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[95],
     borderRadius: 15,
     padding: 20,
     marginBottom: 12,

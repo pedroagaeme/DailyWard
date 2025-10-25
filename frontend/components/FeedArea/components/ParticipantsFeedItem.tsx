@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   profilePic: {
+    backgroundColor: Colors.light.background[80],
     width: 44,
     height: 44,
     borderRadius: 24,
@@ -41,12 +42,6 @@ const styles = StyleSheet.create({
   fullName: {
     fontFamily: 'Inter_500Medium',
     fontSize: 17,
-    color: Colors.light.text[30],
-  },
-  lastMessage: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 13,
-    color: Colors.light.text[30],
-    opacity: 0.85,
+    color: Colors.light.text[5],
   },
 });

@@ -36,6 +36,7 @@ export interface CustomImageViewProps {
 export interface CustomImageProps extends Omit<FastImageProps, 'source'>, CustomImageViewProps {
   source: string | null | undefined;
   fallbackSource?: any; // For require() imports
+  expandable?: boolean; // Enable image expansion modal
 }
 
 export interface CustomProfileImageProps extends Omit<CustomImageProps, 'source'> {

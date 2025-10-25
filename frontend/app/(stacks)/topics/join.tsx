@@ -4,11 +4,9 @@ import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/contexts';
-
 interface JoinTopicForm {
   code: string;
 }
@@ -31,6 +29,7 @@ export default function JoinTopic() {
     <View style={styles.container}>
       <KeyboardAwareScrollView 
         enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
         style={styles.body} 
         contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}
       >

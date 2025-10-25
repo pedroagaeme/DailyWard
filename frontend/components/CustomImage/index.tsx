@@ -1,8 +1,13 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState} from 'react';
+import { View, StyleSheet, Pressable, Modal, Dimensions, StatusBar } from 'react-native';
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { DefaultProfileIcon } from './components/DefaultProfileIcon';
 import { CustomImageProps, CustomProfileImageProps } from '@/types';
+import { Colors } from '@/constants/Colors';
+import { Zoomable } from '@likashefqet/react-native-image-zoom';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 
 export function CustomImage({
   source,
@@ -10,8 +15,12 @@ export function CustomImage({
   containerStyle,
   showOverlay = true,
   overlayStyle,
+  expandable = true,
   ...imageProps
 }: CustomImageProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  
   const imageSource: FastImageProps['source'] = (source ? { 
     uri: source, 
     cache: FastImage.cacheControl.immutable,
@@ -19,13 +28,71 @@ export function CustomImage({
   const imageStyle = imageProps.style as any;
   const borderRadius = imageStyle?.borderRadius || containerStyle?.borderRadius || 0;
 
+  const handleImagePress = () => {
+    if (expandable && source) {
+      setModalVisible(true);
+    }
+  };
+
+
   return (
-    <View style={containerStyle}>
-      <FastImage source={imageSource} {...imageProps} />
-      {showOverlay && (
-        <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
+    <>
+      <View style={[containerStyle, !source && { pointerEvents: 'none' }]}>
+        {expandable && source ? (
+          <Pressable onPress={handleImagePress} style={{ flex: 1 }}>
+            <FastImage source={imageSource} {...imageProps} />
+            {showOverlay && (
+              <View style={[styles.overlay, { borderRadius }, overlayStyle, styles.overlayPressable]} />
+            )}
+          </Pressable>
+        ) : (
+          <>
+            <FastImage source={imageSource} {...imageProps} />
+            {showOverlay && (
+              <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
+            )}
+          </>
+        )}
+      </View>
+
+      {expandable && source && (
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          onRequestClose={() => setModalVisible(false)}
+          animationType="fade"
+          statusBarTranslucent={true}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <StatusBar barStyle="light-content" animated={true} />
+            <Pressable 
+              onPress={() => setModalVisible(false)} 
+              style={[styles.backButton, { top: insets.top + 16, left: 16 }]}
+            >
+              <GoBackIcon width={32} height={32} color="#FFFFFF" />
+            </Pressable>
+            <Pressable 
+              style={styles.zoomModalContainer}
+              onPress={() => setModalVisible(false)}
+            >
+              <Pressable onPress={(e) => e.stopPropagation()}>
+                <Zoomable
+                  minScale={1}
+                  maxScale={3}
+
+                >
+                  <FastImage 
+                    source={imageSource} 
+                    style={styles.zoomImage}
+                    resizeMode={FastImage.resizeMode.contain}
+                  />
+                </Zoomable>
+              </Pressable>
+            </Pressable>
+          </GestureHandlerRootView>
+        </Modal>
       )}
-    </View>
+    </>
   );
 }
 
@@ -75,6 +142,43 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    boxShadow: '0 -1px 4px rgba(0, 0, 0, 0.1) inset',
+    boxShadow: '0 0 4px rgba(0, 0, 0, 0.2) inset',
+    borderRadius: 16,
+  },
+  overlayPressable: {
+    pointerEvents: 'none',
+  },
+  imageModalContent: {
+    backgroundColor: Colors.light.background[100],
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  expandedImageContainer: {
+    position: 'relative',
+    width: '100%',
+    borderRadius: 16,
+  },
+  expandedImage: {
+    borderRadius: 16,
+    width: '100%',
+    height: undefined,
+    resizeMode: 'cover',
+  },
+  zoomModalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoomImage: {
+    width: Dimensions.get('screen').width,
+    height: Dimensions.get('screen').height,
+  },
+  backButton: {
+    position: 'absolute',
+    zIndex: 10,
+    padding: 8,
   },
 });

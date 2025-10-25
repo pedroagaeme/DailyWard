@@ -1,20 +1,22 @@
 import { FeedArea } from "@/components/FeedArea";
 import { renderResourcesFeedItem } from "@/components/FeedArea/components/ResourcesFeedItem";
-import { ResourcesFeedItem } from "@/types";
 import { Colors } from "@/constants/Colors";
-import { useTopics } from "@/contexts";
 import { useInfiniteResources } from "@/hooks/useInfiniteResources";
 import { AddIcon } from "@/assets/images/add-icon";
 import { router } from "expo-router";
 import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
-import { useCallback, useMemo } from "react";
-import { useFocusEffect } from "expo-router";
+import { useMemo } from "react";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
-
+import { ResourcesHeader } from "@/components/ResourcesHeader";
+import { useLocalSearchParams, useGlobalSearchParams } from 'expo-router';
+import { useTopicInfo } from "@/hooks/useTopicInfo";
 
 export default function Resources() {
-    const { topicState } = useTopics();
-    const topicId = topicState?.id;
+    const localParams = useLocalSearchParams();
+    const globalParams = useGlobalSearchParams();
+    const topicId = globalParams.topicId as string || '';
+    const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
+    const topicTitle = topicInfo?.data.title;
 
     const {
         data,
@@ -36,10 +38,10 @@ export default function Resources() {
     
     return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <ResourcesHeader title={topicTitle || 'Carregando...'} />
+      <View style={styles.sectionHeader}>
         <View style={styles.row}>
-          <Text style={styles.sectionTitle}>Recursos</Text>
-          <Pressable onPress={() => router.push('/topics/add-resource')} style={styles.button}>
+          <Pressable onPress={() => router.push({pathname:'/topics/[topicId]/resources/add-resource', params:{topicId:topicId}})} style={styles.button}>
             <AddIcon width={32} height={32}/>
           </Pressable>
         </View>
@@ -49,7 +51,7 @@ export default function Resources() {
         renderItem={renderResourcesFeedItem}
         fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
-        additionalPadding={{top: 0, bottom: 16}}
+        additionalPadding={{top: 16, bottom: 16}}
         navbarInset={true}
         refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
         onEndReachedThreshold={0.2}
@@ -73,13 +75,11 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems:'stretch',
     justifyContent:'space-between',
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[90],
     overflow: 'visible',
-    gap:16,
   },
-  header: {
+  sectionHeader: {
     gap:24,
-    paddingTop:8,
     paddingBottom:8,
   },
   row: {

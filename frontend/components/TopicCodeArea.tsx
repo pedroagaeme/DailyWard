@@ -1,11 +1,8 @@
 import { InviteCodeIcon } from "@/assets/images/invite-code-icon";
 import { Colors } from "@/constants/Colors";
-import { useTopics } from "@/contexts";
 import { View, StyleSheet, Text } from "react-native";
 
-export function TopicCodeArea() {
-    const { topicState } = useTopics();
-    const code = topicState?.code;
+export function TopicCodeArea({ code }: { code: string }) {
     return (
         <View style={[styles.card, styles.cardShadow]}>
             <InviteCodeIcon height={70} width={70} />
@@ -27,7 +24,7 @@ const styles = StyleSheet.create({
         paddingVertical:24,
         paddingRight:32,
         gap:12,
-        backgroundColor: Colors.light.background[100],
+        backgroundColor: Colors.light.background[95],
         borderRadius: 20,
     },
     cardShadow: {
@@ -37,8 +34,8 @@ const styles = StyleSheet.create({
             height: 2,
         },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowRadius: 2,
+        elevation: 3,
     },
     textSection: {
         gap:8,

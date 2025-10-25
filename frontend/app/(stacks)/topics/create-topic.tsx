@@ -11,7 +11,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/contexts';
 import { CustomImage } from '@/components/CustomImage';
 
 interface CreateTopicForm {
@@ -61,7 +60,12 @@ export default function CreateTopic() {
 
   return (
     <View style={styles.container}>
-      <KeyboardAwareScrollView enableOnAndroid={true}style={styles.body} contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <KeyboardAwareScrollView 
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        style={styles.body} 
+        contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}
+      >
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />

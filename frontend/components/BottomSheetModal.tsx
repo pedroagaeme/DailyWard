@@ -24,7 +24,7 @@ export function BottomSheetModal({
 
     useEffect(() => {
         if (ModalVisible) {
-            slideAnim.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.cubic) });
+            slideAnim.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.ease) });
         }
     }, [ModalVisible]);
 

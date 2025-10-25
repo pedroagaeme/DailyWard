@@ -1,15 +1,15 @@
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
+import { UploadFileIcon } from '@/assets/images/upload-file-icon';
 import * as DocumentPicker from 'expo-document-picker';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { ResourceService } from '@/services/resourceService';
-import { router } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useTopics } from '@/contexts';
 import { FileCard } from '@/components/FileCard';
 
 interface CreateResourceForm {
@@ -18,7 +18,8 @@ interface CreateResourceForm {
 }
 
 export default function AddResource() {
-  const { topicState } = useTopics();
+  const { topicId: topicIdParam } = useGlobalSearchParams();
+  const topicId = topicIdParam as string || '';
   const { control, handleSubmit } = useForm<CreateResourceForm>();
   const insets = useSafeAreaInsets();
   const [files, setFiles] = useState<any[]>([]);
@@ -54,12 +55,12 @@ export default function AddResource() {
   });
 
   const onSubmit = async (data: CreateResourceForm) => {
-    if (!topicState?.id) {
+    if (!topicId) {
       Alert.alert('Error', 'No topic selected');
       return;
     }
 
-    const result = await ResourceService.createResource(topicState.id, {
+    const result = await ResourceService.createResource(topicId, {
       title: data.title,
       description: data.description,
       resourceType: files.length > 0 ? 'file' : 'announcement',
@@ -124,6 +125,7 @@ export default function AddResource() {
           <Text style={styles.label}>Adicionar Arquivos</Text>
           <Pressable style={styles.uploadArea} onPress={pickDocuments}>
             <View style={styles.uploadContent}>
+              <UploadFileIcon width={48} height={48} color={Colors.light.primary} />
               <Text style={styles.uploadCta}>Clique para adicionar arquivos</Text>
               <Text style={styles.uploadHint}>Você pode selecionar múltiplos arquivos</Text>
             </View>
@@ -203,18 +205,18 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 120,
   },
   uploadContent: {
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 4,
   },
   uploadCta: {
+    marginTop: 12,
     fontFamily: 'Inter_600SemiBold',
     color: Colors.light.text[5],
   },
   uploadHint: {
+    marginTop: 4,
     fontFamily: 'Inter_400Regular',
     color: Colors.light.text[30],
     fontSize: 12,

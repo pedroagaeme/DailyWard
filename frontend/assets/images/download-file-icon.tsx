@@ -1,6 +1,11 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
-export const DownloadFileIcon = (props: SvgProps) => (
+
+interface DownloadFileIconProps extends SvgProps {
+  color?: string;
+}
+
+export const DownloadFileIcon = ({ color = "#557fad", ...props }: DownloadFileIconProps) => (
   <Svg
     width={48}
     height={48}
@@ -10,7 +15,7 @@ export const DownloadFileIcon = (props: SvgProps) => (
   >
     <Path
       d="M42 30V38C42 39.0609 41.5786 40.0783 40.8284 40.8284C40.0783 41.5786 39.0609 42 38 42H10C8.93913 42 7.92172 41.5786 7.17157 40.8284C6.42143 40.0783 6 39.0609 6 38V30M14 20L24 30M24 30L34 20M24 30V6"
-      stroke="#557fad"
+      stroke={color}
       strokeWidth={4}
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -1,14 +1,13 @@
 import { Colors } from '@/constants/Colors';
-import { useTopics } from '@/contexts';
 import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CustomImage } from '@/components/CustomImage';
 import { HomeFeedItem } from '@/types';
+import { router } from 'expo-router';
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
-  const { enterTopic } = useTopics();
 
   const handlePress = () => {
-    enterTopic!(item.code, item.id, item.title, item.createdAt);
+    router.push({pathname: '/topics/[topicId]/tabs', params: {topicId: item.id}});
   };
   
   return(

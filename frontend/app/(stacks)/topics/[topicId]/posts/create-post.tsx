@@ -4,8 +4,7 @@ import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { PostService } from '@/services/postService';
 import { useAuth } from '@/contexts';
-import { useTopics } from '@/contexts';
-import { router } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View, TextInput } from 'react-native';
@@ -13,12 +12,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 
 export default function CreatePostPage() {
-  const { topicState } = useTopics();
   const { authState } = useAuth();
   const { control, handleSubmit } = useForm();
   const  insets  = useSafeAreaInsets(); 
   const [image, setImage] = useState<string | null>(null);
-  const topicId = topicState?.id;
+  const params = useGlobalSearchParams();
+  const topicId = params.topicId as string | undefined;
   
   const onSubmit = async (data:any) => {
     if (!topicId) {

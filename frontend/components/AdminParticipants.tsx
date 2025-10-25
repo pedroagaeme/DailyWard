@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { View, StyleSheet, Text, FlatList, Dimensions} from 'react-native';
 import { CustomProfileImage } from './CustomImage';
-import { ParticipantsFeedItem } from '@/components/FeedArea/components/ParticipantsFeedItem';
+import { ParticipantsFeedItem } from '@/types';
 
 export function AdminParticipants({participants}: {participants: ParticipantsFeedItem[]}) {
     const windowWidth = Dimensions.get('window').width;
@@ -47,9 +47,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 20,
         letterSpacing: 0.2,
-        color: Colors.light.text[15]
+        color: Colors.light.text[5]
     },
     profilePic: {
+        backgroundColor: Colors.light.background[80],
         borderRadius: 24,
         aspectRatio: 1,
     }
