@@ -37,7 +37,6 @@ function ParticipantsContent({participants, code}: {participants: ParticipantsFe
               <Text style={styles.subsectionTitle}>Todos os Participantes</Text>
             </View>
         </View>
-        
       </View>
     </ScrollView>
   );
@@ -117,7 +116,6 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_600SemiBold',
     fontSize: 24,
     lineHeight: 32,
-    marginBottom: 4,
     color: Colors.light.text[5],
   },
   row: {
@@ -125,6 +123,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     gap:8,
+    marginBottom: 8,
   },
   subsectionTitle: {
     fontFamily:'Inter_600SemiBold',

@@ -8,19 +8,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { DateItem } from '@/components/CustomDatePicker/components/DateItem';
 import { DateTime } from 'luxon';
+import { IconButton } from '@/components/IconButton';
+import { TopicBottomSheet } from './TopicBottomSheet';
 
 interface PostsHeaderProps {
   title: string;
   chosenDate: DateItem;
   setChosenDate: React.Dispatch<React.SetStateAction<DateItem>>;
   topicCreationDate?: string;
+  topicId?: string;
 }
 
 export const PostsHeader = ({ 
   title, 
   chosenDate, 
   setChosenDate, 
-  topicCreationDate 
+  topicCreationDate,
+  topicId
 }: PostsHeaderProps) => {
   const navigation = useNavigation();
   const { top: topPadding } = useSafeAreaInsets();
@@ -32,9 +36,10 @@ export const PostsHeader = ({
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-        <Pressable onPress={openDrawer} style={styles.drawerButton}>
+        <IconButton onPress={openDrawer}
+        borders={{left: true, top: true}} outerboxRadius={10} innerSize={24} style={{marginLeft: 4}} >
           <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
-        </Pressable>
+        </IconButton>
         
         <View style={styles.titleContainer}>
           <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
@@ -45,7 +50,9 @@ export const PostsHeader = ({
           </Text>
         </View>
         
-        <View style={styles.placeholder} />
+        {topicId && (
+          <TopicBottomSheet topicId={topicId} buttonStyle={{marginRight: 4}} />
+        )}
       </View>
       <View style={styles.datePickerContainer}>
         <CustomDatePicker 
@@ -67,23 +74,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal:16,
     backgroundColor: Colors.light.background[100],
-  },
-  drawerButton: {
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   titleContainer: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 4,
+    gap: 2,
+    marginHorizontal: 20,
   },
   placeholder: {
-    width: 40,
-    height: 40,
+    width: 28,
+    height: 28,
   },
   titleText: {
     fontFamily: 'Inter_700Bold',

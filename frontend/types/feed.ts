@@ -20,6 +20,7 @@ export interface TopicFeedItem extends FeedItem {
   createdAt: string;
   posterProfilePicUrl: string;
   contentPicUrl: string;
+  posterId?: string;
 }
 
 // Resource file interface
@@ -41,6 +42,7 @@ export interface ResourcesFeedItem extends FeedItem {
   posterProfilePicUrl?: string;
   createdAt?: string;
   files?: ResourceFile[];
+  posterId?: string;
 }
 
 // Participants feed item

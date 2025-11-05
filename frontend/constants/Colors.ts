@@ -21,7 +21,7 @@ export const Colors = {
       30: '#475569',  
     },
     primary: '#557fad',
-    secondary: '#F0F7FF',
+    secondary: '#5879a7',
     accent: '#E1EFFF',
     error: '#ba1a1a',
   },

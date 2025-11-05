@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
-from .serializers import UserRegisterSerializer, UserLoginSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserInfoSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .utils import send_code_to_user
@@ -61,3 +61,28 @@ class LoginUserView(GenericAPIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UserInfoView(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserInfoSerializer
+
+    def get(self, request):
+        serializer = self.serializer_class(request.user)
+        return Response({
+            'data': serializer.data,
+            'message': 'user info retrieved successfully'
+        }, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        serializer = self.serializer_class(
+            request.user, 
+            data=request.data, 
+            partial=True
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({
+                'data': serializer.data,
+                'message': 'user info updated successfully'
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

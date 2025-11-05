@@ -5,24 +5,48 @@ import { Colors } from '@/constants/Colors';
 import { ResourceService } from '@/services/resourceService';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { FileCard } from '@/components/FileCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
 
-interface CreateResourceForm {
+interface EditResourceForm {
   title: string;
   description: string;
 }
 
-export default function AddResource() {
-  const { topicId: topicIdParam } = useGlobalSearchParams();
+export default function EditResource() {
+  const { topicId: topicIdParam, resourceId: resourceIdParam } = useGlobalSearchParams();
   const topicId = topicIdParam as string || '';
-  const { control, handleSubmit } = useForm<CreateResourceForm>();
+  const resourceId = resourceIdParam as string || '';
+  const { control, handleSubmit, reset } = useForm<EditResourceForm>();
   const insets = useSafeAreaInsets();
   const [files, setFiles] = useState<any[]>([]);
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch existing resource data
+  useEffect(() => {
+    const fetchResource = async () => {
+      if (!topicId || !resourceId) return;
+      
+      setIsLoading(true);
+      const resource = await ResourceService.fetchResourceById(topicId, resourceId);
+      
+      if (resource) {
+        reset({ 
+          title: resource.title,
+          description: resource.description || ''
+        });
+        setExistingFiles(resource.files || []);
+      }
+      setIsLoading(false);
+    };
+
+    fetchResource();
+  }, [topicId, resourceId, reset]);
 
   const pickDocuments = async () => {
     try {
@@ -44,6 +68,10 @@ export default function AddResource() {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const removeExistingFile = (index: number) => {
+    setExistingFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   // Convert picked files to ResourceFile format for FileCard
   const convertToResourceFile = (file: any, index: number) => ({
     id: index,
@@ -54,30 +82,39 @@ export default function AddResource() {
     created_at: new Date().toISOString(),
   });
 
-  const onSubmit = async (data: CreateResourceForm) => {
-    if (!topicId) {
-      Alert.alert('Error', 'No topic selected');
+  const onSubmit = async (data: EditResourceForm) => {
+    if (!topicId || !resourceId) {
+      Alert.alert('Error', 'No topic or resource ID');
       return;
     }
 
-    const result = await ResourceService.createResource(topicId, {
+    const result = await ResourceService.updateResource(topicId, resourceId, {
       title: data.title,
       description: data.description,
-      resourceType: files.length > 0 ? 'file' : 'announcement',
-      files: files.length > 0 ? files : undefined
+      resourceType: (existingFiles.length > 0 || files.length > 0) ? 'file' : 'announcement',
+      files: files.length > 0 ? files : undefined,
+      existingFileIds: existingFiles.map(f => f.id)
     });
     
-    if (result && result.status === 201) {
+    if (result && (result.status === 200 || result.status === 201)) {
       router.back();
     } else {
-      console.error('Error creating resource:', result);
-      Alert.alert('Error', 'Failed to create resource');
+      console.error('Error updating resource:', result);
+      Alert.alert('Error', 'Failed to update resource');
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <ScreenHeader title="Adicionar Recurso" />
+      <ScreenHeader title="Editar Recurso" />
       <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingBottom: insets.bottom }}>
 
         <Controller
@@ -116,24 +153,49 @@ export default function AddResource() {
         />
 
         <View style={styles.fileUploadBlock}>
-          <Text style={styles.label}>Adicionar Arquivos</Text>
+          <Text style={styles.label}>Arquivos</Text>
+          
+          {/* Upload new files */}
           <Pressable style={styles.uploadArea} onPress={pickDocuments}>
             <View style={styles.uploadContent}>
               <UploadFileIcon width={40} height={40} color={Colors.light.primary} />
-              <Text style={styles.uploadCta}>Clique para adicionar arquivos</Text>
+              <Text style={styles.uploadCta}>Adicionar novos arquivos</Text>
               <Text style={styles.uploadHint}>Você pode selecionar múltiplos arquivos</Text>
             </View>
           </Pressable>
           
-          {files.length > 0 && (
+          {/* All Files - Combined */}
+          {(existingFiles.length > 0 || files.length > 0) && (
             <View style={styles.filesList}>
-              <Text style={styles.filesListTitle}>Arquivos selecionados ({files.length})</Text>
+              <Text style={styles.filesListTitle}>Arquivos selecionados ({existingFiles.length + files.length})</Text>
+              {/* Existing Files */}
+              {existingFiles.map((file, index) => (
+                <View key={`existing-${index}`} style={styles.fileCardContainer}>
+                  <FileCard 
+                    file={file} 
+                    onPress={() => {}}
+                  />
+                  <Pressable 
+                    style={styles.removeButton}
+                    onPress={() => removeExistingFile(index)}
+                  >
+                    <Text style={styles.removeButtonText}>×</Text>
+                  </Pressable>
+                </View>
+              ))}
+              {/* New Files */}
               {files.map((file, index) => (
-                <View key={index} style={styles.fileCardContainer}>
+                <View key={`new-${index}`} style={styles.fileCardContainer}>
                   <FileCard 
                     file={convertToResourceFile(file, index)} 
-                    onPress={() => {}} // Disable file opening during upload
+                    onPress={() => {}}
                   />
+                  <Pressable 
+                    style={styles.removeButton}
+                    onPress={() => removeFile(index)}
+                  >
+                    <Text style={styles.removeButtonText}>×</Text>
+                  </Pressable>
                 </View>
               ))}
             </View>
@@ -142,7 +204,7 @@ export default function AddResource() {
 
         <View style={styles.footer}>
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
-            <Text style={styles.buttonText}>Enviar</Text>
+            <Text style={styles.buttonText}>Salvar</Text>
           </Pressable>
         </View>
       </KeyboardAwareScrollView>
@@ -177,6 +239,7 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 8,
   },
   uploadContent: {
     justifyContent: 'center',
@@ -259,3 +322,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

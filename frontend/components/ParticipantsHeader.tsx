@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { IconButton } from '@/components/IconButton';
 
 interface ParticipantsHeaderProps {
   title: string;
@@ -20,9 +21,9 @@ export const ParticipantsHeader = ({ title }: ParticipantsHeaderProps) => {
 
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-      <Pressable onPress={() => openDrawer()} style={styles.drawerButton}>
+      <IconButton onPress={() => openDrawer()} style={{marginLeft: 4}}>
         <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
-      </Pressable>
+      </IconButton>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
             {title}
@@ -40,20 +41,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
-  drawerButton: {
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   titleContainer: {
-    flex: 1,
+    flex: 1,  
     alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 2,
+    marginHorizontal: 20,
   },
   placeholder: {
-    width: 40,
-    height: 40,
+    width: 28,
+    height: 28,
   },
   titleText: {
     fontFamily: 'Inter_700Bold',

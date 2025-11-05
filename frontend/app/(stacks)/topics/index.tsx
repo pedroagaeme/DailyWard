@@ -2,15 +2,17 @@ import { FeedArea } from '@/components/FeedArea';
 import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedItem';
 import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
-import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
-import { use, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { AddIcon } from '@/assets/images/add-icon';
-import { GoToRouteButton } from '@/components/GoToRouteButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { HomeHeader } from '@/components/HomeHeader';
+import { IconButton } from '@/components/IconButton';
+import { BottomSheetButton } from '@/components/BottomSheetButton';
+import { router } from 'expo-router';
 
 export default function Home() {
   const [ModalVisible, setModalVisible] = useState(false);
@@ -37,9 +39,13 @@ export default function Home() {
       <View style={styles.topicsHeader}>
         <View style={styles.row}>
           <Text style={styles.feedTitleText}>Seus Tópicos</Text>
-          <Pressable onPress={() => setModalVisible(true)} style={styles.button}>
+          <IconButton 
+          onPress={() => setModalVisible(true)} 
+          outerboxRadius={10} 
+          innerSize={24}
+          style={styles.button}>
             <AddIcon width={32} height={32}/>
-          </Pressable>
+          </IconButton>
         </View>
       </View>
       <FeedArea 
@@ -62,23 +68,18 @@ export default function Home() {
           ) : null
         }
       />
-      <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible} children={
-        <View style={[styles.modal, {paddingBottom: insets.bottom + 20}]}>
-          <GoToRouteButton
-            route="/topics/join"
-            style={{}}
-            
-          >
-            <Text style={styles.modalText}>Entrar em Tópico</Text>
-          </GoToRouteButton>
-          <GoToRouteButton
-            route="/topics/create-topic"
-            style={{}}
-          >
-            <Text style={styles.modalText}>Criar Tópico</Text>
-          </GoToRouteButton>
+      <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible}>
+        <View style={[styles.modal, {paddingBottom: insets.bottom + 8, paddingTop: 8, paddingHorizontal: 20}]}>
+          <BottomSheetButton
+            onPress={() => router.push('/topics/join')}
+            label="Entrar em Tópico"
+          />
+          <BottomSheetButton
+            onPress={() => router.push('/topics/create-topic')}
+            label="Criar Tópico"
+          />
         </View>
-      }/>
+      </BottomSheetModal>
     </View>
   );
 };
@@ -115,22 +116,15 @@ const styles = StyleSheet.create({
   },
   modal: {
     backgroundColor: Colors.light.background[100],
-    padding: 24,
-    gap: 28,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  modalText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 18,
-    color: Colors.light.text[15],
-  },
   button: {
-    flexDirection: 'row',
     backgroundColor: Colors.light.primary,
-    padding: 8,
-    gap: 4,
-    borderRadius: 24,
+    width: 44,
+    height: 44,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
   },
 });

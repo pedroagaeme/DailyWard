@@ -2,9 +2,7 @@ import { FeedArea } from "@/components/FeedArea";
 import { renderResourcesFeedItem } from "@/components/FeedArea/components/ResourcesFeedItem";
 import { Colors } from "@/constants/Colors";
 import { useInfiniteResources } from "@/hooks/useInfiniteResources";
-import { AddIcon } from "@/assets/images/add-icon";
-import { router } from "expo-router";
-import { ActivityIndicator, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, RefreshControl, StyleSheet, View } from "react-native";
 import { useMemo } from "react";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import { ResourcesHeader } from "@/components/ResourcesHeader";
@@ -17,7 +15,6 @@ export default function Resources() {
     const topicId = globalParams.topicId as string || '';
     const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
     const topicTitle = topicInfo?.data.title;
-
     const {
         data,
         isLoading,
@@ -39,13 +36,6 @@ export default function Resources() {
     return (
     <View style={styles.container}>
       <ResourcesHeader title={topicTitle || 'Carregando...'} />
-      <View style={styles.sectionHeader}>
-        <View style={styles.row}>
-          <Pressable onPress={() => router.push({pathname:'/topics/[topicId]/resources/add-resource', params:{topicId:topicId}})} style={styles.button}>
-            <AddIcon width={32} height={32}/>
-          </Pressable>
-        </View>
-      </View>
       <FeedArea
         data={resources}
         renderItem={renderResourcesFeedItem}
@@ -77,36 +67,5 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     backgroundColor: Colors.light.background[90],
     overflow: 'visible',
-  },
-  sectionHeader: {
-    gap:24,
-    paddingBottom:8,
-  },
-  row: {
-    paddingHorizontal:16,
-    width:'100%',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center',
-  },
-  contentText: {
-    fontFamily:'Inter_500Medium',
-    fontSize: 20,
-    lineHeight:20,
-    color: Colors.light.text[5],
-  },
-  sectionTitle: {
-    fontFamily:'Inter_600SemiBold',
-    fontSize: 24,
-    lineHeight: 32,
-    color: Colors.light.text[5],
-  },
-  button: {
-    flexDirection: 'row',
-    backgroundColor: Colors.light.primary,
-    padding: 8,
-    gap: 4,
-    borderRadius: 24,
-    alignItems: 'center',
   },
 });

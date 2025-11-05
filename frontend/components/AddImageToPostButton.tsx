@@ -2,6 +2,7 @@ import { AddImageToPostIcon } from "@/assets/images/add-image-to-post";
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
+import { IconButton } from '@/components/IconButton';
 
 export function AddImageToPostButton({setImage}:{setImage:React.Dispatch<React.SetStateAction<string | null>>}) {
     const handleButtonPress = async () => {
@@ -17,14 +18,10 @@ export function AddImageToPostButton({setImage}:{setImage:React.Dispatch<React.S
         }
     };
     return (
-        <Pressable style={styles.addImageButton} onPress={handleButtonPress}>
+        <IconButton onPress={handleButtonPress}>
             <AddImageToPostIcon width={24} height={24} />
-        </Pressable>
+        </IconButton>
     );
 }
 
-const styles = StyleSheet.create({
-    addImageButton: {
-        padding: 8,
-    },
-});
+const styles = StyleSheet.create({});

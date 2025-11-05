@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 20,
         letterSpacing: 0.2,
-        color: Colors.light.text[5]
+        color: Colors.light.text[15]
     },
     profilePic: {
         backgroundColor: Colors.light.background[80],

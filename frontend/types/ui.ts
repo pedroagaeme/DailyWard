@@ -28,7 +28,6 @@ export interface SegmentedDate {
 
 // Custom image interfaces
 export interface CustomImageViewProps {
-  containerStyle?: ViewStyle;
   showOverlay?: boolean;
   overlayStyle?: ViewStyle;
 }

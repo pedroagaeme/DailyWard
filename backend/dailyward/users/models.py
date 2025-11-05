@@ -13,7 +13,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_pic_url = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
     USERNAME_FIELD = "email"  
     REQUIRED_FIELDS = ["first_name", "last_name"]

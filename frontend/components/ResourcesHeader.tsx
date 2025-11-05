@@ -5,6 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { router, useGlobalSearchParams } from 'expo-router';
+import { AddIcon } from '@/assets/images/add-icon';
+import { IconButton } from '@/components/IconButton';
 
 interface ResourcesHeaderProps {
   title: string;
@@ -13,23 +16,33 @@ interface ResourcesHeaderProps {
 export const ResourcesHeader = ({ title }: ResourcesHeaderProps) => {
   const { top: topPadding } = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { topicId } = useGlobalSearchParams();
 
   const openDrawer = () => {
       navigation.dispatch(DrawerActions.openDrawer());
   };
 
+  const handleAddResource = () => {
+    router.push({
+      pathname: '/topics/[topicId]/resources/add-resource',
+      params: { topicId: topicId }
+    });
+  };
+
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-      <Pressable onPress={() => openDrawer()} style={styles.drawerButton}>
+      <IconButton onPress={() => openDrawer()} borders={{left: true, top: true}} outerboxRadius={10} innerSize={24} style={{marginLeft: 4}} >
         <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
-      </Pressable>
+      </IconButton>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>
         <Text style={styles.sectionText}>Recursos</Text>
       </View>
-      <View style={styles.placeholder} />
+      <IconButton onPress={handleAddResource} style={styles.addButton} outerboxRadius={8} innerSize={28} >
+        <AddIcon width={28} height={28} color="#FFFFFF" />
+      </IconButton>
     </View>
   );
 };
@@ -40,20 +53,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
-  drawerButton: {
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   titleContainer: {
+    marginLeft: 36,
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 2,
+    marginHorizontal: 20,
   },
-  placeholder: {
-    width: 40,
-    height: 40,
+  addButton: {
+    backgroundColor: Colors.light.primary,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
   },
   titleText: {
     fontFamily: 'Inter_700Bold',

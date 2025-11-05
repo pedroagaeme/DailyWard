@@ -1,48 +1,79 @@
 import { ResourcesFeedItem } from '@/types';
-import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { FileCard } from '@/components/FileCard';
 import { ResourceService } from '@/services/resourceService';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { useTopicInfo } from '@/hooks/useTopicInfo';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
+import { IconButton } from '@/components/IconButton';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { calculatePermissions } from '@/utils/permissions';
 
 export default function SeeResourceScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const route = useRoute();
+  const queryClient = useQueryClient();
   
   const resourceId = (route.params as { resourceId: string })?.resourceId || '';
   const topicId = (route.params as { topicId: string })?.topicId || '';
   const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
   const topicTitle = topicInfo?.data.title;
+  const { profile } = useUserProfile();
 
-  const [item, setItem] = useState<ResourcesFeedItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchResource = async () => {
-      if (!resourceId || !topicId) return;
-      
-      try {
-        setLoading(true);
-        const resource = await ResourceService.fetchResourceById(topicId, resourceId);
-        setItem(resource);
-      } catch (err) {
-        console.error('Error fetching resource:', err);
-        setError('Erro ao carregar recurso');
-      } finally {
-        setLoading(false);
+  const { data: item, isLoading: loading, isError, error, refetch } = useQuery({
+    queryKey: ['resource', topicId, resourceId],
+    queryFn: () => ResourceService.fetchResourceById(topicId, resourceId),
+    enabled: !!resourceId && !!topicId,
+  });
+
+  useRefreshOnFocus(refetch);
+
+  const { canEdit, canDelete } = calculatePermissions(
+    item?.posterId,
+    profile?.id ?? null,
+    topicInfo?.data.isLoggedInUserAdmin ?? false
+  );
+
+  const handleEllipsisPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleEditResource = () => {
+    setModalVisible(false);
+    router.push({
+      pathname: '/topics/[topicId]/resources/edit-resource',
+      params: {
+        topicId: topicId,
+        resourceId: resourceId
       }
-    };
+    });
+  };
 
-    fetchResource();
-  }, [resourceId, topicId]);
+  const handleDeleteResource = async (): Promise<boolean> => {
+    if (!topicId || !resourceId) return false;
+    
+    const result = await ResourceService.deleteResource(topicId, resourceId);
+    
+    if (result && (result.status === 200 || result.status === 204)) {
+      // Invalidate resources queries to refresh the feed
+      queryClient.invalidateQueries({ queryKey: ['resources'] });
+      router.back();
+      return true;
+    }
+    return false;
+  };
 
   if (loading) {
     return (
@@ -52,31 +83,41 @@ export default function SeeResourceScreen() {
     );
   }
 
-  if (error || !item) {
+  if (isError || !item) {
     return (
       <View style={[styles.fullScreenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text>{error || 'Recurso não encontrado.'}</Text>
+        <Text>{error ? 'Erro ao carregar recurso' : 'Recurso não encontrado.'}</Text>
       </View>
     );
   }
 
 
   return (
-      <View style={[styles.fullScreenContainer, { paddingTop: insets.top}]}>
-        <View style={styles.headerRow}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
-          </Pressable>
-          <Text style={styles.sectionTitle}>{topicTitle}</Text>
-          <View style={{ width: 24, height: 24 }} />
-        </View>
+      <View style={styles.fullScreenContainer}>
+        <ScreenHeader 
+          title={topicTitle || ''} 
+          rightComponent={
+            canDelete ? (
+              <IconButton 
+                onPress={handleEllipsisPress}
+                borders={{right: true}} 
+                outerboxRadius={10} 
+                innerSize={24}
+              >
+                <VerticalEllipsisIcon width={24} height={24} color={Colors.light.text[5]} />
+              </IconButton>
+            ) : (
+              <View style={{ width: 24, height: 24 }} />
+            )
+          }
+        />
         
         <View style={styles.resourceHeaderRow}>
             <View style={styles.profileSection}>
             <CustomProfileImage 
               source={item.posterProfilePicUrl}
               fullName={item.posterName || 'Usuário'}
-              style={{width: 40, borderRadius: 20}}
+              style={styles.profilePic}
             />
             <Text style={styles.posterName}>{item.posterName || 'Usuário'}</Text>
             </View>
@@ -116,6 +157,18 @@ export default function SeeResourceScreen() {
              </View>
            )}
       </ScrollView>
+
+      <EditDeleteBottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onEdit={handleEditResource}
+        onDelete={handleDeleteResource}
+        canEdit={canEdit}
+        editLabel="Editar recurso"
+        deleteLabel="Deletar recurso"
+        deleteTitle="Deletar Recurso"
+        deleteMessage="Tem certeza que deseja deletar este recurso? Esta ação não pode ser desfeita."
+      />
       </View>
   );
 }
@@ -124,45 +177,25 @@ const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
     backgroundColor: Colors.light.background[95],
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    gap: 20,
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: Colors.light.background[90],
+  },
   resourceHeaderRow: {
     flexDirection: 'row',
     justifyContent:'space-between',
     alignItems: 'center',
     marginBottom: 4,
-  },
-  sectionTitle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text[5],
-    marginTop: 0,
-    marginBottom: 0,
-    textAlign: 'center',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    marginBottom: 16,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 12,
   },
   profileSection: {
     flexDirection: 'row',
@@ -177,6 +210,9 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     gap: 20,
+    paddingTop: 20,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
   },
   resourceHeader: {
     gap: 12,
@@ -208,7 +244,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   filesContainer: {
-    marginTop: 12,
     gap: 12,
   },
   filesTitle: {

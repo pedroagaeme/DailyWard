@@ -28,6 +28,12 @@ class PostViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated(), IsAuthorOrTopicAdmin()]
         return [permissions.IsAuthenticated()]
     
+    def get_serializer_context(self):
+        # Pass request to serializer context for permission checks.
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
     def get_queryset(self):
         # filter posts by topic from URL
         topic_id = self.kwargs.get('topic_pk')          
@@ -41,6 +47,12 @@ class PostViewSet(viewsets.ModelViewSet):
 class PostsByDayAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTopicParticipant]
     serializer_class = PostSerializer
+
+    def get_serializer_context(self):
+        # Pass request to serializer context for permission checks.
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     def get_queryset(self):
         topic_pk = self.kwargs.get('topic_pk')

@@ -19,6 +19,12 @@ class TopicViewSet(viewsets.ModelViewSet):
         # Show topics where user is a participant
         return Topic.objects.filter(participant__user=user).order_by('-created_at')
 
+    def get_serializer_context(self):
+        """Pass request to serializer context for permission checks."""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
     def perform_create(self, serializer):
         code = generate_topic_code()
         topic = serializer.save(created_by=self.request.user, code=code)
@@ -50,3 +56,13 @@ def join_topic_by_code(request):
         return Response({'detail': 'Joined topic successfully.'})
     else:
         return Response({'detail': 'You are already a participant in this topic.'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def leave_topic(request, topic_pk):
+    try:
+        participant = Participant.objects.get(user=request.user, topic=topic_pk)
+    except Participant.DoesNotExist:
+        return Response({'detail': 'You are not a participant of this topic.'}, status=status.HTTP_404_NOT_FOUND)
+    participant.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

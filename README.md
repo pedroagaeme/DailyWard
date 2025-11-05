@@ -3,35 +3,24 @@
 ## Visão Geral
 DailyWard é um aplicativo desenvolvido para facilitar a comunicação, organização e compartilhamento de recursos entre usuários em ambientes colaborativos. O projeto utiliza uma arquitetura moderna, integrando backend em Django REST Framework e frontend em React Native com Expo Router.
 
-## Principais Pontos do Desenvolvimento
+## Principais Frameworks e Bibliotecas
 
-### 1. Backend
-- **Framework:** Django REST Framework
-- **Banco de Dados:** PostgreSQL
-- **Autenticação:** Customização do modelo de usuário, autenticação JWT
-- **APIs:** Endpoints para posts, recursos, tópicos e usuários
-- **Permissões:** Controle de acesso por permissões customizadas
-- **Docker:** Contêinerização do backend para ambientes de desenvolvimento e produção
-- **Gerenciamento de Segredos:** Integração com Doppler para variáveis de ambiente seguras
-- **Migrações:** Gerenciamento de banco de dados via Django migrations
+### Backend
+- **Django REST Framework** - Framework web e API
+- **PostgreSQL** - Banco de dados
+- **JWT** - Autenticação
+- **Docker** - Contêinerização
 
-### 2. Frontend
-- **Navegação:** Expo Router gerencia as rotas e transições entre telas, tornando o fluxo do app dinâmico e modular.
-- **Formulários:** React Hook Form controla e valida os dados dos formulários, oferecendo feedback instantâneo de erros.
-- **Integração com backend:** Axios realiza as requisições HTTP para a API, garantindo comunicação eficiente e segura.
-- **Componentização:** Diversos componentes reutilizáveis (inputs, botões, listas, date pickers, etc.) promovem consistência visual e facilitam a manutenção.
-- **Estilização:** Interface construída com StyleSheet e temas customizados, adaptando cores, tipografia e espaçamentos.
-- **Gestão de assets:** Imagens e ícones organizados para garantir performance e carregamento rápido.
-- **Estado e contexto:** Contextos e hooks customizados para autenticação, estado global, temas e dados do usuário.
+### Frontend
+- **React Native** - Framework mobile
+- **Expo** - Plataforma de desenvolvimento
+- **Expo Router** - Navegação
+- **React Hook Form** - Gerenciamento de formulários
+- **Axios** - Cliente HTTP
+- **React Query (TanStack Query)** - Gerenciamento de estado e cache
+- **React Native Reanimated** - Animações
 
-### 3. DevOps & Deploy
-- **CI/CD:** Automatização do deploy via GitHub Actions
-- **Orquestração:** Docker Compose para gerenciamento dos serviços
-- **Nginx:** Proxy reverso e gerenciamento de certificados SSL
-- **Segurança:** Injeção de segredos via Doppler CLI
-- **Deploy:** SCP/SSH para atualização do servidor VPS
-
-### 4. Estrutura do Projeto
+### Estrutura do Projeto
 - **backend/**: Código do servidor Django, configurações, apps e scripts
 - **frontend/**: Aplicativo mobile, componentes, telas, assets e utilitários
 - **.github/**: Workflows de CI/CD
@@ -41,11 +30,53 @@ DailyWard é um aplicativo desenvolvido para facilitar a comunicação, organiza
 **Este projeto está fechado para colaborações externas no momento.**
 
 ## Como rodar o projeto
-1. Clone o repositório
-2. Instale as dependências do backend e frontend
-3. Configure as variáveis de ambiente
-4. Para rodar o backend, utilize o Docker Compose de desenvolvimento (`compose.dev.yml`).
-5. Para rodar o frontend, utilize o aplicativo Expo Go no seu dispositivo ou emulador.
 
+### Pré-requisitos
+- Node.js e npm/yarn instalados
+- Conta Expo (cadastre-se em [expo.dev](https://expo.dev))
+- EAS CLI instalado e logado:
+  ```bash
+  npm install -g eas-cli && eas login
+  ```
+
+### Frontend (Dev Build)
+
+Para instruções detalhadas sobre como criar um build de desenvolvimento, consulte a [documentação oficial do Expo](https://docs.expo.dev/develop/development-builds/create-a-build/).
+
+**Resumo dos passos:**
+
+1. Navegue até a pasta do frontend:
+```bash
+cd frontend
+```
+
+2. Instale as dependências:
+```bash
+npm install
+```
+
+3. Instale o `expo-dev-client`:
+```bash
+npx expo install expo-dev-client
+```
+
+4. Crie um build de desenvolvimento usando EAS:
+```bash
+# Para Android
+eas build --platform android --profile development
+
+# Para iOS 
+eas build --platform ios --profile development
+```
+
+**Nota:** Para builds do iOS Simulator, é necessário editar o `eas.json` e configurar `simulator: true` no perfil de desenvolvimento. Veja a [documentação](https://docs.expo.dev/develop/development-builds/create-a-build/) para mais detalhes.
+
+5. Após o build ser concluído, instale o APK/IPA no seu dispositivo ou emulador. O EAS CLI irá oferecer opções para instalação após o build.
+
+6. Inicie o bundler JavaScript:
+```bash
+npx expo start
+
+```
 ## Contato
 Para dúvidas ou sugestões, entre em contato com o mantenedor do projeto.

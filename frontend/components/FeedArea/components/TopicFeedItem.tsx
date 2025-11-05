@@ -4,15 +4,31 @@ import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native'
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { TopicFeedItem } from '@/types';
 import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
-import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import { IconButton } from '@/components/IconButton';
+import { PostService } from '@/services/postService';
+import { useQueryClient } from '@tanstack/react-query';
+import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useTopicInfo } from '@/hooks/useTopicInfo';
+import { calculatePermissions } from '@/utils/permissions';
 
 function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
-  const { topicId } = useGlobalSearchParams();
+  const { topicId, postId: currentPostId } = useGlobalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const { profile } = useUserProfile();
+  const { data: topicInfo } = useTopicInfo(topicId as string || '');
+  const isOnDetailPage = currentPostId === item.id.toString();
   
+  const { canEdit, canDelete } = calculatePermissions(
+    item.posterId,
+    profile?.id ?? null,
+    topicInfo?.data.isLoggedInUserAdmin ?? false
+  );
+
   const handlePress = () => {
     router.push({
       pathname: '/topics/[topicId]/posts/[postId]',
@@ -29,12 +45,31 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
 
   const handleEditPost = () => {
     setModalVisible(false);
-    console.log('Edit post:', item.id);
+    router.push({
+      pathname: '/topics/[topicId]/posts/edit-post',
+      params: {
+        topicId: topicId,
+        postId: item.id
+      }
+    });
   };
 
-  const handleDeletePost = () => {
-    setModalVisible(false);
-    console.log('Delete post:', item.id);
+  const handleDeletePost = async (): Promise<boolean> => {
+    if (!topicId) return false;
+    
+    const result = await PostService.deletePost(topicId, item.id.toString());
+    
+    if (result && (result.status === 200 || result.status === 204)) {
+      // Invalidate posts queries to refresh the feed
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      
+      // If on detail page, navigate back
+      if (isOnDetailPage) {
+        router.back();
+      }
+      return true;
+    }
+    return false;
   };
   
   return(
@@ -44,15 +79,23 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
           <CustomProfileImage 
             source={item.posterProfilePicUrl} 
             fullName={item.posterName} 
-            style={{width:40, borderRadius: 20}}
+            style={styles.profilePic}
           />
           <Text style={styles.posterName}>{item.posterName}</Text>
         </View>
         <View style={styles.timeAndOptions}>
           <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-          <Pressable onPress={handleEllipsisPress} style={styles.ellipsisButton}>
-            <VerticalEllipsisIcon width={20} height={20} color={Colors.light.text[30]} />
-          </Pressable>
+          {canDelete && (
+            <IconButton 
+              onPress={handleEllipsisPress} 
+              borders={{right: true}} 
+              outerboxRadius={10} 
+              innerSize={24} 
+              style={styles.ellipsisButton}
+            >
+              <VerticalEllipsisIcon width={24} height={24} color={Colors.light.text[30]} />
+            </IconButton>
+          )}
         </View>
       </View>
       <View style={styles.contentArea}>
@@ -60,16 +103,17 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
       {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
       </View>
       
-      <BottomSheetModal ModalVisible={modalVisible} setModalVisible={setModalVisible}>
-        <View style={[styles.modalContent, { paddingTop: 8, paddingBottom: insets.bottom + 8, paddingHorizontal: 20 }]}>
-          <Pressable onPress={handleEditPost} style={styles.modalOption}>
-            <Text style={styles.modalOptionText}>Editar post</Text>
-          </Pressable>
-          <Pressable onPress={handleDeletePost} style={styles.modalOption}>
-            <Text style={[styles.modalOptionText, styles.deleteOptionText]}>Deletar post</Text>
-          </Pressable>
-        </View>
-      </BottomSheetModal>
+      <EditDeleteBottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onEdit={handleEditPost}
+        onDelete={handleDeletePost}
+        canEdit={canEdit}
+        editLabel="Editar post"
+        deleteLabel="Deletar post"
+        deleteTitle="Deletar Post"
+        deleteMessage="Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita."
+      />
     </Pressable>
   )
 }
@@ -134,31 +178,16 @@ const styles = StyleSheet.create({
   timeAndOptions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
+  },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: Colors.light.background[90],
   },
   ellipsisButton: {
-    padding: 8,
-    paddingRight:0,
-    borderRadius: 4,
-  },
-  modalContent: {
-    backgroundColor: Colors.light.background[100],
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalOption: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-  },
-  modalOptionText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 16,
-    lineHeight: 20,
-    color: Colors.light.text[5],
-    textAlign: 'center',
-  },
-  deleteOptionText: {
-    color: '#FF3B30',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

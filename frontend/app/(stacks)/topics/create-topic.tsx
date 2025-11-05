@@ -1,4 +1,3 @@
-import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import * as ImagePicker from 'expo-image-picker';
 import { CreateTopicButton } from '@/components/CreateTopicButton';
 import { FormInput } from '@/components/FormInput';
@@ -12,6 +11,8 @@ import { useState } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { CustomImage } from '@/components/CustomImage';
+import { UploadImageIcon } from '@/assets/images/upload-image-icon';
+import { ScreenHeader } from '@/components/ScreenHeader';
 
 interface CreateTopicForm {
   title: string;
@@ -60,19 +61,13 @@ export default function CreateTopic() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title="Criar Tópico" />
       <KeyboardAwareScrollView 
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
         style={styles.body} 
-        contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
       >
-        <View style={styles.headerRow}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
-          </Pressable>
-          <Text style={styles.sectionTitle}>Criar Tópico</Text>
-          <View style={{ width: 24, height: 24 }} />
-        </View>
 
         <Controller
           control={control}
@@ -93,7 +88,7 @@ export default function CreateTopic() {
         <Controller
           control={control}
           name="description"
-          rules={{ maxLength: 120 }}
+          rules={{ maxLength: 800 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Descrição"
@@ -102,8 +97,7 @@ export default function CreateTopic() {
               onBlur={onBlur}
               value={value}
               multiline
-              numberOfLines={4}
-              maxLength={120}
+              maxLength={800}
             />
           )}
         />
@@ -115,6 +109,7 @@ export default function CreateTopic() {
               <CustomImage source={image} style={styles.previewImage} />
             ) : (
               <View style={styles.uploadContent}>
+                <UploadImageIcon width={40} height={40} color={Colors.light.primary} />
                 <Text style={styles.uploadCta}>Clique para fazer upload</Text>
                 <Text style={styles.uploadHint}>SVG, PNG, JPG ou GIF </Text>
               </View>
@@ -138,30 +133,8 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 8,
     gap: 8,
-  },
-  sectionTitle: {
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text[5],
-    marginTop: 0,
-    marginBottom: 0,
-    textAlign: 'center',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    marginBottom: 16,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   label: {
     fontFamily: 'Inter_600SemiBold',
@@ -180,11 +153,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
+    aspectRatio: 1,
+    width: '100%',
   },
   uploadAreaWithImage: {
     padding: 0,
-    borderStyle: 'solid',
-    borderWidth: 0.5,
     aspectRatio: 1,
     width: '100%',
   },

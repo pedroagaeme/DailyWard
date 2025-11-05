@@ -5,7 +5,7 @@ import { TabTriggerSlotProps } from "expo-router/ui";
 import { Colors } from "@/constants/Colors";
 
 interface CustomTabButtonProps extends React.PropsWithChildren, TabTriggerSlotProps {
-	Icon: ((props:SvgProps) => React.JSX.Element);
+	Icon: React.ComponentType<any>;
 }
 
 export const CustomTabButton = React.forwardRef<View, CustomTabButtonProps>(

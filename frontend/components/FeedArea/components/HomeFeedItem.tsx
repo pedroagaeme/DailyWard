@@ -3,6 +3,7 @@ import { ListRenderItem, Pressable, StyleSheet, Text, View } from 'react-native'
 import { CustomImage } from '@/components/CustomImage';
 import { HomeFeedItem } from '@/types';
 import { router } from 'expo-router';
+import { TopicBottomSheet } from '@/components/TopicBottomSheet';
 
 function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
 
@@ -22,7 +23,12 @@ function HomeFeedItemButton({item}:{item:HomeFeedItem}) {
           />
         </View>
         <View style={styles.contentArea}>
-          <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <TopicBottomSheet topicId={item.id} borders={{}} />
+            </Pressable>
+          </View>
           <Text style={styles.descriptionText} numberOfLines={2}>{item.description && item.description !== "undefined" ? item.description : 'Sem descrição disponível.'}</Text>
         </View>
       </View>
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex:1,
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 12,
     overflow: 'hidden',
     backgroundColor: Colors.light.background[95],
     elevation: 2,
@@ -53,7 +59,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     gap: 6,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
   title: {
+    flex: 1,
     fontFamily:'Inter_600SemiBold',
     letterSpacing: 0.1,
     fontSize: 16,

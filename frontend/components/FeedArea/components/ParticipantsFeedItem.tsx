@@ -30,18 +30,18 @@ const styles = StyleSheet.create({
   },
   profilePic: {
     backgroundColor: Colors.light.background[80],
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 24,
   },
   textSection: {
     flex: 1,
     justifyContent: 'center',
-    gap: 4,
   },
   fullName: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 17,
-    color: Colors.light.text[5],
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    lineHeight: 20,
+    color: Colors.light.text[15],
   },
 });

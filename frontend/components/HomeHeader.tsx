@@ -5,14 +5,15 @@ import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { DailyWardLogoCompact } from '@/assets/images/dailyward-logo-compact';
 import { CustomProfileImage } from '@/components/CustomImage';
-import { useAuth } from '@/contexts';
+import { useUserProfile } from '@/hooks';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { IconButton } from '@/components/IconButton';
 
 export const HomeHeader = () => {
   const navigation = useNavigation();
   const { top: topPadding } = useSafeAreaInsets();
-  const { authState } = useAuth();
+  const { profile } = useUserProfile();
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -20,21 +21,27 @@ export const HomeHeader = () => {
 
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-      <Pressable onPress={openDrawer} style={styles.drawerButton}>
+      <IconButton 
+        style={{marginLeft: 4}}
+        onPress={openDrawer} 
+        borders={{left: true, top: true}} 
+        outerboxRadius={10} 
+        innerSize={24} >
         <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
-      </Pressable>
+      </IconButton>
       
       <View style={styles.logoContainer}>
         <DailyWardLogoCompact width={32} height={32} />
         <Text style={styles.logoText}>DailyWard</Text>
       </View>
       
-      <CustomProfileImage
-        source={authState?.profile?.avatarUrl || null}
-        fullName={authState?.profile?.name || 'User'}
-        style={styles.profilePic}
-        containerStyle={styles.profileContainer}
-      />
+      <View style={styles.profileContainer}>
+        <CustomProfileImage
+          source={profile?.profilePicUrl || null}
+          fullName={`${profile?.firstName} ${profile?.lastName}` || 'User'}
+          style={styles.profilePic}
+        />
+      </View>
     </View>
   );
 };
@@ -45,12 +52,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingRight: 16,
-    paddingLeft: 12,
-  },
-  drawerButton: {
-    padding: 8,
+    paddingLeft: 16,
   },
   logoContainer: {
+    marginLeft: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -61,13 +66,15 @@ const styles = StyleSheet.create({
     color: Colors.light.primary,
   },
   profileContainer: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 50,
     backgroundColor: Colors.light.background[80],
   },
 });

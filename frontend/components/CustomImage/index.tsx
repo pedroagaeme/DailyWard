@@ -12,7 +12,6 @@ import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 export function CustomImage({
   source,
   fallbackSource,
-  containerStyle,
   showOverlay = true,
   overlayStyle,
   expandable = true,
@@ -26,7 +25,7 @@ export function CustomImage({
     cache: FastImage.cacheControl.immutable,
   } : fallbackSource)
   const imageStyle = imageProps.style as any;
-  const borderRadius = imageStyle?.borderRadius || containerStyle?.borderRadius || 0;
+  const borderRadius = imageStyle?.borderRadius || 0;
 
   const handleImagePress = () => {
     if (expandable && source) {
@@ -37,7 +36,7 @@ export function CustomImage({
 
   return (
     <>
-      <View style={[containerStyle, !source && { pointerEvents: 'none' }]}>
+      <View style={[imageStyle, !source && { pointerEvents: 'none' }]}>
         {expandable && source ? (
           <Pressable onPress={handleImagePress} style={{ flex: 1 }}>
             <FastImage source={imageSource} {...imageProps} />
@@ -100,7 +99,6 @@ export function CustomImage({
 export function CustomProfileImage({
   source,
   fullName,
-  containerStyle,
   showOverlay = true,
   overlayStyle,
   ...imageProps
@@ -108,10 +106,10 @@ export function CustomProfileImage({
   // If no source, show DefaultProfileIcon
   if (!source) {
     const imageStyle = imageProps.style as any;
-    const borderRadius = imageStyle?.borderRadius || containerStyle?.borderRadius || 0;
+    const borderRadius = imageStyle?.borderRadius || 0;
     
     return (
-      <View style={containerStyle}>
+      <View style={{ position: 'relative' }}>
         <DefaultProfileIcon 
           fullName={fullName} 
           viewStyleProps={imageStyle}
@@ -127,7 +125,6 @@ export function CustomProfileImage({
   return (
     <CustomImage
       source={source}
-      containerStyle={containerStyle}
       showOverlay={showOverlay}
       overlayStyle={overlayStyle}
       {...imageProps}
@@ -143,7 +140,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     boxShadow: '0 0 4px rgba(0, 0, 0, 0.2) inset',
-    borderRadius: 16,
   },
   overlayPressable: {
     pointerEvents: 'none',

@@ -1,4 +1,3 @@
-import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
@@ -7,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, Text, View, Alert, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ScreenHeader } from '@/components/ScreenHeader';
 interface JoinTopicForm {
   code: string;
 }
@@ -27,19 +27,13 @@ export default function JoinTopic() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title="Entrar em Tópico" />
       <KeyboardAwareScrollView 
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
         style={styles.body} 
-        contentContainerStyle={{paddingTop: insets.top, paddingBottom: insets.bottom }}
+        contentContainerStyle={{ paddingBottom: insets.bottom }}
       >
-        <View style={styles.headerRow}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
-            <GoBackIcon width={24} height={24} color={Colors.light.text[5]} />
-          </Pressable>
-          <Text style={styles.sectionTitle}>Entrar em Tópico</Text>
-          <View style={{ width: 24, height: 24 }} />
-        </View>
 
         <View style={styles.content}>
           <Text style={styles.description}>
@@ -98,30 +92,8 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingHorizontal: 16,
-    gap: 8,
-  },
-  sectionTitle: {
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text[5],
-    marginTop: 0,
-    marginBottom: 0,
-    textAlign: 'center',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingTop: 16,
-    marginBottom: 12,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: 8,
   },
   content: {
     flex: 1,

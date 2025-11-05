@@ -1,22 +1,19 @@
 import { View, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { AddIcon } from "@/assets/images/add-icon";
+import { IconButton } from '@/components/IconButton';
 
 export function AddResourceButton() {
     return (
-        <View style={styles.button}>
-            <AddIcon  width={24} height={24} />
-        </View>
+        <IconButton style={styles.button}>
+            <AddIcon width={24} height={24} />
+        </IconButton>
     )
 }
 
 const styles = StyleSheet.create({
     button: {
         backgroundColor: Colors.light.primary,
-        borderRadius:50,
-        width:40,
-        aspectRatio:1,
-        justifyContent:'center',
-        alignItems:'center',
+        borderRadius: 22,
     }
 })

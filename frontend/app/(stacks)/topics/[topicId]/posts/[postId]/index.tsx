@@ -1,44 +1,76 @@
 import { TopicFeedItem } from '@/types';
-import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { PostService } from '@/services/postService';
 import { SeePostHeader } from '@/components/SeePostHeader';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTopicInfo } from '@/hooks/useTopicInfo';
+import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
+import { IconButton } from '@/components/IconButton';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { calculatePermissions } from '@/utils/permissions';
 
 export default function SeePostScreen() {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
     const params = useGlobalSearchParams();
     const topicId = params.topicId as string || '';
     const { data: topicInfo, isLoading: isTopicInfoLoading, isError: isTopicInfoError, error: topicInfoError } = useTopicInfo(topicId);
     const topicTitle = topicInfo?.data.title;
     const postId = params.postId as string || '';
+    const queryClient = useQueryClient();
+    const { profile } = useUserProfile();
     
-    const [item, setItem] = useState<TopicFeedItem | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            if (!postId || !topicId) return;
-            
-            try {
-                setLoading(true);
-                const post = await PostService.fetchPostById(topicId, postId);
-                setItem(post);
-            } catch (err) {
-                console.error('Error fetching post:', err);
-                setError('Erro ao carregar post');
-            } finally {
-                setLoading(false);
+    const { data: item, isLoading: loading, isError, error, refetch } = useQuery({
+        queryKey: ['post', topicId, postId],
+        queryFn: () => PostService.fetchPostById(topicId, postId),
+        enabled: !!postId && !!topicId,
+    });
+
+    useRefreshOnFocus(refetch);
+
+    const { canEdit, canDelete } = calculatePermissions(
+        item?.posterId,
+        profile?.id ?? null,
+        topicInfo?.data.isLoggedInUserAdmin ?? false
+    );
+
+    const handleEllipsisPress = () => {
+        setModalVisible(true);
+    };
+
+    const handleEditPost = () => {
+        setModalVisible(false);
+        router.push({
+            pathname: '/topics/[topicId]/posts/edit-post',
+            params: {
+                topicId: topicId,
+                postId: postId
             }
-        };
+        });
+    };
 
-        fetchPost();
-    }, [postId, topicId]);
+    const handleDeletePost = async (): Promise<boolean> => {
+        if (!topicId || !postId) return false;
+        
+        const result = await PostService.deletePost(topicId, postId);
+        
+        if (result && (result.status === 200 || result.status === 204)) {
+            // Invalidate posts queries to refresh the feed
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            router.back();
+            return true;
+        }
+        return false;
+    };
 
     if (loading) {
         return (
@@ -48,22 +80,38 @@ export default function SeePostScreen() {
         );
     }
 
-    if (error || !item) {
+    if (isError || !item) {
         return (
             <View style={[styles.fullScreenContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-                <Text>{error || 'Post não encontrado.'}</Text>
+                <Text>{error ? 'Erro ao carregar post' : 'Post não encontrado.'}</Text>
             </View>
         );
     }
 
     return (
         <View style={styles.fullScreenContainer}>
-          <SeePostHeader title={topicTitle} />
+          <SeePostHeader 
+            title={topicTitle} 
+            rightComponent={
+                canDelete ? (
+                    <IconButton 
+                        onPress={handleEllipsisPress}
+                        borders={{right: true}} 
+                        outerboxRadius={10} 
+                        innerSize={24}
+                    >
+                        <VerticalEllipsisIcon width={24} height={24} color={Colors.light.text[5]} />
+                    </IconButton>
+                ) : (
+                    <View style={{ width: 24, height: 24 }} />
+                )
+            }
+          />
           <View style={styles.postContainer}>
               <View style={styles.postHeaderRow}>
                   <View style={styles.profileSection}>
-                  <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={{width:40, borderRadius: 20}}/>
-                  <Text style={styles.posterName}>{item.posterName}</Text>
+                    <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={styles.profilePic}/>
+                    <Text style={styles.posterName}>{item.posterName}</Text>
                   </View>
                   <View >
                       <Text style={styles.hourText}>
@@ -83,6 +131,18 @@ export default function SeePostScreen() {
             {item.contentPicUrl && <CustomImage source={item.contentPicUrl} style={styles.contentPic} />}
             </ScrollView>
           </View>
+
+          <EditDeleteBottomSheet
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            onEdit={handleEditPost}
+            onDelete={handleDeletePost}
+            canEdit={canEdit}
+            editLabel="Editar post"
+            deleteLabel="Deletar post"
+            deleteTitle="Deletar Post"
+            deleteMessage="Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita."
+          />
         </View>
     );
 }
@@ -109,35 +169,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  sectionTitle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text[5],
-    marginTop: 0,
-    marginBottom: 0,
-    textAlign: 'center',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    marginBottom: 16,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
     gap:12,
+  },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: Colors.light.background[90],
   },
   posterName: {
     fontFamily:'Inter_600SemiBold',
@@ -160,8 +201,6 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 16/9,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.light.background[90],
     backgroundColor: Colors.light.background[90],
     resizeMode: 'cover',
   },

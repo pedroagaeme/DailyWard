@@ -10,11 +10,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [authState, setAuthState] = useState<{
         token: string | null, 
         isAuthenticated: boolean | null
-        profile?: UserProfile | null
     }>({
         token: null, 
         isAuthenticated: null,
-        profile: null
     });
 
     useEffect(() => {
@@ -36,17 +34,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             return result;
         }
 
-        const { accessToken, refreshToken, email, fullName } = result.data;
-        const profile: UserProfile = {
-            name: fullName,
-            email: email,
-            avatarUrl: null
-        };
+        const { accessToken } = result.data;
 
         setAuthState({
             token: accessToken,
             isAuthenticated: true,
-            profile: profile
         });
 
         return result;
@@ -54,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = async () => {
         await AuthService.logout();
-        setAuthState({token: null, isAuthenticated: false, profile: null});
+        setAuthState({token: null, isAuthenticated: false});
     }
 
     const value = {

@@ -83,4 +83,50 @@ export class PostService {
       return null;
     }
   }
+
+  static async updatePost(topicId: string, postId: string, data: {
+    contentText: string;
+    contentPicUrl?: string;
+  }): Promise<PostCreateResponse | null> {
+    try {
+      const formData = new FormData();
+      formData.append('contentText', data.contentText);
+      
+      if (data.contentPicUrl) {
+        formData.append('contentPicUrl', {
+          uri: data.contentPicUrl,
+          name: data.contentPicUrl.split('/').pop() || 'post_image.jpg',
+          type: 'image/jpeg',
+        } as any);
+      }
+
+      const response = await axiosPrivate.put(
+        `/users/me/topics/${topicId}/posts/${postId}/`, 
+        formData, 
+        {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
+
+      return {
+        status: response.status,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error updating post:', error);
+      return null;
+    }
+  }
+
+  static async deletePost(topicId: string, postId: string): Promise<{ status: number } | null> {
+    try {
+      const response = await axiosPrivate.delete(`/users/me/topics/${topicId}/posts/${postId}/`);
+      return {
+        status: response.status
+      };
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      return null;
+    }
+  }
 }

@@ -12,14 +12,22 @@ export interface RegisterFormData extends LoginFormData {
 
 // User profile interface
 export interface UserProfile {
-  name: string | null;
-  email: string | null;
-  avatarUrl?: string | null;
+  id: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profilePicUrl: string | null;
+}
+
+// User profile update data
+export interface UserProfileUpdateData {
+  firstName?: string;
+  lastName?: string;
+  profilePicUrl?: any; // File object for React Native
 }
 
 // Auth context interface
 export interface AuthProps {
-  authState?: {token: string | null, isAuthenticated: boolean | null, profile?: UserProfile | null};
+  authState?: {token: string | null, isAuthenticated: boolean | null};
   onRegister?: (data: RegisterFormData) => Promise<any>;
   onLogin?: (data: LoginFormData) => Promise<any>;
   onLogout?: () => Promise<void>;

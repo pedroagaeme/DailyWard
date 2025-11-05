@@ -6,10 +6,14 @@ export default function StackLayout() {
             <Stack.Screen name="tabs" />
             
             <Stack.Screen name="posts/create-post" />
+            <Stack.Screen name="posts/edit-post" />
             <Stack.Screen name="posts/[postId]" />
             
             <Stack.Screen name="resources/add-resource" />
+            <Stack.Screen name="resources/edit-resource" />
             <Stack.Screen name="resources/[resourceId]" />
+            
+            <Stack.Screen name="info" />
             
         </Stack>
     )

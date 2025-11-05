@@ -3,6 +3,16 @@ import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native'
 import { router, useGlobalSearchParams } from 'expo-router';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { ResourcesFeedItem } from '@/types';
+import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import { IconButton } from '@/components/IconButton';
+import { ResourceService } from '@/services/resourceService';
+import { useQueryClient } from '@tanstack/react-query';
+import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useTopicInfo } from '@/hooks/useTopicInfo';
+import { calculatePermissions } from '@/utils/permissions';
 
 const formatDate = (dateString?: string) => {
   if (!dateString) return 'Data não disponível';
@@ -35,7 +45,22 @@ const formatDate = (dateString?: string) => {
 };
 
 function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
-  const { topicId } = useGlobalSearchParams();
+  const params = useGlobalSearchParams();
+  const topicId = params.topicId as string;
+  const currentResourceId = params.resourceId as string | undefined;
+  const [modalVisible, setModalVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const { profile } = useUserProfile();
+  const { data: topicInfo } = useTopicInfo(topicId);
+  const isOnDetailPage = currentResourceId === item.id.toString();
+  
+  const { canEdit, canDelete } = calculatePermissions(
+    item.posterId,
+    profile?.id ?? null,
+    topicInfo?.data.isLoggedInUserAdmin ?? false
+  );
+
   const handlePress = () => {
     router.push({
       pathname: '/topics/[topicId]/resources/[resourceId]',
@@ -44,6 +69,39 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
         topicId: topicId
       }
     });
+  };
+
+  const handleEllipsisPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleEditResource = () => {
+    setModalVisible(false);
+    router.push({
+      pathname: '/topics/[topicId]/resources/edit-resource',
+      params: {
+        topicId: topicId,
+        resourceId: item.id
+      }
+    });
+  };
+
+  const handleDeleteResource = async (): Promise<boolean> => {
+    if (!topicId) return false;
+    
+    const result = await ResourceService.deleteResource(topicId, item.id.toString());
+    
+    if (result && (result.status === 200 || result.status === 204)) {
+      // Invalidate resources queries to refresh the feed
+      queryClient.invalidateQueries({ queryKey: ['resources'] });
+      
+      // If on detail page, navigate back
+      if (isOnDetailPage) {
+        router.back();
+      }
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -72,8 +130,34 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
               <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
             </View>
           </View>
+          {canDelete && (
+            <IconButton 
+              onPress={(e) => {
+                e.stopPropagation();
+                handleEllipsisPress();
+              }}
+              borders={{right: true}} 
+              outerboxRadius={10} 
+              innerSize={24} 
+              style={styles.ellipsisButton}
+            >
+              <VerticalEllipsisIcon width={24} height={24} color={Colors.light.text[30]} />
+            </IconButton>
+          )}
         </View>
       </View>
+
+      <EditDeleteBottomSheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onEdit={handleEditResource}
+        onDelete={handleDeleteResource}
+        canEdit={canEdit}
+        editLabel="Editar recurso"
+        deleteLabel="Deletar recurso"
+        deleteTitle="Deletar Recurso"
+        deleteMessage="Tem certeza que deseja deletar este recurso? Esta ação não pode ser desfeita."
+      />
     </Pressable>
   );
 }
@@ -113,7 +197,7 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_600SemiBold',
     fontSize: 18,
     color: Colors.light.text[5],
-    lineHeight: 20,
+    lineHeight: 22,
   },
   nameAndDateContainer: {
     gap: 5,
@@ -126,7 +210,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   descriptionText: {
-    marginTop:10,
+    marginTop:8,
     fontFamily:'Inter_400Regular',
     fontSize: 14,
     lineHeight: 18,
@@ -154,5 +238,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.light.text[30],
     textAlign: 'center',
+  },
+  ellipsisButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

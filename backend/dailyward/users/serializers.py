@@ -2,6 +2,39 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
+from django.core.cache import cache
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField(read_only=True)
+    first_name = serializers.CharField(max_length=100, required=False)
+    last_name = serializers.CharField(max_length=100, required=False)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'full_name', 'profile_pic_url']
+        read_only_fields = ['id', 'full_name']
+
+    def get_full_name(self, obj):
+        return obj.get_full_name
+
+    def to_representation(self, instance):
+        #get the default representation
+        data = super().to_representation(instance)
+
+        # Handle caching for profile_pic_url
+        if instance.profile_pic_url:
+            cache_key = f'profile_pic_url_{instance.id}'
+            cached_url = cache.get(cache_key)
+            if cached_url:
+                data['profile_pic_url'] = cached_url
+            else:
+                url = instance.profile_pic_url.url
+                cache.set(cache_key, url, timeout=300)
+                data['profile_pic_url'] = url
+        else:
+            data['profile_pic_url'] = None
+            
+        return data
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=8, write_only=True)
@@ -29,14 +62,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, min_length=6)
-    full_name = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(write_only=True)
     access_token = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'full_name', 'access_token', 'refresh_token']
+        fields = ['email', 'password', 'access_token', 'refresh_token']
 
     def validate(self, attrs):
         email = attrs.get('email')

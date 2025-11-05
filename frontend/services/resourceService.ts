@@ -83,4 +83,67 @@ export class ResourceService {
       return null;
     }
   }
+
+  static async updateResource(topicId: string, resourceId: string, data: {
+    title: string;
+    description: string;
+    resourceType: 'file' | 'announcement';
+    files?: any[];
+    existingFileIds?: number[];
+  }): Promise<ResourceCreateResponse | null> {
+    try {
+      const form = new FormData();
+      form.append('title', data.title);
+      form.append('description', data.description);
+      form.append('resourceType', data.resourceType);
+      
+      // Append existing file IDs to keep
+      if (data.existingFileIds && data.existingFileIds.length > 0) {
+        data.existingFileIds.forEach((id) => {
+          form.append('existingFileIds', id.toString());
+        });
+      }
+      
+      // Append new files
+      if (data.files && data.files.length > 0) {
+        data.files.forEach((file) => {
+          form.append('files', {
+            uri: file.uri,
+            name: file.name,
+            type: file.mimeType,
+          } as any);
+        });
+      }
+      
+      const response = await axiosPrivate.put(
+        `/users/me/topics/${topicId}/resources/${resourceId}/`, 
+        form, 
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return {
+        status: response.status,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error updating resource:', error);
+      return null;
+    }
+  }
+
+  static async deleteResource(topicId: string, resourceId: string): Promise<{ status: number } | null> {
+    try {
+      const response = await axiosPrivate.delete(`/users/me/topics/${topicId}/resources/${resourceId}/`);
+      return {
+        status: response.status
+      };
+    } catch (error) {
+      console.error('Error deleting resource:', error);
+      return null;
+    }
+  }
 }
