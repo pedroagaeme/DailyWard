@@ -16,6 +16,11 @@ services:
       retries: 10
       start_period: 30s
 
+  memcached:
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+
   django-dailyward-api:
     build: .
     container_name: dailyward-api
@@ -39,6 +44,8 @@ services:
       - AZURE_CONTAINER_NAME=${AZURE_CONTAINER_NAME}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - MEMCACHE_HOST=${MEMCACHE_HOST}
+      - MEMCACHE_PORT=${MEMCACHE_PORT}
 
   nginx:
     build: ./nginx

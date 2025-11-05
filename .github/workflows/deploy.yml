@@ -46,5 +46,7 @@ jobs:
             export EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
             export CERT_PEM_BASE64=${{ secrets.CERT_PEM_BASE64 }}
             export CERT_KEY_BASE64=${{ secrets.CERT_KEY_BASE64 }}
+            export MEMCACHE_HOST=${{ secrets.MEMCACHE_HOST }}
+            export MEMCACHE_PORT=${{ secrets.MEMCACHE_PORT }}
             docker compose -f compose.prod.yml pull
             docker compose -f compose.prod.yml up -d --build

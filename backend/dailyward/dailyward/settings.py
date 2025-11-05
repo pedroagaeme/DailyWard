@@ -113,11 +113,14 @@ STORAGES = {
     },
 }
 
+MEMCACHE_HOST = os.environ.get('MEMCACHE_HOST')
+MEMCACHE_PORT = os.environ.get('MEMCACHE_PORT')
+LOCATION = f"{MEMCACHE_HOST}:{MEMCACHE_PORT}"
 # Caches
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "memcached:11211",
+        "LOCATION": LOCATION,
     }
 }
 
