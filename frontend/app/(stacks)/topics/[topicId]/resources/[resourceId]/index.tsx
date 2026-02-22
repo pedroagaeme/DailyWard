@@ -100,7 +100,7 @@ export default function SeeResourceScreen() {
             canDelete ? (
               <IconButton 
                 onPress={handleEllipsisPress}
-                borders={{right: true}} 
+                borders={{right: true, bottom: true}} 
                 outerboxRadius={10} 
                 innerSize={24}
               >

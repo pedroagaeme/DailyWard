@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { useForm, Controller } from 'react-hook-form';
 import { useRef } from 'react';
@@ -7,9 +7,11 @@ import { FormInput } from '@/components/FormInput';
 import { LoginFormData } from '@/types';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function Login() {
     const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();
+    const insets = useSafeAreaInsets();
     const passwordRef = useRef<TextInput>(null);
     const { onLogin, authState } = useAuth();
 
@@ -24,7 +26,14 @@ export default function Login() {
     };
 
     return(
-        <View style={styles.container}>
+        <KeyboardAwareScrollView 
+            style={[styles.container, { marginTop: insets.top, marginBottom: insets.bottom }]}
+            contentContainerStyle={styles.scrollContent}
+            enableOnAndroid={true}
+            enableAutomaticScroll={true}
+            keyboardShouldPersistTaps="handled"
+            extraScrollHeight={20 + insets.bottom}
+        >
             <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
                 <Text style={styles.title}>Entrar</Text>
             </SafeAreaView>
@@ -81,20 +90,23 @@ export default function Login() {
                     </Link>
                 </View>
             </View>
-        </View>
+        </KeyboardAwareScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: Colors.light.background[90],
+    },
+    scrollContent: {
+        alignItems: 'center',
     },
     header: {
         width: '100%',
         paddingHorizontal: 20,
-        paddingVertical: 40,
+        paddingTop: 20,
+        paddingBottom: 40,
     },
     form: {
         width: '100%',

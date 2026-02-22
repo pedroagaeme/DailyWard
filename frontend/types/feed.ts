@@ -14,7 +14,6 @@ export interface HomeFeedItem extends FeedItem {
 
 // Topic feed item for posts
 export interface TopicFeedItem extends FeedItem {
-  id: string;
   posterName: string;
   contentText: string;
   createdAt: string;
@@ -25,7 +24,6 @@ export interface TopicFeedItem extends FeedItem {
 
 // Resource file interface
 export interface ResourceFile {
-  id: number;
   filename: string;
   fileSize?: number;
   mimeType?: string;
@@ -34,7 +32,6 @@ export interface ResourceFile {
 
 // Resources feed item
 export interface ResourcesFeedItem extends FeedItem {
-  id: string;
   title: string;
   resourceType?: string;
   description?: string;
@@ -51,4 +48,5 @@ export interface ParticipantsFeedItem extends FeedItem {
   userProfilePic: string;
   role: string;
   joinedAt: string;
+  user: string;
 }

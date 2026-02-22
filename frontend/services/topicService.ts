@@ -17,33 +17,18 @@ export interface TopicGetResponse {
 }
 
 export class TopicService {
-  static async fetchUserTopics(page: number = 1): Promise<{
-    results: HomeFeedItem[];
-    count: number;
-    next: string | null;
-    previous: string | null;
-  }> {
+  static async fetchUserTopics(): Promise<HomeFeedItem[]> {
     try {
-      const response = await axiosPrivate.get(`/users/me/topics/?page=${page}`);
+      const response = await axiosPrivate.get(`/users/me/topics/`);
       console.log('Fetched user topics:', response.data);
       
       if (response.status === 200) {
-        return response.data;
+        return Array.isArray(response.data) ? response.data : [];
       }
-      return {
-        results: [],
-        count: 0,
-        next: null,
-        previous: null,
-      };
+      return [];
     } catch (error) {
       console.error('Error fetching user topics:', error);
-      return {
-        results: [],
-        count: 0,
-        next: null,
-        previous: null,
-      };
+      return [];
     }
   }
 
@@ -106,6 +91,40 @@ export class TopicService {
       };
     } catch (error) {
       console.error('Error getting topic:', error);
+      return null;
+    }
+  }
+
+  static async updateTopic(topicId: string, data: {
+    title: string;
+    description: string;
+    topicImageUrl?: any;
+  }): Promise<TopicCreateResponse | null> {
+    try {
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('description', data.description);
+      
+      if (data.topicImageUrl) {
+        formData.append('topicImageUrl', {
+          uri: data.topicImageUrl.uri,
+          name: data.topicImageUrl.name || 'topic_image.jpg',
+          type: data.topicImageUrl.type || 'image/jpeg',
+        } as any);
+      }
+
+      const response = await axiosPrivate.put(`/users/me/topics/${topicId}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return {
+        status: response.status,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Error updating topic:', error);
       return null;
     }
   }

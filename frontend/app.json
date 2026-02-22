@@ -5,14 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/dailyward-logo.png",
-    "scheme": "DailyWard",
+    "scheme": "dailyward",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.pedroagaeme.DailyWard"
     },
     "android": {
       "adaptiveIcon": {

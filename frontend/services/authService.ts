@@ -38,18 +38,16 @@ export class AuthService {
       await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
 
-      const email = response.data.data.email;
-      const fullName = response.data.data.fullName;
-      const profile: UserProfile = {
-        name: fullName,
-        email: email,
-        avatarUrl: null
-      };
-
-      await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
-
       console.log('Login successful, token stored.');
       return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  }
+
+  static async verifyEmail(otp: string): Promise<AuthError | void> {
+    try {
+      await axiosPublic.post('/auth/verify-email/', { otp });
     } catch (error) {
       return { error: error };
     }
@@ -58,7 +56,6 @@ export class AuthService {
   static async logout(): Promise<void> {
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
-    await SecureStore.deleteItemAsync('userProfile');
   }
 
   static async loadAuthState(): Promise<{

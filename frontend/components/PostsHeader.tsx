@@ -51,7 +51,7 @@ export const PostsHeader = ({
         </View>
         
         {topicId && (
-          <TopicBottomSheet topicId={topicId} buttonStyle={{marginRight: 4}} />
+          <TopicBottomSheet topicId={topicId} buttonStyle={{marginRight: 4}}  borders={{right: true, top: true}}/>
         )}
       </View>
       <View style={styles.datePickerContainer}>
@@ -81,11 +81,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     gap: 2,
-    marginHorizontal: 20,
-  },
-  placeholder: {
-    width: 28,
-    height: 28,
+    paddingLeft: 40,
+    paddingRight: 40,
   },
   titleText: {
     fontFamily: 'Inter_700Bold',

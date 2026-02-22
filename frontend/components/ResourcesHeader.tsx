@@ -40,7 +40,7 @@ export const ResourcesHeader = ({ title }: ResourcesHeaderProps) => {
         </Text>
         <Text style={styles.sectionText}>Recursos</Text>
       </View>
-      <IconButton onPress={handleAddResource} style={styles.addButton} outerboxRadius={8} innerSize={28} >
+      <IconButton onPress={handleAddResource} style={styles.addButton} innerSize={44} >
         <AddIcon width={28} height={28} color="#FFFFFF" />
       </IconButton>
     </View>
@@ -54,10 +54,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   titleContainer: {
-    marginLeft: 36,
     flex: 1,
     alignItems: 'center',
-    marginHorizontal: 20,
+    paddingLeft: 40,
+    paddingRight: 24,
   },
   addButton: {
     backgroundColor: Colors.light.primary,

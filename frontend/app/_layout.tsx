@@ -12,23 +12,24 @@ import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { AuthProvider } from '../contexts';
+import { AuthProvider, useAuth } from '../contexts';
 import {NavigationBar} from '@zoontek/react-native-navigation-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LogoutButton } from '@/components/LogoutButton';
 import { SectionList, View, Text } from 'react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
-import { ActivityIndicator } from 'react-native';
+import { useTopics } from '@/hooks/useTopics';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { DrawerContentComponentProps, DrawerItem, useDrawerProgress } from '@react-navigation/drawer';
 import { Colors } from '@/constants/Colors';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 
 // Custom Drawer Content Component
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteTopics({ enabled: true });
-  const topics = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
+  const { authState, onLogout } = useAuth();
+  const { data, isLoading, isError, error, refetch } = useTopics({ enabled: !!authState?.isAuthenticated });
+  const topics = useMemo(() => data || [], [data]);
   const insets = useSafeAreaInsets();
   const {topicId} = useGlobalSearchParams();
   const selectedItem = topicId as string | undefined;
@@ -62,6 +63,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   const handleNavigateAndClose = (href: Href) => {
     pendingRoute.current = href;
     props.navigation.closeDrawer();
+  };
+
+  const handleLogout = () => {
+    props.navigation.closeDrawer();
+    setTimeout(() => {
+      onLogout?.();
+    }, 300);
   };
   
   // Create sections data for SectionList
@@ -103,7 +111,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       case 'header':
         return (
           <View style={{ padding: 12, gap: 12, paddingTop: insets.top }}>
-            <LogoutButton />
+            <LogoutButton onLogoutPress={handleLogout} />
             <Text style={{ fontWeight: 'bold', fontSize: 18, color: Colors.light.text[5] }}>Bem-vindo(a)!</Text>
           </View>
         );
@@ -155,24 +163,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         sections={sections}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
-        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+        keyExtractor={(item, index) => (item as any).id ? (item as any).id.toString() : index.toString()}
         contentContainerStyle={{paddingBottom: insets.bottom, paddingTop: 12, paddingHorizontal: 8}}
         showsVerticalScrollIndicator={false}
         bounces={true}
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews={false}
         scrollEventThrottle={16}
-        onEndReachedThreshold={0.1}
-        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <ActivityIndicator
-              color="blue"
-              size="small"
-              style={{ marginBottom: 5 }}
-            />
-          ) : null
-        }
       />
     </View>
   );
@@ -210,7 +207,7 @@ export default function RootLayout() {
   
   return (
     <>
-    <NavigationBar barStyle='dark-content'/>
+    <NavigationBar barStyle='light-content'/>
     <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RegisterFormProvider>
@@ -224,6 +221,7 @@ export default function RootLayout() {
 }
 
 function AppContent() {
+  const insets = useSafeAreaInsets();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
         <Drawer
@@ -234,6 +232,15 @@ function AppContent() {
             name="(stacks)"
           />
       </Drawer>
+      <View style={[styles.navigationBar, {height: insets.bottom, bottom: 0, left: 0, right: 0}]}></View>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  navigationBar: {
+    zIndex: 1000,
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+});

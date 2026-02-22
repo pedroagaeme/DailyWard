@@ -3,7 +3,6 @@ import { Colors } from "@/constants/Colors";
 import { StyleSheet, Text, View, ScrollView, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
-import { AdminParticipants } from "@/components/AdminParticipants";
 import { ParticipantsIcon } from "@/assets/images/participants-icon";
 import { renderParticipantsFeedItem } from "@/components/FeedArea/components/ParticipantsFeedItem";
 import { ParticipantsFeedItem } from "@/types";
@@ -17,28 +16,18 @@ import { useTopicInfo } from "@/hooks/useTopicInfo";
 import { useGlobalSearchParams } from "expo-router";
 
 function ParticipantsContent({participants, code}: {participants: ParticipantsFeedItem[], code: string}) {
-  const adminParticipants = participants.filter(p => p.role === 'admin');
   return (
-    <ScrollView contentContainerStyle={{flexGrow:1}}>
       <View style={styles.container}>
         <View style={styles.header}>
           <TopicCodeArea code={code || ''} />
         </View>
         <View style={styles.section}>
-          <View style={styles.row}>
-            <AdminIcon width={28} height={28} />
-            <Text style={styles.subsectionTitle}>Administradores</Text>
-          </View>
-          <AdminParticipants participants={adminParticipants} />
-        </View>
-        <View style={styles.section}>
             <View style={styles.row}>
-              <ParticipantsIcon width={28} height={28} />
+              <ParticipantsIcon width={28} height={28} color={Colors.light.text[5]}/>
               <Text style={styles.subsectionTitle}>Todos os Participantes</Text>
             </View>
         </View>
       </View>
-    </ScrollView>
   );
 }
 
@@ -75,7 +64,6 @@ export default function Participants() {
         data={participants} 
         renderItem={renderParticipantsFeedItem}
         ListHeaderComponent={<ParticipantsContent participants={participants} code={code || ''} />}
-        fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 20}}
         noHorizontalPadding={true}
@@ -111,12 +99,6 @@ const styles = StyleSheet.create({
     paddingBottom:32,
   },
   section: {
-  },
-  sectionTitle: {
-    fontFamily:'Inter_600SemiBold',
-    fontSize: 24,
-    lineHeight: 32,
-    color: Colors.light.text[5],
   },
   row: {
     paddingHorizontal:16,

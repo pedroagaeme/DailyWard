@@ -20,6 +20,11 @@ class Participant(models.Model):
     role = models.CharField(max_length=50, choices=[("member","Member"), ("admin","Admin")])
     joined_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def participant_set(self):
+        """Return the participant_set of the topic this participant belongs to."""
+        return self.topic.participant_set
+        
     class Meta:
         unique_together = ("user", "topic")
     

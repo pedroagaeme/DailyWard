@@ -41,7 +41,7 @@ export default function Posts() {
   const handleButtonLayout = (event: any) => {
     const { height } = event.nativeEvent.layout;
     // Calculate the padding needed: 
-    // - Button height (64px)
+    // - Button height
     // - Gap between button and tab bar (50px)
     // - Extra space for comfortable scrolling (20px)
     // Total: height + 50
@@ -80,7 +80,6 @@ export default function Posts() {
         <FeedArea 
           data={posts} 
           renderItem={renderTopicFeedItem} 
-          fadedEdges={{top:false, bottom:false}} 
           immersiveScreen={{top:false, bottom:true}} 
           navbarInset={true}
           additionalPadding={{top: 12, bottom: buttonBottomPadding > 0 ? buttonBottomPadding : 4}}
@@ -102,8 +101,11 @@ export default function Posts() {
           onLayout={handleButtonLayout}
           style={[styles.button, styles.shadowButton, {bottom: insets.bottom + 100}]}
         >
-          <IconButton 
+          <IconButton
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
             onPress={handleCreatePostPress}
+            innerSize={64}
+            outerboxRadius={0}
           >
             <AddIcon width={32} height={32} />
           </IconButton>
@@ -125,8 +127,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Colors.light.primary,
   },
   shadowButton: {

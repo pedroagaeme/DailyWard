@@ -44,6 +44,32 @@ class ResourceViewSet(viewsets.ModelViewSet):
                 file_size=file_data.size,
                 mime_type=file_data.content_type
             )
+    
+    def perform_update(self, serializer):
+        # Save the resource first
+        resource = serializer.save()
+        
+        # Get existing file IDs to keep (sent as list in form data)
+        existing_file_ids = self.request.data.getlist('existingFileIds')
+        existing_file_ids = [int(id) for id in existing_file_ids if id]
+        
+        # Delete files that are not in the existing_file_ids list
+        if existing_file_ids:
+            ResourceFile.objects.filter(resource=resource).exclude(id__in=existing_file_ids).delete()
+        else:
+            # If no existing file IDs provided, delete all existing files
+            ResourceFile.objects.filter(resource=resource).delete()
+        
+        # Handle new files if provided
+        files_data = self.request.FILES.getlist('files')
+        for file_data in files_data:
+            ResourceFile.objects.create(
+                resource=resource,
+                file_url=file_data,
+                filename=file_data.name,
+                file_size=file_data.size,
+                mime_type=file_data.content_type
+            )
 
 class ResourceFileDownloadView(APIView):
     """

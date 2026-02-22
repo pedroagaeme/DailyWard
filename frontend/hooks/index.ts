@@ -5,6 +5,6 @@ export * from './useFeedAreaInsets';
 export * from './useThemeColor';
 export * from './useInfinitePosts';
 export * from './useInfiniteResources';
-export * from './useInfiniteTopics';
+export * from './useTopics';
 export * from './useInfiniteParticipants';
 export * from './useUserProfile';

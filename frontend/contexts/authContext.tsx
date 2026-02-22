@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { RegisterFormData, LoginFormData, UserProfile, AuthProps } from "@/types";
+import { RegisterFormData, LoginFormData, AuthProps } from "@/types";
 import { AuthService } from "@/services/authService";
+import { useLogout } from "@/hooks/useLogout";
 
 const AuthContext = createContext<AuthProps>({});
 
@@ -22,6 +23,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         loadAuth();
     }, []);
+
+    const { logout: logoutMutation } = useLogout();
 
     const register = async (data: RegisterFormData) => {
         return await AuthService.register(data);
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const logout = async () => {
-        await AuthService.logout();
+        logoutMutation();
         setAuthState({token: null, isAuthenticated: false});
     }
 

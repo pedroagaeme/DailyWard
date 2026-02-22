@@ -5,28 +5,31 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetModal } from './BottomSheetModal';
 import { IconButton } from './IconButton';
 import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
-import { router, usePathname } from 'expo-router';
 import { BottomSheetButton } from './BottomSheetButton';
-import { TopicService } from '@/services/topicService';
+import { ParticipantService } from '@/services/participantService';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTopicInfo } from '@/hooks/useTopicInfo';
+import { ParticipantsFeedItem } from '@/types';
 import { useFeedAreaContextSafe } from '@/contexts/feedAreaContext';
 
-interface TopicBottomSheetProps {
+interface ParticipantBottomSheetProps {
+  participant: ParticipantsFeedItem;
   topicId: string;
   buttonStyle?: any;
   borders?: { left?: boolean; right?: boolean; top?: boolean; bottom?: boolean };
   getItemHeight?: () => number;
 }
 
-export function TopicBottomSheet({ topicId, buttonStyle, borders = { right: true, top: true }, getItemHeight }: TopicBottomSheetProps) {
+export function ParticipantBottomSheet({ 
+  participant, 
+  topicId, 
+  buttonStyle, 
+  borders = { right: true, top: true },
+  getItemHeight,
+}: ParticipantBottomSheetProps) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [enabled, setEnabled] = useState(true);
   const { bottom: bottomPadding } = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const { data: topicInfo, isLoading } = useTopicInfo(topicId, enabled);
-  const isAdmin = (topicInfo?.data?.isLoggedInUserAdmin === true);
-  const isOnPostsPage = usePathname().includes('tabs/index');
+  const isAdmin = participant.role === 'admin';
   const feedAreaContext = useFeedAreaContextSafe();
   const onItemAboutToDelete = feedAreaContext?.onItemAboutToDelete;
 
@@ -34,35 +37,20 @@ export function TopicBottomSheet({ topicId, buttonStyle, borders = { right: true
     setModalVisible(true);
   };
 
-  const handleSeeMoreInfo = () => {
-    router.push({
-      pathname: '/topics/[topicId]/info',
-      params: { topicId }
-    });
-  };
-
-  const handleEditTopic = () => {
-    setModalVisible(false);
-    router.push({
-      pathname: '/topics/[topicId]/edit-topic',
-      params: { topicId }
-    });
-  };
-
-  const handleExitTopic = async () => {
+  const handleKickOut = async () => {
     Alert.alert(
-      'Sair do Tópico',
-      'Tem certeza que deseja sair deste tópico? Você não poderá ver mais posts ou recursos deste tópico.',
+      'Remover Participante',
+      `Tem certeza que deseja remover ${participant.userFullName} deste tópico?`,
       [
         {
           text: 'Cancelar',
           style: 'cancel'
         },
         {
-          text: 'Sair',
+          text: 'Remover',
           style: 'destructive',
           onPress: async () => {
-            // Increase padding by item height before leaving topic
+            // Increase padding by item height before deletion
             if (getItemHeight && onItemAboutToDelete) {
               const itemHeight = getItemHeight();
               if (itemHeight > 0) {
@@ -70,20 +58,44 @@ export function TopicBottomSheet({ topicId, buttonStyle, borders = { right: true
               }
             }
 
-            setEnabled(false);
-            // Navigate back to topics list
-            if (isOnPostsPage) {
-              router.back();
-            }
-
-            const result = await TopicService.leaveTopic(topicId);
+            const result = await ParticipantService.removeParticipant(topicId, participant.id);
             
             if (result && (result.status === 200 || result.status === 204)) {
-              // Invalidate topic queries to refresh the feed
-              queryClient.invalidateQueries({ queryKey: ['topics'] });
-              queryClient.removeQueries({ queryKey: ['topic', topicId] });
+              // Invalidate participants queries to refresh the list
+              queryClient.invalidateQueries({ queryKey: ['participants', topicId] });
+              setModalVisible(false);
             } else {
-              Alert.alert('Erro', 'Não foi possível sair do tópico. Tente novamente.');
+              Alert.alert('Erro', 'Não foi possível remover o participante. Tente novamente.');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleToggleAdmin = async () => {
+    const newRole = isAdmin ? 'member' : 'admin';
+    const action = isAdmin ? 'remover como administrador' : 'promover a administrador';
+    
+    Alert.alert(
+      isAdmin ? 'Remover Administrador' : 'Promover a Administrador',
+      `Tem certeza que deseja ${action} ${participant.userFullName}?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: isAdmin ? 'Remover' : 'Promover',
+          onPress: async () => {
+            const result = await ParticipantService.updateParticipantRole(topicId, participant.id, newRole);
+            
+            if (result && (result.status === 200 || result.status === 204)) {
+              // Invalidate participants queries to refresh the list
+              queryClient.invalidateQueries({ queryKey: ['participants', topicId] });
+              setModalVisible(false);
+            } else {
+              Alert.alert('Erro', `Não foi possível ${action}. Tente novamente.`);
             }
           }
         }
@@ -106,18 +118,12 @@ export function TopicBottomSheet({ topicId, buttonStyle, borders = { right: true
       <BottomSheetModal ModalVisible={modalVisible} setModalVisible={setModalVisible}>
         <View style={[styles.modalContent, { paddingTop: 8, paddingBottom: bottomPadding + 8, paddingHorizontal: 20 }]}>
           <BottomSheetButton 
-            onPress={handleSeeMoreInfo}
-            label="Ver mais informações"
+            onPress={handleToggleAdmin}
+            label={isAdmin ? 'Remover administrador' : 'Promover a administrador'}
           />
-          {isAdmin && (
-            <BottomSheetButton 
-              onPress={handleEditTopic}
-              label="Editar tópico"
-            />
-          )}
           <BottomSheetButton 
-            onPress={handleExitTopic}
-            label="Sair do tópico"
+            onPress={handleKickOut}
+            label="Remover participante"
             isDestructive={true}
           />
         </View>

@@ -5,14 +5,12 @@ import { PostService } from '@/services/postService';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, Keyboard, ActivityIndicator } from 'react-native';
+import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { scheduleOnRN } from 'react-native-worklets';
 
 export default function EditPostPage() {
   const { profile, isLoading: isProfileLoading } = useUserProfile();
@@ -48,41 +46,20 @@ export default function EditPostPage() {
   // Keyboard animation
   const keyboard = useAnimatedKeyboard();
   const footerHeight = useSharedValue(0);
-  
+
   const animatedContainerStyle = useAnimatedStyle(() => {
     'worklet';
     return {
-      height: screenHeight - footerHeight.value - keyboard.height.value - insets.top,
+      maxHeight: screenHeight - insets.bottom - insets.top,
+      height: screenHeight - keyboard.height.value - insets.top,
     };
   });
-
-  // Listen for keyboard dismissal and navigate back
-  useEffect(() => {
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      router.back();
-    });
-
-    return () => {
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  const focusInput = () => {
-    contentTextRef.current?.focus();
-  };
-
-  // Tap gesture to focus input when screen is tapped
-  const tapGesture = Gesture.Tap()
-    .onStart(() => {
-      scheduleOnRN(focusInput);
-    });
   
   const onSubmit = async (data:any) => {
     if (!topicId || !postId) {
       console.error('No topic or post ID');
       return;
     }
-
     const result = await PostService.updatePost(topicId, postId, {
       contentText: data.contentText,
       contentPicUrl: image || undefined
@@ -105,56 +82,57 @@ export default function EditPostPage() {
   }
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={[styles.container]}>
-        <ScreenHeader title="Editar Postagem" />
-        <View style={[styles.body]}>
-          <Animated.View style={[animatedContainerStyle]}>
-            <View style={styles.postContainer}>
-              <View style={styles.contentContainer}>
-                <Controller
-                  name="contentText"
-                  control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <FormInput
-                      ref={contentTextRef}
-                      autoFocus
-                      placeholder="Escreva sua postagem..."
-                      onChangeText={onChange}
-                      value={value}
-                      multiline
-                      borderless={true}
-                      headerComponent={
-                      <View style={styles.profileSection}>
-                        <CustomProfileImage 
-                          source={profile?.profilePicUrl} 
-                          fullName={profile?.firstName + ' ' + profile?.lastName || ''} 
-                          style={styles.profilePic}/>
-                        <Text style={styles.posterName}>{profile?.firstName + ' ' + profile?.lastName}</Text>
-                      </View>
-                      }
-                      footerComponent={image ? <CustomImage source={image} style={styles.imagePreview} /> : null}
-                    />
-                  )}
-                  rules={{ required: true }}
-                />
-              </View>
+    <View style={[styles.container]}>
+      <ScreenHeader title="Editar Postagem" />
+      <View style={[styles.body]}>
+        <Animated.View style={[animatedContainerStyle]}>
+          <View style={styles.postContainer}>
+            <View style={styles.contentContainer}>
+              <Controller
+                name="contentText"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <FormInput
+                    ref={contentTextRef}
+                    autoFocus
+                    placeholder="Escreva sua postagem..."
+                    onChangeText={onChange}
+                    value={value}
+                    multiline
+                    borderless={true}
+                    headerComponent={
+                    <View style={styles.profileSection}>
+                      <CustomProfileImage 
+                        source={profile?.profilePicUrl} 
+                        fullName={profile?.firstName + ' ' + profile?.lastName || ''} 
+                        style={styles.profilePic}/>
+                      <Text style={styles.posterName}>{profile?.firstName + ' ' + profile?.lastName}</Text>
+                    </View>
+                    }
+                    footerComponent={image ? <CustomImage source={image} style={styles.imagePreview} /> : null}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+            </View>
           </View>
-          </Animated.View>
-          <View 
-            style={styles.footer}
-            onLayout={(event) => {
-              footerHeight.value = event.nativeEvent.layout.height;
-            }}
-          >
-            <AddImageToPostButton setImage={setImage} />
-            <Pressable onPress={handleSubmit(onSubmit)} style={styles.createPostButton}>
-              <Text style={styles.createPostButtonText}>Salvar</Text>
-            </Pressable>
-          </View>
+        <View 
+          style={styles.footer}
+          onLayout={(event) => {
+            footerHeight.value = event.nativeEvent.layout.height;
+          }}
+        >
+          <AddImageToPostButton 
+            setImage={setImage} 
+            inputRef={contentTextRef} 
+          />
+          <Pressable onPress={handleSubmit(onSubmit)} style={styles.createPostButton}>
+            <Text style={styles.createPostButtonText}>Salvar</Text>
+          </Pressable>
         </View>
+        </Animated.View>
       </View>
-    </GestureDetector>
+    </View>
   );
 }
 
@@ -178,7 +156,6 @@ const styles = StyleSheet.create({
     gap:8,
   },
   profileSection: {
-    marginTop: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap:16,

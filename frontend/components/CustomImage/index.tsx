@@ -1,6 +1,6 @@
 import React, { useState} from 'react';
 import { View, StyleSheet, Pressable, Modal, Dimensions, StatusBar } from 'react-native';
-import FastImage, { FastImageProps } from 'react-native-fast-image';
+import { Image, ImageProps } from 'expo-image';
 import { DefaultProfileIcon } from './components/DefaultProfileIcon';
 import { CustomImageProps, CustomProfileImageProps } from '@/types';
 import { Colors } from '@/constants/Colors';
@@ -20,10 +20,8 @@ export function CustomImage({
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
   
-  const imageSource: FastImageProps['source'] = (source ? { 
-    uri: source, 
-    cache: FastImage.cacheControl.immutable,
-  } : fallbackSource)
+  const imageSource = source ? { uri: source } : fallbackSource
+  
   const imageStyle = imageProps.style as any;
   const borderRadius = imageStyle?.borderRadius || 0;
 
@@ -33,20 +31,19 @@ export function CustomImage({
     }
   };
 
-
   return (
     <>
       <View style={[imageStyle, !source && { pointerEvents: 'none' }]}>
         {expandable && source ? (
           <Pressable onPress={handleImagePress} style={{ flex: 1 }}>
-            <FastImage source={imageSource} {...imageProps} />
+            <Image source={imageSource} cachePolicy="disk"  {...imageProps}/>
             {showOverlay && (
               <View style={[styles.overlay, { borderRadius }, overlayStyle, styles.overlayPressable]} />
             )}
           </Pressable>
         ) : (
           <>
-            <FastImage source={imageSource} {...imageProps} />
+            <Image source={imageSource} cachePolicy="disk" {...imageProps} />
             {showOverlay && (
               <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
             )}
@@ -80,10 +77,10 @@ export function CustomImage({
                   maxScale={3}
 
                 >
-                  <FastImage 
+                  <Image 
                     source={imageSource} 
                     style={styles.zoomImage}
-                    resizeMode={FastImage.resizeMode.contain}
+                    contentFit="contain"
                   />
                 </Zoomable>
               </Pressable>

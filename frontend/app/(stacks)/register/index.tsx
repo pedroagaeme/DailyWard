@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { useRef } from 'react';
@@ -10,6 +11,7 @@ import { useRegisterForm } from '@/contexts';
 
 export default function Register() {
     const { control, handleSubmit, formState: {errors} } = useForm<RegisterFormData>();
+    const insets = useSafeAreaInsets();
     const { updateFormData} = useRegisterForm();
     const lastNameRef = useRef<TextInput>(null);
 
@@ -19,7 +21,14 @@ export default function Register() {
     };
 
     return(
-        <View style={styles.container}>
+        <KeyboardAwareScrollView 
+            style={[styles.container, { marginTop: insets.top, marginBottom: insets.bottom }]}
+            contentContainerStyle={styles.scrollContent}
+            enableOnAndroid={true}
+            enableAutomaticScroll={true}
+            keyboardShouldPersistTaps="handled"
+            extraScrollHeight={20 + insets.bottom}
+        >
             <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
                 <Text style={styles.title}>Qual é o seu nome?</Text>
                 <Text style={styles.text}>Insira seu nome completo para se conectar com outros usuários.</Text>
@@ -76,20 +85,23 @@ export default function Register() {
                     </Link>
                 </View>
             </View>
-        </View>
+        </KeyboardAwareScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: Colors.light.background[90],
+    },
+    scrollContent: {
+        alignItems: 'center',
     },
     header: {
         width: '100%',
         paddingHorizontal: 20,
-        paddingVertical: 40,
+        paddingTop: 20,
+        paddingBottom: 40,
         gap:12,
     },
     form: {

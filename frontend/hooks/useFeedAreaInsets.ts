@@ -3,14 +3,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
     immersiveScreen:InsetToggle, 
-    fadedEdges:InsetToggle, 
-    overlayHeight:number,
     navbarInset:boolean
 }
 
-export function useFeedAreaInsets({immersiveScreen, fadedEdges, overlayHeight, navbarInset}:Props) {
+export function useFeedAreaInsets({immersiveScreen, navbarInset}:Props) {
     const insets = useSafeAreaInsets();
-    const topInset = Math.max((immersiveScreen.top ? insets.top : 0), (fadedEdges.top ? overlayHeight: 0));
-    const bottomInset = Math.max((immersiveScreen.bottom ? (insets.bottom + (navbarInset ? navbarMaxHeight : 0)) : 0), (fadedEdges.bottom ? overlayHeight: 0));
+    const topInset = immersiveScreen.top ? insets.top : 0;
+    const bottomInset = immersiveScreen.bottom ? (insets.bottom + (navbarInset ? navbarMaxHeight : 0)) : 0;
     return {top:topInset, bottom:bottomInset};
 }

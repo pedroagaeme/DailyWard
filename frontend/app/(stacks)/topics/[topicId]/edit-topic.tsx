@@ -1,28 +1,56 @@
 import * as ImagePicker from 'expo-image-picker';
-import { CreateTopicButton } from '@/components/CreateTopicButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
-import { router } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { CustomImage } from '@/components/CustomImage';
 import { UploadImageIcon } from '@/assets/images/upload-image-icon';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { useQueryClient } from '@tanstack/react-query';
 
-interface CreateTopicForm {
+interface EditTopicForm {
   title: string;
   description: string;
 }
 
-export default function CreateTopic() {
-  const { control, handleSubmit } = useForm<CreateTopicForm>();
+export default function EditTopic() {
+  const { topicId: topicIdParam } = useGlobalSearchParams();
+  const topicId = topicIdParam as string || '';
+  const { control, handleSubmit, reset } = useForm<EditTopicForm>();
   const insets = useSafeAreaInsets();
   const [image, setImage] = useState<string | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // Fetch existing topic data
+  useEffect(() => {
+    const fetchTopic = async () => {
+      if (!topicId) return;
+      
+      setIsLoading(true);
+      const topic = await TopicService.getTopic(topicId);
+      
+      if (topic && topic.data) {
+        reset({ 
+          title: topic.data.title || '',
+          description: topic.data.description || ''
+        });
+        if (topic.data.topicImageUrl) {
+          setExistingImageUrl(topic.data.topicImageUrl);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    fetchTopic();
+  }, [topicId, reset]);
 
   const pickImage = async () => {
     try {
@@ -35,14 +63,21 @@ export default function CreateTopic() {
 
       if (!result.canceled && result.assets[0]) {
         setImage(result.assets[0].uri);
+        // Clear existing image URL when new image is picked
+        setExistingImageUrl(null);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to pick image');
     }
   };
 
-  const onSubmit = async (data: CreateTopicForm) => {
-    const result = await TopicService.createTopic({
+  const onSubmit = async (data: EditTopicForm) => {
+    if (!topicId) {
+      Alert.alert('Error', 'No topic ID');
+      return;
+    }
+
+    const result = await TopicService.updateTopic(topicId, {
       title: data.title,
       description: data.description,
       topicImageUrl: image ? {
@@ -52,21 +87,34 @@ export default function CreateTopic() {
       } : undefined
     });
 
-    if (result && result.status === 201) {
+    if (result && (result.status === 200 || result.status === 201)) {
+      queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+      queryClient.invalidateQueries({ queryKey: ['topics'] });
       router.back();
     } else {
-      console.error('Error creating topic:', result);
+      console.error('Error updating topic:', result);
+      Alert.alert('Error', 'Failed to update topic');
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
+  }
+
+  const displayImage = image || existingImageUrl;
+
   return (
-    <View style={[styles.container]}>
-      <ScreenHeader title="Criar Tópico" />
+    <View style={styles.container}>
+      <ScreenHeader title="Editar Tópico" />
       <KeyboardAwareScrollView 
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
-        style={styles.body}
-        contentContainerStyle={{paddingBottom: insets.bottom + 16}}
+        style={styles.body} 
+        contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
       >
 
         <Controller
@@ -104,9 +152,9 @@ export default function CreateTopic() {
 
         <View style={styles.pictureBlock}>
           <Text style={styles.label}>Imagem</Text>
-          <Pressable style={[styles.uploadArea, image && styles.uploadAreaWithImage]} onPress={pickImage}>
-            {image ? (
-              <CustomImage source={image} style={styles.previewImage} />
+          <Pressable style={[styles.uploadArea, displayImage && styles.uploadAreaWithImage]} onPress={pickImage}>
+            {displayImage ? (
+              <CustomImage source={displayImage} style={styles.previewImage} />
             ) : (
               <View style={styles.uploadContent}>
                 <UploadImageIcon width={40} height={40} color={Colors.light.primary} />
@@ -118,7 +166,9 @@ export default function CreateTopic() {
         </View>
 
         <View style={styles.footer}>
-          <CreateTopicButton onPress={handleSubmit(onSubmit)} />
+          <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
+            <Text style={styles.buttonText}>Salvar</Text>
+          </Pressable>
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -128,6 +178,7 @@ export default function CreateTopic() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.light.background[90],
   },
   body: {
     flex: 1,
@@ -181,13 +232,26 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: 'cover',
   },
-  textAreaContainer: {},
-  textArea: {},
   footer: {
     marginTop: 'auto',
     marginBottom: 8,
     alignItems: 'center',
   },
+  button: {
+    marginTop: 24,
+    flexDirection: 'row',
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
+  },
+  buttonText: {
+    fontFamily: 'Inter_500Medium',
+    color: Colors.light.background[100],
+    fontSize: 18,
+    lineHeight: 28,
+  },
 });
-
 

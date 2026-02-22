@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Colors } from '@/constants/Colors';
 import { Controller, useForm } from 'react-hook-form';
 import { FormInput } from '@/components/FormInput';
@@ -10,6 +11,7 @@ import { useAuth } from '@/contexts';
 
 export default function EmailScreen() {
     const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
+    const insets = useSafeAreaInsets();
     const { onRegister } = useAuth();
     const { updateFormData, getFormData} = useRegisterForm();
 
@@ -26,7 +28,14 @@ export default function EmailScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAwareScrollView 
+            style={[styles.container, { marginTop: insets.top, marginBottom: insets.bottom }]}
+            contentContainerStyle={styles.scrollContent}
+            enableOnAndroid={true}
+            enableAutomaticScroll={true}
+            keyboardShouldPersistTaps="handled"
+            extraScrollHeight={20 + insets.bottom}
+        >
             <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
                 <Text style={styles.title}>Insira seu email</Text>
                 <Text style={styles.text}>Enviaremos um código de verificação de 6 dígitos para o seu endereço de email.</Text>
@@ -61,20 +70,23 @@ export default function EmailScreen() {
                     </Link>
                 </View>
             </View>
-        </View>
+        </KeyboardAwareScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         backgroundColor: Colors.light.background[90],
+    },
+    scrollContent: {
+        alignItems: 'center',
     },
     header: {
         width: '100%',
         paddingHorizontal: 20,
-        paddingVertical: 40,
+        paddingTop: 20,
+        paddingBottom: 40,
         gap:12,
     },
     form: {

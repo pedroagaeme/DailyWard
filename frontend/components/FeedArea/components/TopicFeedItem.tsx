@@ -4,8 +4,7 @@ import { ListRenderItem, StyleSheet, Text, View, Pressable } from 'react-native'
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { TopicFeedItem } from '@/types';
 import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { IconButton } from '@/components/IconButton';
 import { PostService } from '@/services/postService';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,15 +12,17 @@ import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useTopicInfo } from '@/hooks/useTopicInfo';
 import { calculatePermissions } from '@/utils/permissions';
+import { useFeedAreaContext } from '@/contexts/feedAreaContext';
 
 function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
   const { topicId, postId: currentPostId } = useGlobalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { profile } = useUserProfile();
   const { data: topicInfo } = useTopicInfo(topicId as string || '');
   const isOnDetailPage = currentPostId === item.id.toString();
+  const itemHeightRef = useRef<number>(0);
+  const { onItemAboutToDelete } = useFeedAreaContext();
   
   const { canEdit, canDelete } = calculatePermissions(
     item.posterId,
@@ -55,13 +56,18 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
   };
 
   const handleDeletePost = async (): Promise<boolean> => {
+    // Increase padding by item height before deletion
+    if (itemHeightRef.current > 0) {
+      onItemAboutToDelete(itemHeightRef.current);
+    }
+
     if (!topicId) return false;
     
-    const result = await PostService.deletePost(topicId, item.id.toString());
+    const result = await PostService.deletePost(topicId as string, item.id.toString());
     
     if (result && (result.status === 200 || result.status === 204)) {
       // Invalidate posts queries to refresh the feed
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] }); 
       
       // If on detail page, navigate back
       if (isOnDetailPage) {
@@ -73,7 +79,13 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
   };
   
   return(
-    <Pressable style={styles.itemContainer} onPress={handlePress}>
+    <Pressable 
+      style={styles.itemContainer} 
+      onPress={handlePress}
+      onLayout={(event) => {
+        itemHeightRef.current = event.nativeEvent.layout.height;
+      }}
+    >
       <View style={styles.headerRow}>
         <View style={styles.profileSection}>
           <CustomProfileImage 
@@ -129,11 +141,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     marginBottom: 8,
     gap:12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 2,
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.12)',
   },
   headerRow: {
     flexDirection: 'row',

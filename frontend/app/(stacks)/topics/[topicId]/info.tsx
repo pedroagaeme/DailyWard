@@ -11,9 +11,8 @@ export default function TopicInfoScreen() {
   const insets = useSafeAreaInsets();
   const params = useGlobalSearchParams();
   const topicId = params.topicId as string || '';
-  
   const { data: topicData, isLoading: topicLoading, isError, error, refetch } = useTopicInfo(topicId);
-  
+
   useRefreshOnFocus(refetch);
 
   if (topicLoading) {
@@ -37,7 +36,7 @@ export default function TopicInfoScreen() {
 
   return (
     <View style={styles.fullScreenContainer}>
-      <ScreenHeader title="Informações do Tópico" />
+      <ScreenHeader title={'Informações'} />
       
       <ScrollView 
         style={{ flex: 1 }} 

@@ -13,6 +13,7 @@ from .permissions import IsAdminOrParticipant
 class TopicViewSet(viewsets.ModelViewSet):
     serializer_class = TopicSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdminOrParticipant]
+    pagination_class = None  # Disable pagination for topics
 
     def get_queryset(self):
         user = self.request.user

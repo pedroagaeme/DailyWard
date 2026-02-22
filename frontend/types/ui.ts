@@ -1,6 +1,6 @@
 import { SvgProps } from "react-native-svg";
 import { ViewStyle } from "react-native";
-import { FastImageProps } from "react-native-fast-image";
+import { ImageProps } from "expo-image";
 
 // Tab icon interface
 export interface TabIconInfo {
@@ -32,7 +32,7 @@ export interface CustomImageViewProps {
   overlayStyle?: ViewStyle;
 }
 
-export interface CustomImageProps extends Omit<FastImageProps, 'source'>, CustomImageViewProps {
+export interface CustomImageProps extends Omit<ImageProps, 'source'>, CustomImageViewProps {
   source: string | null | undefined;
   fallbackSource?: any; // For require() imports
   expandable?: boolean; // Enable image expansion modal

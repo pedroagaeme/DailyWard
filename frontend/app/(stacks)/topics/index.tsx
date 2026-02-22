@@ -3,7 +3,7 @@ import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedIte
 import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
 import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { useInfiniteTopics } from '@/hooks/useInfiniteTopics';
+import { useTopics } from '@/hooks/useTopics';
 import { useMemo, useState } from 'react';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { AddIcon } from '@/assets/images/add-icon';
@@ -23,16 +23,13 @@ export default function Home() {
     isLoading,
     isError,
     error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
     refetch,
-  } = useInfiniteTopics({
+  } = useTopics({
     enabled: true,
   });
   useRefreshOnFocus(refetch);
-  // Flatten all pages of data
-  const topics = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
+  // Use the topics data directly (non-paginated)
+  const topics = useMemo(() => data || [], [data]);
   return (
     <View style={styles.container}>
       <HomeHeader />
@@ -52,21 +49,8 @@ export default function Home() {
         data={topics} 
         renderItem={renderHomeFeedItem} 
         immersiveScreen={{top:false, bottom:true}}
-        fadedEdges={{top:false, bottom:false}}
-        additionalPadding={{top:12, bottom:0}}
+        additionalPadding={{top:12, bottom: 0}}
         numColumns={2}
-        refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
-        onEndReachedThreshold={0.2}
-        onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <ActivityIndicator
-              color="blue"
-              size="small"
-              style={{ marginBottom: 5 }}
-            />
-          ) : null
-        }
       />
       <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible}>
         <View style={[styles.modal, {paddingBottom: insets.bottom + 8, paddingTop: 8, paddingHorizontal: 20}]}>

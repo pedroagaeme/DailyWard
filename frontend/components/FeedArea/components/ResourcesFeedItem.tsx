@@ -4,8 +4,7 @@ import { router, useGlobalSearchParams } from 'expo-router';
 import { CustomProfileImage } from '@/components/CustomImage';
 import { ResourcesFeedItem } from '@/types';
 import { VerticalEllipsisIcon } from '@/assets/images/vertical-ellipsis-icon';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { IconButton } from '@/components/IconButton';
 import { ResourceService } from '@/services/resourceService';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,6 +12,7 @@ import { EditDeleteBottomSheet } from '@/components/EditDeleteBottomSheet';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useTopicInfo } from '@/hooks/useTopicInfo';
 import { calculatePermissions } from '@/utils/permissions';
+import { useFeedAreaContext } from '@/contexts/feedAreaContext';
 
 const formatDate = (dateString?: string) => {
   if (!dateString) return 'Data não disponível';
@@ -41,7 +41,7 @@ const formatDate = (dateString?: string) => {
   if (diffDays === 1) return '1 dia atrás';
   if (diffDays < 7) return `${diffDays} dias atrás`;
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? 's' : ''} atrás`;
-  return `${Math.floor(diffDays / 30)} mês${Math.floor(diffDays / 30) > 1 ? 'es' : ''} atrás`;
+  return `${Math.floor(diffDays / 30)} ${Math.floor(diffDays / 30) > 1 ? 'meses' : 'mês'} atrás`;
 };
 
 function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
@@ -49,11 +49,12 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
   const topicId = params.topicId as string;
   const currentResourceId = params.resourceId as string | undefined;
   const [modalVisible, setModalVisible] = useState(false);
-  const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { profile } = useUserProfile();
   const { data: topicInfo } = useTopicInfo(topicId);
   const isOnDetailPage = currentResourceId === item.id.toString();
+  const itemHeightRef = useRef<number>(0);
+  const { onItemAboutToDelete } = useFeedAreaContext();
   
   const { canEdit, canDelete } = calculatePermissions(
     item.posterId,
@@ -87,6 +88,11 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
   };
 
   const handleDeleteResource = async (): Promise<boolean> => {
+    // Increase padding by item height before deletion
+    if (itemHeightRef.current > 0) {
+      onItemAboutToDelete(itemHeightRef.current);
+    }
+
     if (!topicId) return false;
     
     const result = await ResourceService.deleteResource(topicId, item.id.toString());
@@ -105,7 +111,12 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
   };
 
   return (
-    <Pressable onPress={handlePress}>
+    <Pressable 
+      onPress={handlePress}
+      onLayout={(event) => {
+        itemHeightRef.current = event.nativeEvent.layout.height;
+      }}
+    >
       <View style={styles.itemContainer}>
         <View>
           <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
@@ -175,11 +186,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.background[80],
     gap:20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.1)',
   },
   footerRow: {
     gap:12,

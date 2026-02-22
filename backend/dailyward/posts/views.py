@@ -11,6 +11,7 @@ from .permissions import IsTopicParticipant, IsAuthor, IsAuthorOrTopicAdmin
 from topics.models import Topic
 from datetime import datetime 
 from django.utils import timezone
+from django.core.cache import cache
 
 #create your views here.
 
@@ -43,6 +44,15 @@ class PostViewSet(viewsets.ModelViewSet):
         topic_id = self.kwargs.get('topic_pk') 
         topic = Topic.objects.get(pk=topic_id)
         serializer.save(posted_by=self.request.user, topic=topic)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        # Delete cached URLs for the post and poster
+        cache.delete(f'post_pic_url_{instance.id}')
+    
+    def perform_destroy(self, instance):
+        cache.delete(f'post_pic_url_{instance.id}')
+        instance.delete()
 
 class PostsByDayAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTopicParticipant]

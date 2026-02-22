@@ -1,7 +1,7 @@
 import {View, Text, TextInput, StyleSheet, TextInputProps, ScrollView} from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { FieldError } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const lineHeight = 24;
 const minInputHeight = 45;
@@ -16,7 +16,13 @@ export function FormInput({title, ref, errors, borderless = false, headerCompone
     } & TextInputProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [inputHeight, setInputHeight] = useState(minInputHeight);
-    const [isTextEmpty, setIsTextEmpty] = useState(true);
+    const initialValue = props.value || props.defaultValue || '';
+    const [isTextEmpty, setIsTextEmpty] = useState(initialValue.length === 0);
+
+    useEffect(() => {
+        const currentValue = props.value || props.defaultValue || '';
+        setIsTextEmpty(currentValue.length === 0);
+    }, [props.value, props.defaultValue]);
 
     return(
         <View style={[styles.formContainer, borderless && {marginBottom:0, flex:1}]}>
@@ -24,6 +30,7 @@ export function FormInput({title, ref, errors, borderless = false, headerCompone
             <ScrollView 
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="always"
+                contentContainerStyle={borderless ? {paddingVertical: 16} : {}}
             >   
                 {headerComponent}
                 <View style={[

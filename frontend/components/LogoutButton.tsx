@@ -1,13 +1,20 @@
-import { Pressable } from "react-native";
-import { useAuth } from "@/contexts";
 import { LogoutIcon } from "@/assets/images/logout-icon";
 import { IconButton } from '@/components/IconButton';
+import { useAuth } from "@/contexts";
 
-export function LogoutButton() {
+interface LogoutButtonProps {
+    onLogoutPress?: () => void;
+}
+
+export function LogoutButton({ onLogoutPress }: LogoutButtonProps = {}) {
     const { onLogout } = useAuth();
-
-    const handlePress = async () => {
-        await onLogout!();
+    
+    const handlePress = () => {
+        if (onLogoutPress) {
+            onLogoutPress();
+        } else {
+            onLogout!();
+        }
     };
     
     return (

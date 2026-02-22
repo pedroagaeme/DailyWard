@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     paddingHorizontal: 8,
     paddingVertical: 12,
-    marginBottom: 4,
+    marginBottom: 12,
     maxWidth: 260,
     flexDirection:'row',
     justifyContent:'space-around',

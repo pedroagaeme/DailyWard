@@ -26,7 +26,7 @@ export const ScreenHeader = ({ title, onBackPress, rightComponent }: ScreenHeade
 
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-      <IconButton onPress={handleBackPress} >
+      <IconButton onPress={handleBackPress} innerSize={28} outerboxRadius={8} borders={{left: true, bottom: true}}>
         <GoBackIcon width={28} height={28} color={Colors.light.text[5]} />
       </IconButton>
       
@@ -53,6 +53,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.light.text[5],
     textAlign: 'center',
+    marginRight: 36,
+    marginLeft: 32,
   },
   placeholder: {
     width: 32,

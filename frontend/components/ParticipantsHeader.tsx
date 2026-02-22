@@ -21,7 +21,7 @@ export const ParticipantsHeader = ({ title }: ParticipantsHeaderProps) => {
 
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
-      <IconButton onPress={() => openDrawer()} style={{marginLeft: 4}}>
+      <IconButton onPress={() => openDrawer()} style={{marginLeft: 4}} innerSize={24} outerboxRadius={10} borders={{left: true, bottom: true}}>
         <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
       </IconButton>
       <View style={styles.titleContainer}>
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,  
     alignItems: 'center',
-    marginHorizontal: 20,
+    paddingLeft: 40,
+    paddingRight: 40,
   },
   placeholder: {
     width: 28,

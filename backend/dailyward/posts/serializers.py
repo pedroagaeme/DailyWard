@@ -31,6 +31,7 @@ class PostSerializer(serializers.ModelSerializer):
                 data['content_pic_url'] = cached_url
             else:
                 url = instance.content_pic_url.url
+
                 cache.set(cache_key, url, timeout=300)
                 data['content_pic_url'] = url
         else:
@@ -45,6 +46,7 @@ class PostSerializer(serializers.ModelSerializer):
                 data['poster_profile_pic_url'] = cached_url
             else:
                 url = instance.posted_by.profile_pic_url.url
+
                 cache.set(cache_key, url, timeout=300)
                 data['poster_profile_pic_url'] = url
         else:
