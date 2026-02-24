@@ -92,7 +92,7 @@ export class PostService {
       const formData = new FormData();
       formData.append('contentText', data.contentText);
       
-      if (data.contentPicUrl) {
+      if (data.contentPicUrl && data.contentPicUrl.startsWith('file://')) {
         formData.append('contentPicUrl', {
           uri: data.contentPicUrl,
           name: data.contentPicUrl.split('/').pop() || 'post_image.jpg',

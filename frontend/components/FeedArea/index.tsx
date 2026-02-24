@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeOutUp, FlatListPropsWithLayout, LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { FeedAreaProvider, useFeedAreaContext } from '@/contexts/feedAreaContext';
+import { InteractionBlockerProvider, useInteractionBlocker } from '../InteractionBlocker';
 
 interface Props extends FlatListPropsWithLayout<any> {
   data: any[];
@@ -33,8 +34,9 @@ function FeedAreaContent({
   ...flatListProps
 }: Props) 
   {
+  const { blockInteractions } = useInteractionBlocker();
   const dataLength = useRef<number>(flatListProps.data.length);
-  const previousDataLength = useRef<number>(flatListProps.data.length);
+  const previousDataLength = useRef<number>(0);
 
   const {top:topPadding, bottom:bottomPadding} = useFeedAreaInsets({immersiveScreen, navbarInset});
   const windowWidth = useWindowDimensions().width;
@@ -47,13 +49,16 @@ function FeedAreaContent({
   useEffect(() => {
     const currentLength = flatListProps.data.length;
     // Always update to track current length (handles both initial mount and changes)
+    if (currentLength !== previousDataLength.current) { // Avoid blocking on initial mount if lengths are the same
+      blockInteractions(400); // Block interactions for 350ms whenever data length changes
+    }
     onDataChange(currentLength);
     previousDataLength.current = currentLength;
   }, [flatListProps.data.length, onDataChange]);
   
   const renderItemWithPadding: ListRenderItem<any> = ({item, index}: {item: any, index: number}) => {
     return (
-      <Animated.View style={[styles.itemWrapper, {width: itemWidth}]} entering={FadeInDown.springify().delay(150)}
+      <Animated.View style={[styles.itemWrapper, {width: itemWidth}]} entering={FadeInDown.springify()}
       exiting={FadeOutUp.springify()}>
         {typeof flatListProps.renderItem === 'function' ? flatListProps.renderItem({item, index, separators: {highlight: () => {}, unhighlight: () => {}, updateProps: () => {}}}) : null}
       </Animated.View>
@@ -108,7 +113,9 @@ function FeedAreaContent({
 export function FeedArea(props: Props) {
   return (
     <FeedAreaProvider>
-      <FeedAreaContent {...props} />
+      <InteractionBlockerProvider >
+        <FeedAreaContent {...props} />
+      </InteractionBlockerProvider>
     </FeedAreaProvider>
   );
 }

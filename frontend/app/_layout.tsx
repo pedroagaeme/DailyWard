@@ -211,7 +211,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RegisterFormProvider>
-                <AppContent />
+            <AppContent />
           </RegisterFormProvider>
         </AuthProvider>
         <StatusBar style="dark" />
