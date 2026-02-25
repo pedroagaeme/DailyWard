@@ -1,5 +1,6 @@
 import { renderTopicFeedItem } from '@/components/FeedArea/components/TopicFeedItem';
 import { Colors } from '@/constants/Colors';
+import { EmptyState } from '@/components/EmptyState';
 import { toSegmentedDate } from '@/constants/SegmentedDate';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useInfinitePosts } from '@/hooks/useInfinitePosts';
@@ -68,6 +69,23 @@ export default function Posts() {
   // Flatten all pages of data and filter out undefined items
   const posts = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <PostsHeader 
+          title={topicTitle || 'Carregando...'} 
+          chosenDate={chosenDate}
+          setChosenDate={setChosenDate}
+          topicCreationDate={topicCreationDate}
+          topicId={topicId}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        </View>
+      </View>
+    );
+  }
+
   return (
       <View style={styles.container}>
         <PostsHeader 
@@ -87,6 +105,7 @@ export default function Posts() {
           refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
           onEndReachedThreshold={0.2}
           onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+          ListEmptyComponent={<EmptyState title="Nenhum post" subtitle="Ainda não há posts para esta data. Seja o primeiro a publicar!" />}
           ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
@@ -120,6 +139,11 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     backgroundColor: Colors.light.background[90],
     overflow: 'visible',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     width: 64,

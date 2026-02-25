@@ -1,5 +1,6 @@
 import { AddContactsButton } from "@/components/AddContactsButton";
 import { Colors } from "@/constants/Colors";
+import { EmptyState } from "@/components/EmptyState";
 import { StyleSheet, Text, View, ScrollView, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { TopicCodeArea } from "@/components/TopicCodeArea";
 import { AdminIcon } from "@/assets/images/admin-icon";
@@ -57,6 +58,17 @@ export default function Participants() {
   // Flatten all pages of data and filter out undefined items
   const participants = useMemo(() => data?.pages.flatMap((page: any) => page.results)|| [], [data])  ;
 
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ParticipantsHeader title={topicTitle || 'Carregando...'} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ParticipantsHeader title={topicTitle || 'Carregando...'} />
@@ -71,6 +83,7 @@ export default function Participants() {
         refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
         onEndReachedThreshold={0.2}
         onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListEmptyComponent={<EmptyState title="Nenhum participante" subtitle="Compartilhe o código do tópico para convidar pessoas." />}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
@@ -90,6 +103,11 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor: Colors.light.background[90],
     overflow: 'visible'
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     paddingHorizontal:16,

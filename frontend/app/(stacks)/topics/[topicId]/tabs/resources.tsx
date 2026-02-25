@@ -1,6 +1,7 @@
 import { FeedArea } from "@/components/FeedArea";
 import { renderResourcesFeedItem } from "@/components/FeedArea/components/ResourcesFeedItem";
 import { Colors } from "@/constants/Colors";
+import { EmptyState } from "@/components/EmptyState";
 import { useInfiniteResources } from "@/hooks/useInfiniteResources";
 import { ActivityIndicator, RefreshControl, StyleSheet, View } from "react-native";
 import { useMemo } from "react";
@@ -33,19 +34,30 @@ export default function Resources() {
     // Flatten all pages of data and filter out undefined items
     const resources = useMemo(() => data?.pages.flatMap((page: any) => page.results || []) || [], [data]) ;
     
+    if (isLoading) {
+      return (
+        <View style={styles.container}>
+          <ResourcesHeader title={topicTitle || 'Carregando...'} />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.light.primary} />
+          </View>
+        </View>
+      );
+    }
+
     return (
     <View style={styles.container}>
       <ResourcesHeader title={topicTitle || 'Carregando...'} />
       <FeedArea
         data={resources}
         renderItem={renderResourcesFeedItem}
-        fadedEdges={{top: false, bottom: false}}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 16, bottom: 16}}
         navbarInset={true}
         refreshControl={<RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} tintColor={Colors.light.primary} />}
         onEndReachedThreshold={0.2}
         onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+        ListEmptyComponent={<EmptyState title="Nenhum recurso" subtitle="Compartilhe links, documentos e materiais úteis aqui." />}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
@@ -67,5 +79,10 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     backgroundColor: Colors.light.background[90],
     overflow: 'visible',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

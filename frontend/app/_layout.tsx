@@ -1,5 +1,5 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { RegisterFormProvider } from '@/contexts';
+import { RegisterFormProvider, InteractionBlockerProvider } from '@/contexts';
 import {
     Inter_400Regular,
     Inter_500Medium,
@@ -211,7 +211,9 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RegisterFormProvider>
-            <AppContent />
+            <InteractionBlockerProvider>
+              <AppContent />
+            </InteractionBlockerProvider>
           </RegisterFormProvider>
         </AuthProvider>
         <StatusBar style="dark" />

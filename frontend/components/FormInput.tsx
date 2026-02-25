@@ -1,28 +1,40 @@
 import {View, Text, TextInput, StyleSheet, TextInputProps, ScrollView} from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { FieldError } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const lineHeight = 24;
 const minInputHeight = 45;
 
-export function FormInput({title, ref, errors, borderless = false, headerComponent, footerComponent, ...props}: {
-    title?: string, 
-    ref?: React.Ref<TextInput>, 
-    errors?:FieldError,
-    borderless?:boolean
-    headerComponent?: React.ReactNode
-    footerComponent?: React.ReactNode
-    } & TextInputProps) {
+type FormInputProps = {
+    title?: string;
+    ref?: React.Ref<TextInput>;
+    errors?: FieldError;
+    borderless?: boolean;
+    headerComponent?: React.ReactNode;
+    footerComponent?: React.ReactNode;
+    parentScrollRef?: React.RefObject<KeyboardAwareScrollView> | null;
+} & TextInputProps;
+
+export function FormInput({title, ref, errors, borderless = false, headerComponent, footerComponent, parentScrollRef, ...props}: FormInputProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [inputHeight, setInputHeight] = useState(minInputHeight);
     const initialValue = props.value || props.defaultValue || '';
     const [isTextEmpty, setIsTextEmpty] = useState(initialValue.length === 0);
+    const errorMessageRef = useRef<View>(null);
+    const [errorY, setErrorY] = useState(0);
 
     useEffect(() => {
         const currentValue = props.value || props.defaultValue || '';
         setIsTextEmpty(currentValue.length === 0);
     }, [props.value, props.defaultValue]);
+
+    useEffect(() => {
+        if (errors && parentScrollRef?.current) {
+            parentScrollRef.current?.scrollToPosition(0, errorY, true);
+        }
+    }, [errors, errorY]);
 
     return(
         <View style={[styles.formContainer, borderless && {marginBottom:0, flex:1}]}>
@@ -68,7 +80,18 @@ export function FormInput({title, ref, errors, borderless = false, headerCompone
                 </View>
                 {footerComponent}
             </ScrollView>
-            {errors && <Text style={styles.errorText}>{errors.message}</Text>}
+            {errors && (
+                <View 
+                    ref={errorMessageRef}
+                    onLayout={(event) => {
+                        errorMessageRef.current?.measureInWindow((x, y) => {
+                            setErrorY(y);
+                        });
+                    }}
+                >
+                    <Text style={styles.errorText}>{errors.message}</Text>
+                </View>
+            )}
         </View>
     );
 }

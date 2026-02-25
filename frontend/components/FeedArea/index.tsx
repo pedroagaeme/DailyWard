@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeOutUp, FlatListPropsWithLayout, LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { FeedAreaProvider, useFeedAreaContext } from '@/contexts/feedAreaContext';
-import { InteractionBlockerProvider, useInteractionBlocker } from '../InteractionBlocker';
+import { useInteractionBlocker } from '@/contexts';
 
 interface Props extends FlatListPropsWithLayout<any> {
   data: any[];
@@ -113,9 +113,7 @@ function FeedAreaContent({
 export function FeedArea(props: Props) {
   return (
     <FeedAreaProvider>
-      <InteractionBlockerProvider >
-        <FeedAreaContent {...props} />
-      </InteractionBlockerProvider>
+      <FeedAreaContent {...props} />
     </FeedAreaProvider>
   );
 }

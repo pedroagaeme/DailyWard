@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useState, ReactNode } from 'react';
+import { createContext, useContext, useRef, useState, ReactNode } from 'react';
 import { StyleSheet, ActivityIndicator } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
@@ -15,6 +15,11 @@ export const useInteractionBlocker = () => {
     throw new Error('useInteractionBlocker must be used within InteractionBlockerProvider');
   }
   return context;
+};
+
+// Safe version that doesn't throw
+export const useInteractionBlockerSafe = () => {
+  return useContext(InteractionBlockerContext);
 };
 
 interface InteractionBlockerProviderProps {

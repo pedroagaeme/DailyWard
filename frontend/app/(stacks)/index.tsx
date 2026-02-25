@@ -8,6 +8,7 @@ import { LoginFormData } from '@/types';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { DailyWardLogo } from '@/assets/images/dailyward-logo';
 
 export default function Login() {
     const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();
@@ -35,6 +36,9 @@ export default function Login() {
             extraScrollHeight={20 + insets.bottom}
         >
             <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
+                <View style={styles.logoBox}>
+                    <DailyWardLogo width={52} height={52} color={Colors.light.background[95]} />
+                </View>
                 <Text style={styles.title}>Entrar</Text>
             </SafeAreaView>
             <View style={styles.form}>
@@ -103,18 +107,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     header: {
+        alignItems: 'flex-start',
+        gap: 16,
         width: '100%',
         paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 40,
+        paddingTop: 4,
+        paddingBottom: 24
     },
     form: {
         width: '100%',
         paddingHorizontal: 20,
     },
+    logoBox: {
+        padding: 4,
+        backgroundColor: Colors.light.primary,
+        borderRadius: 16,
+    },
     title: {
         fontFamily: 'Inter_600SemiBold',
-        letterSpacing: -0.5,
+        letterSpacing: 0,
         fontSize: 32,
         lineHeight: 40,
         color: Colors.light.text[5],

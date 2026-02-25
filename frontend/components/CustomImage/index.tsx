@@ -36,14 +36,14 @@ export function CustomImage({
       <View style={[imageStyle, !source && { pointerEvents: 'none' }]}>
         {expandable && source ? (
           <Pressable onPress={handleImagePress} style={{ flex: 1 }}>
-            <Image source={imageSource} cachePolicy="disk"  {...imageProps}/>
+            <Image source={imageSource} cachePolicy="disk" transition={100}{...imageProps}/>
             {showOverlay && (
               <View style={[styles.overlay, { borderRadius }, overlayStyle, styles.overlayPressable]} />
             )}
           </Pressable>
         ) : (
           <>
-            <Image source={imageSource} cachePolicy="disk" {...imageProps} />
+            <Image source={imageSource} cachePolicy="disk" transition={100} {...imageProps} />
             {showOverlay && (
               <View style={[styles.overlay, { borderRadius }, overlayStyle]} />
             )}

@@ -2,6 +2,7 @@ import { FeedArea } from '@/components/FeedArea';
 import { renderHomeFeedItem } from '@/components/FeedArea/components/HomeFeedItem';
 import { HomeFeedItem } from '@/types';
 import { Colors } from '@/constants/Colors';
+import { EmptyState } from '@/components/EmptyState';
 import { ActivityIndicator, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useTopics } from '@/hooks/useTopics';
 import { useMemo, useState } from 'react';
@@ -30,6 +31,30 @@ export default function Home() {
   useRefreshOnFocus(refetch);
   // Use the topics data directly (non-paginated)
   const topics = useMemo(() => data || [], [data]);
+  
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <HomeHeader />
+        <View style={styles.topicsHeader}>
+          <View style={styles.row}>
+            <Text style={styles.feedTitleText}>Seus Tópicos</Text>
+            <IconButton 
+            onPress={() => setModalVisible(true)} 
+            outerboxRadius={10} 
+            innerSize={24}
+            style={styles.button}>
+              <AddIcon width={32} height={32}/>
+            </IconButton>
+          </View>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <HomeHeader />
@@ -51,6 +76,7 @@ export default function Home() {
         immersiveScreen={{top:false, bottom:true}}
         additionalPadding={{top:12, bottom: 0}}
         numColumns={2}
+        ListEmptyComponent={<EmptyState title="Nenhum tópico" subtitle="Você ainda não tem tópicos. Crie um novo ou entre em um existente!" />}
       />
       <BottomSheetModal ModalVisible={ModalVisible} setModalVisible={setModalVisible}>
         <View style={[styles.modal, {paddingBottom: insets.bottom + 8, paddingTop: 8, paddingHorizontal: 20}]}>
@@ -74,6 +100,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background[90],
     overflow: 'visible',
     gap:12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   topicsHeader: {
     paddingHorizontal:16,

@@ -5,9 +5,9 @@ import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, Alert, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import mime from 'mime';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { CustomImage } from '@/components/CustomImage';
@@ -20,9 +20,10 @@ interface CreateTopicForm {
 }
 
 export default function CreateTopic() {
-  const { control, handleSubmit } = useForm<CreateTopicForm>();
+  const { control, handleSubmit, formState: { errors } } = useForm<CreateTopicForm>();
   const insets = useSafeAreaInsets();
   const [image, setImage] = useState<string | null>(null);
+  const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const pickImage = async () => {
     try {
@@ -63,6 +64,7 @@ export default function CreateTopic() {
     <View style={[styles.container]}>
       <ScreenHeader title="Criar Tópico" />
       <KeyboardAwareScrollView 
+        ref={scrollViewRef}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
         style={styles.body}
@@ -72,7 +74,7 @@ export default function CreateTopic() {
         <Controller
           control={control}
           name="title"
-          rules={{ required: true }}
+          rules={{ required: 'Título é obrigatório' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -81,6 +83,8 @@ export default function CreateTopic() {
               onBlur={onBlur}
               value={value}
               autoCapitalize="sentences"
+              errors={errors.title}
+              parentScrollRef={scrollViewRef}
             />
           )}
         />
