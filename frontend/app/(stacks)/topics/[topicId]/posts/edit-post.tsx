@@ -1,17 +1,18 @@
-import { AddImageToPostButton } from '@/components/AddImageToPostButton';
+import { PostImageButton } from '@/components/PostImageButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { PostService } from '@/services/postService';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, useWindowDimensions, ActivityIndicator, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function EditPostPage() {
   const { profile, isLoading: isProfileLoading } = useUserProfile();
@@ -24,6 +25,7 @@ export default function EditPostPage() {
   const { height: screenHeight } = useWindowDimensions();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
   
   const contentTextRef = useRef<TextInput>(null);
 
@@ -65,14 +67,16 @@ export default function EditPostPage() {
     setIsSubmitting(true);
     const result = await PostService.updatePost(topicId, postId, {
       contentText: data.contentText,
-      contentPicUrl: image || undefined
+      contentPicUrl: image
     });
 
-    if (result && (result.status === 200 || result.status === 201)) {
+    if (result.status === 200 || result.status === 201) {
       console.log('Post updated:', result.data);
+      queryClient.invalidateQueries({ queryKey: ['post', topicId, postId] });
+      queryClient.invalidateQueries({ queryKey: ['posts', topicId] });
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error updating post:', result);
     }
     setIsSubmitting(false);
@@ -105,6 +109,7 @@ export default function EditPostPage() {
                     value={value}
                     multiline
                     borderless={true}
+                    maxLength={800}
                     headerComponent={
                     <View style={styles.profileSection}>
                       <CustomProfileImage 
@@ -117,7 +122,7 @@ export default function EditPostPage() {
                     footerComponent={image ? <CustomImage source={image} style={styles.imagePreview} /> : null}
                   />
                 )}
-                rules={{ required: true }}
+                rules={{ required: true, maxLength: 800 }}
               />
             </View>
           </View>
@@ -127,10 +132,14 @@ export default function EditPostPage() {
             footerHeight.value = event.nativeEvent.layout.height;
           }}
         >
-          <AddImageToPostButton 
-            setImage={setImage} 
-            inputRef={contentTextRef} 
-          />
+          <View style={styles.row}>
+            <PostImageButton
+              mode={image ? 'remove' : 'add'}
+              setImage={setImage} 
+              inputRef={contentTextRef} 
+            />
+            <Text style={styles.numberOfImagesText}>{image ? '1 / 1' : '0 / 1'}</Text>
+          </View>
           <ApiInterfacingButton 
             onPress={handleSubmit(onSubmit)} 
             label="Salvar"
@@ -222,5 +231,16 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     borderRadius: 16,
   },
+  row: {
+    flexDirection:'row',
+    gap: 12,
+    alignItems:'center',
+  },
+  numberOfImagesText: {
+    fontFamily:'Inter_600SemiBold',
+    fontSize: 16,
+    lineHeight: 24,
+    color: Colors.light.primary,
+  }
 });
 
