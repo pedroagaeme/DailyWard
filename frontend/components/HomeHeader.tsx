@@ -1,11 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { DailyWardLogoCompact } from '@/assets/images/dailyward-logo-compact';
-import { CustomProfileImage } from '@/components/CustomImage';
-import { useUserProfile } from '@/hooks';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton } from '@/components/IconButton';
@@ -13,7 +11,6 @@ import { IconButton } from '@/components/IconButton';
 export const HomeHeader = () => {
   const navigation = useNavigation();
   const { top: topPadding } = useSafeAreaInsets();
-  const { profile } = useUserProfile();
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -35,13 +32,7 @@ export const HomeHeader = () => {
         <Text style={styles.logoText}>DailyWard</Text>
       </View>
       
-      <View style={styles.profileContainer}>
-        <CustomProfileImage
-          source={profile?.profilePicUrl || null}
-          fullName={`${profile?.firstName} ${profile?.lastName}` || 'User'}
-          style={styles.profilePic}
-        />
-      </View>
+      <View style={styles.placeholder} />
     </View>
   );
 };
@@ -65,16 +56,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.light.primary,
   },
-  profileContainer: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profilePic: {
-    width: 44,
-    height: 44,
-    borderRadius: 50,
-    backgroundColor: Colors.light.background[80],
+  placeholder: {
+    width: 32,
+    height: 32,
   },
 });

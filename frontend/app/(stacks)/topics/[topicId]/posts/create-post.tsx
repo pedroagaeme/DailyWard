@@ -5,18 +5,20 @@ import { PostService } from '@/services/postService';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, Keyboard } from 'react-native';
+import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, Keyboard, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 export default function CreatePostPage() {
   const { profile, isLoading } = useUserProfile();
   const { control, handleSubmit } = useForm();
   const  insets  = useSafeAreaInsets(); 
   const [image, setImage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const params = useGlobalSearchParams();
   const topicId = params.topicId as string | undefined;
   const { height: screenHeight } = useWindowDimensions();
@@ -41,6 +43,7 @@ export default function CreatePostPage() {
       return;
     }
 
+    setIsSubmitting(true);
     const result = await PostService.createPost(topicId, {
       contentText: data.contentText,
       contentPicUrl: image || undefined
@@ -50,8 +53,10 @@ export default function CreatePostPage() {
       console.log('Post created:', result.data);
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error creating post:', result);
     }
+    setIsSubmitting(false);
   };
 
 
@@ -100,9 +105,12 @@ export default function CreatePostPage() {
             setImage={setImage} 
             inputRef={contentTextRef} 
           />
-          <Pressable onPress={handleSubmit(onSubmit)} style={styles.createPostButton}>
-            <Text style={styles.createPostButtonText}>Enviar</Text>
-          </Pressable>
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Enviar"
+            isLoading={isSubmitting}
+            style={styles.createPostButton}
+          />
         </View>
         </Animated.View>
       </View>

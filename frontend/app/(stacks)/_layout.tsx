@@ -25,6 +25,14 @@ const StacksLayout = () => {
                 name="index"
             />
         </Stack.Protected>
+        <Stack.Protected guard={!authState?.isAuthenticated}>
+            <Stack.Screen
+                options={{
+                headerShown: false,
+                }}
+                name="login"
+            />
+        </Stack.Protected>
         </Stack>
     );
 };

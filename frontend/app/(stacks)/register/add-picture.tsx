@@ -9,6 +9,7 @@ import { UploadImageIcon } from '@/assets/images/upload-image-icon';
 import { useRegisterForm } from '@/contexts';
 import { ProfileService } from '@/services/profileService';
 import { useAuth } from '@/contexts';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 export default function AddPicture() {
   const [image, setImage] = useState<string | null>(null);
@@ -30,20 +31,6 @@ export default function AddPicture() {
       }
     } catch (error) {
       Alert.alert('Erro', 'Falha ao selecionar imagem');
-    }
-  };
-
-  const handleSkip = async () => {
-    // Pular e fazer login
-    const formData = getFormData!();
-    if (formData.email && formData.password) {
-      const result = await onLogin!({
-        email: formData.email,
-        password: formData.password,
-      });
-      if (!result?.error) {
-        router.replace('/(stacks)/topics');
-      }
     }
   };
 
@@ -92,7 +79,7 @@ export default function AddPicture() {
       <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
         <Text style={styles.title}>Adicione uma foto de perfil</Text>
         <Text style={styles.text}>
-          Adicione uma foto para que outros usuários possam te reconhecer. Você pode pular esta etapa e adicionar depois.
+          Adicione uma foto para que outros usuários possam te reconhecer. Esta etapa é opcional.
         </Text>
       </SafeAreaView>
       <View style={styles.form}>
@@ -117,23 +104,12 @@ export default function AddPicture() {
           </Pressable>
         )}
 
-        <Pressable 
-          style={[styles.button, isLoading && styles.buttonDisabled]} 
+        <ApiInterfacingButton 
+          style={styles.button} 
           onPress={handleContinue}
-          disabled={isLoading}
-        >
-          <Text style={styles.buttonText}>
-            {isLoading ? 'Finalizando...' : 'Continuar'}
-          </Text>
-        </Pressable>
-
-        <Pressable 
-          style={styles.skipButton} 
-          onPress={handleSkip}
-          disabled={isLoading}
-        >
-          <Text style={styles.skipButtonText}>Pular</Text>
-        </Pressable>
+          label="Continuar"
+          isLoading={isLoading}
+        />
       </View>
     </View>
   );
@@ -179,7 +155,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     aspectRatio: 1,
     width: '100%',
-    backgroundColor: Colors.light.background[100],
   },
   uploadAreaWithImage: {
     padding: 0,
@@ -233,15 +208,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 20,
     color: Colors.light.background[100],
-  },
-  skipButton: {
-    marginTop: 12,
-    alignItems: 'center',
-  },
-  skipButtonText: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 14,
-    color: Colors.light.text[30],
   },
 });
 

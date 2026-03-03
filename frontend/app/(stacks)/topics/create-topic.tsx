@@ -1,5 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { CreateTopicButton } from '@/components/CreateTopicButton';
+import { CloseIcon } from '@/assets/images/close-icon';
+import { IconButton } from '@/components/IconButton';
 import { FormInput } from '@/components/FormInput';
 import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
@@ -13,6 +15,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { CustomImage } from '@/components/CustomImage';
 import { UploadImageIcon } from '@/assets/images/upload-image-icon';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 interface CreateTopicForm {
   title: string;
@@ -23,6 +26,7 @@ export default function CreateTopic() {
   const { control, handleSubmit, formState: { errors } } = useForm<CreateTopicForm>();
   const insets = useSafeAreaInsets();
   const [image, setImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const pickImage = async () => {
@@ -42,7 +46,12 @@ export default function CreateTopic() {
     }
   };
 
+  const removeImage = () => {
+    setImage(null);
+  };
+
   const onSubmit = async (data: CreateTopicForm) => {
+    setIsLoading(true);
     const result = await TopicService.createTopic({
       title: data.title,
       description: data.description,
@@ -56,8 +65,10 @@ export default function CreateTopic() {
     if (result && result.status === 201) {
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error creating topic:', result);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -107,7 +118,23 @@ export default function CreateTopic() {
         />
 
         <View style={styles.pictureBlock}>
-          <Text style={styles.label}>Imagem</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.label}>Imagem</Text>
+            {image && (
+              <IconButton
+                style={styles.removeImageButton}
+                outerboxRadius={14}
+                innerSize={24}
+                borders={{ top: true, right: true, bottom: true, left: true }}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  removeImage();
+                }}
+              >
+                <CloseIcon width={24} height={24} color={Colors.light.error} />
+              </IconButton>
+            )}
+          </View>
           <Pressable style={[styles.uploadArea, image && styles.uploadAreaWithImage]} onPress={pickImage}>
             {image ? (
               <CustomImage source={image} style={styles.previewImage} />
@@ -122,7 +149,12 @@ export default function CreateTopic() {
         </View>
 
         <View style={styles.footer}>
-          <CreateTopicButton onPress={handleSubmit(onSubmit)} />
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Criar Tópico"
+            isLoading={isLoading}
+            style={styles.button}
+          />
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -146,6 +178,11 @@ const styles = StyleSheet.create({
   },
   pictureBlock: {
     gap: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   uploadArea: {
     borderWidth: 1,
@@ -185,12 +222,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: 'cover',
   },
+  removeImageButton: {
+    width: 24,
+    height: 24,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+  },
   textAreaContainer: {},
   textArea: {},
   footer: {
     marginTop: 'auto',
     marginBottom: 8,
     alignItems: 'center',
+  },
+  button: {
+    marginTop: 24,
+    flexDirection: 'row',
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
   },
 });
 

@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { FileCard } from '@/components/FileCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 interface EditResourceForm {
   title: string;
@@ -21,11 +22,12 @@ export default function EditResource() {
   const { topicId: topicIdParam, resourceId: resourceIdParam } = useGlobalSearchParams();
   const topicId = topicIdParam as string || '';
   const resourceId = resourceIdParam as string || '';
-  const { control, handleSubmit, reset } = useForm<EditResourceForm>();
+  const { control, handleSubmit, reset, formState: {errors} } = useForm<EditResourceForm>();
   const insets = useSafeAreaInsets();
   const [files, setFiles] = useState<any[]>([]);
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch existing resource data
   useEffect(() => {
@@ -84,10 +86,11 @@ export default function EditResource() {
 
   const onSubmit = async (data: EditResourceForm) => {
     if (!topicId || !resourceId) {
-      Alert.alert('Error', 'No topic or resource ID');
+      Alert.alert('Erro', 'Tópico ou recurso não encontrado');
       return;
     }
 
+    setIsSubmitting(true);
     const result = await ResourceService.updateResource(topicId, resourceId, {
       title: data.title,
       description: data.description,
@@ -99,9 +102,10 @@ export default function EditResource() {
     if (result && (result.status === 200 || result.status === 201)) {
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error updating resource:', result);
-      Alert.alert('Error', 'Failed to update resource');
     }
+    setIsSubmitting(false);
   };
 
   if (isLoading) {
@@ -115,12 +119,12 @@ export default function EditResource() {
   return (
     <View style={styles.container}>
       <ScreenHeader title="Editar Recurso" />
-      <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingBottom: insets.bottom }}>
+      <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
 
         <Controller
           control={control}
           name="title"
-          rules={{ required: true }}
+          rules={{ required: 'Título é obrigatório' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -129,6 +133,7 @@ export default function EditResource() {
               onBlur={onBlur}
               value={value}
               autoCapitalize="sentences"
+              errors={errors.title}
             />
           )}
         />
@@ -170,42 +175,35 @@ export default function EditResource() {
               <Text style={styles.filesListTitle}>Arquivos selecionados ({existingFiles.length + files.length})</Text>
               {/* Existing Files */}
               {existingFiles.map((file, index) => (
-                <View key={`existing-${index}`} style={styles.fileCardContainer}>
-                  <FileCard 
-                    file={file} 
-                    onPress={() => {}}
-                  />
-                  <Pressable 
-                    style={styles.removeButton}
-                    onPress={() => removeExistingFile(index)}
-                  >
-                    <Text style={styles.removeButtonText}>×</Text>
-                  </Pressable>
-                </View>
+                <FileCard 
+                  key={`existing-${index}`}
+                  file={file} 
+                  onPress={() => {}}
+                  showCloseIcon={true}
+                  onRemove={() => removeExistingFile(index)}
+                />
               ))}
               {/* New Files */}
               {files.map((file, index) => (
-                <View key={`new-${index}`} style={styles.fileCardContainer}>
-                  <FileCard 
-                    file={convertToResourceFile(file, index)} 
-                    onPress={() => {}}
-                  />
-                  <Pressable 
-                    style={styles.removeButton}
-                    onPress={() => removeFile(index)}
-                  >
-                    <Text style={styles.removeButtonText}>×</Text>
-                  </Pressable>
-                </View>
+                <FileCard 
+                  key={`new-${index}`}
+                  file={convertToResourceFile(file, index)} 
+                  onPress={() => {}}
+                  showCloseIcon={true}
+                  onRemove={() => removeFile(index)}
+                />
               ))}
             </View>
           )}
         </View>
 
         <View style={styles.footer}>
-          <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
-            <Text style={styles.buttonText}>Salvar</Text>
-          </Pressable>
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Salvar"
+            isLoading={isSubmitting}
+            style={styles.button}
+          />
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -300,26 +298,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text[5],
     marginBottom: 8,
-  },
-  fileCardContainer: {
-    position: 'relative',
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#ff4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  removeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

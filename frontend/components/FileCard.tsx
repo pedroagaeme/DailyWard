@@ -2,19 +2,25 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { openFile } from '@/services/fileHandling';
 import { Colors } from '@/constants/Colors';
 import { ResourceFile } from '@/types';
+import { CloseIcon } from '@/assets/images/close-icon';
+import { IconButton } from './IconButton';
 
 export function FileCard({ 
     file, 
     onPress, 
     resourceId, 
     fileId, 
-    topicId 
+    topicId,
+    showCloseIcon = false,
+    onRemove
 }: { 
     file: ResourceFile; 
     onPress?: () => void;
     resourceId?: string;
     fileId?: string;
     topicId?: string;
+    showCloseIcon?: boolean;
+    onRemove?: () => void;
 }) {
 
     const getFileTypeFromMime = (mimeType?: string) => {
@@ -48,7 +54,23 @@ export function FileCard({
     return (
         <Pressable style={styles.fileCard} onPress={handlePress}>
             <View style={styles.fileDetail}>
-                <Text style={styles.fileCardTitle}>{getFileTypeFromMime(file.mimeType)}</Text>
+                <View style={styles.titleRow}>
+                    <Text style={styles.fileCardTitle}>{getFileTypeFromMime(file.mimeType)}</Text>
+                    {showCloseIcon && onRemove && (
+                        <IconButton
+                            style={styles.closeButton}
+                            outerboxRadius={14}
+                            innerSize={24}
+                            borders={{ top: true, right: true, bottom: true, left: true }}
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                onRemove();
+                            }}
+                        >
+                            <CloseIcon width={24} height={24} color={Colors.light.error} />
+                        </IconButton>
+                    )}
+                </View>
                 <View style={styles.fileInfo}>
                     <View style={styles.fileDetails}>
                         <Text style={styles.fileName} numberOfLines={2}>{file.filename}</Text>
@@ -83,11 +105,25 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
       },
+      titleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+      },
       fileCardTitle: {
         fontFamily: 'Inter_600SemiBold',
         fontSize: 16,
         color: Colors.light.text[5],
-        marginBottom: 12,
+      },
+      closeButton: {
+        width: 24,
+        height: 24,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.5,
+        shadowRadius: 6,
       },
       fileInfo: {
         flexDirection: 'row',

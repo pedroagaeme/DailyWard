@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { router } from 'expo-router';
 import { AuthService } from '@/services/authService';
 import { FormInput } from '@/components/FormInput';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 interface VerifyEmailForm {
   otp: string;
@@ -31,7 +32,9 @@ export default function VerifyEmail() {
       Alert.alert('Erro', 'Código inválido. Por favor, tente novamente.');
       setIsLoading(false);
     } else {
-      // Email verificado com sucesso, ir para a tela de adicionar foto
+      // Email Verified Successfully, proceed to next step
+      router.dismissAll();
+      router.replace('/login');
       router.push('/register/add-picture');
     }
   };
@@ -68,15 +71,12 @@ export default function VerifyEmail() {
             />
           )}
         />
-        <Pressable 
-          style={[styles.button, isLoading && styles.buttonDisabled]} 
+        <ApiInterfacingButton 
+          style={styles.button} 
           onPress={handleSubmit(onSubmit)}
-          disabled={isLoading}
-        >
-          <Text style={styles.buttonText}>
-            {isLoading ? 'Verificando...' : 'Verificar'}
-          </Text>
-        </Pressable>
+          label="Verificar"
+          isLoading={isLoading}
+        />
         <View style={styles.row}>
           <Text style={styles.text}>Não recebeu o código? </Text>
           <Pressable onPress={() => Alert.alert('Info', 'Por favor, verifique sua caixa de entrada e spam.')}>

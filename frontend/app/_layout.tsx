@@ -216,7 +216,6 @@ export default function RootLayout() {
             </InteractionBlockerProvider>
           </RegisterFormProvider>
         </AuthProvider>
-        <StatusBar style="dark" />
     </QueryClientProvider>
     </>
   );

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { RegisterFormData, LoginFormData, AuthProps } from "@/types";
 import { AuthService } from "@/services/authService";
 import { useLogout } from "@/hooks/useLogout";
+import { router } from "expo-router";
 
 const AuthContext = createContext<AuthProps>({});
 
@@ -50,6 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = async () => {
         logoutMutation();
         setAuthState({token: null, isAuthenticated: false});
+        router.replace('/(stacks)/login');
     }
 
     const value = {

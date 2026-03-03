@@ -1,5 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { FormInput } from '@/components/FormInput';
+import { CloseIcon } from '@/assets/images/close-icon';
+import { IconButton } from '@/components/IconButton';
 import { Colors } from '@/constants/Colors';
 import { TopicService } from '@/services/topicService';
 import { router, useGlobalSearchParams } from 'expo-router';
@@ -13,6 +15,7 @@ import { CustomImage } from '@/components/CustomImage';
 import { UploadImageIcon } from '@/assets/images/upload-image-icon';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { useQueryClient } from '@tanstack/react-query';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 interface EditTopicForm {
   title: string;
@@ -27,6 +30,7 @@ export default function EditTopic() {
   const [image, setImage] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch existing topic data
@@ -71,12 +75,18 @@ export default function EditTopic() {
     }
   };
 
+  const removeImage = () => {
+    setImage(null);
+    setExistingImageUrl(null);
+  };
+
   const onSubmit = async (data: EditTopicForm) => {
     if (!topicId) {
-      Alert.alert('Error', 'No topic ID');
+      Alert.alert('Erro', 'ID do tópico não encontrado');
       return;
     }
 
+    setIsSubmitting(true);
     const result = await TopicService.updateTopic(topicId, {
       title: data.title,
       description: data.description,
@@ -92,9 +102,10 @@ export default function EditTopic() {
       queryClient.invalidateQueries({ queryKey: ['topics'] });
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error updating topic:', result);
-      Alert.alert('Error', 'Failed to update topic');
     }
+    setIsSubmitting(false);
   };
 
   if (isLoading) {
@@ -151,7 +162,23 @@ export default function EditTopic() {
         />
 
         <View style={styles.pictureBlock}>
-          <Text style={styles.label}>Imagem</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.label}>Imagem</Text>
+            {displayImage && (
+              <IconButton
+                style={styles.removeImageButton}
+                outerboxRadius={14}
+                innerSize={24}
+                borders={{ top: true, right: true, bottom: true, left: true }}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  removeImage();
+                }}
+              >
+                <CloseIcon width={24} height={24} color={Colors.light.error} />
+              </IconButton>
+            )}
+          </View>
           <Pressable style={[styles.uploadArea, displayImage && styles.uploadAreaWithImage]} onPress={pickImage}>
             {displayImage ? (
               <CustomImage source={displayImage} style={styles.previewImage} />
@@ -166,9 +193,12 @@ export default function EditTopic() {
         </View>
 
         <View style={styles.footer}>
-          <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
-            <Text style={styles.buttonText}>Salvar</Text>
-          </Pressable>
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Salvar"
+            isLoading={isSubmitting}
+            style={styles.button}
+          />
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -193,6 +223,11 @@ const styles = StyleSheet.create({
   },
   pictureBlock: {
     gap: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   uploadArea: {
     borderWidth: 1,
@@ -231,6 +266,15 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 8,
     resizeMode: 'cover',
+  },
+  removeImageButton: {
+    width: 24,
+    height: 24,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
   },
   footer: {
     marginTop: 'auto',

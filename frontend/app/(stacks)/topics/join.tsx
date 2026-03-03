@@ -7,6 +7,8 @@ import { Pressable, StyleSheet, Text, View, Alert, Keyboard } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { useState } from 'react';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 interface JoinTopicForm {
   code: string;
 }
@@ -14,15 +16,19 @@ interface JoinTopicForm {
 export default function JoinTopic() {
   const { control, handleSubmit, formState: { errors } } = useForm<JoinTopicForm>();
   const insets = useSafeAreaInsets();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: JoinTopicForm) => {
+    setIsLoading(true);
     const result = await TopicService.joinTopic(data.code);
     
     if (result && result.status === 200) {
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error joining topic:', result);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -72,12 +78,12 @@ export default function JoinTopic() {
         </View>
 
         <View style={styles.footer}>
-          <Pressable 
+          <ApiInterfacingButton 
             style={styles.joinButton} 
             onPress={handleSubmit(onSubmit)}
-          >
-            <Text style={styles.joinButtonText}>Entrar</Text>
-          </Pressable>
+            label="Entrar"
+            isLoading={isLoading}
+          />
         </View>
       </KeyboardAwareScrollView>
     </View>

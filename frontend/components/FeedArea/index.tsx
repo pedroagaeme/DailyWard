@@ -82,14 +82,20 @@ function FeedAreaContent({
   )
 
   if( numColumns > 1) {
+    const isDataEmpty = !flatListProps.data || flatListProps.data.length === 0;
+    
     return (
       <ScrollView>
-        <Animated.View style={[{flexDirection: 'row', flexWrap: 'wrap', gap: gapBetweenItems, paddingHorizontal: flatListPaddingHorizontal}, feedAreaStyle]}>
-          {flatListProps.data?.map((item, index) => (
+        <Animated.View style={[{flexDirection: 'row', flexWrap: 'wrap', gap: gapBetweenItems, paddingHorizontal: flatListPaddingHorizontal}, feedAreaStyle, isDataEmpty && {flex: 1}]}>
+          {isDataEmpty && flatListProps.ListEmptyComponent ? (
+            <>{flatListProps.ListEmptyComponent}</>
+          ) : (
+            flatListProps.data?.map((item, index) => (
               <Animated.View key={item.id} style={[styles.itemWrapper, {width: itemWidth}]} layout={LinearTransition}>
                 {typeof flatListProps.renderItem === 'function' ? renderItemWithPadding({item, index, separators: {highlight: () => {}, unhighlight: () => {}, updateProps: () => {}}}) : null}
               </Animated.View>
-            ))}
+            ))
+          )}
         </Animated.View>
       </ScrollView>
     )

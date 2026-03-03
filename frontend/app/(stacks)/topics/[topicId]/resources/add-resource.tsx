@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { FileCard } from '@/components/FileCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 interface CreateResourceForm {
   title: string;
@@ -20,9 +21,10 @@ interface CreateResourceForm {
 export default function AddResource() {
   const { topicId: topicIdParam } = useGlobalSearchParams();
   const topicId = topicIdParam as string || '';
-  const { control, handleSubmit } = useForm<CreateResourceForm>();
+  const { control, handleSubmit, formState: {errors} } = useForm<CreateResourceForm>();
   const insets = useSafeAreaInsets();
   const [files, setFiles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const pickDocuments = async () => {
     try {
@@ -56,10 +58,11 @@ export default function AddResource() {
 
   const onSubmit = async (data: CreateResourceForm) => {
     if (!topicId) {
-      Alert.alert('Error', 'No topic selected');
+      Alert.alert('Erro', 'Tópico não selecionado');
       return;
     }
 
+    setIsLoading(true);
     const result = await ResourceService.createResource(topicId, {
       title: data.title,
       description: data.description,
@@ -70,20 +73,21 @@ export default function AddResource() {
     if (result && result.status === 201) {
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error creating resource:', result);
-      Alert.alert('Error', 'Failed to create resource');
     }
+    setIsLoading(false);
   };
 
   return (
     <View style={styles.container}>
       <ScreenHeader title="Adicionar Recurso" />
-      <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingBottom: insets.bottom }}>
+      <KeyboardAwareScrollView enableOnAndroid={true} style={styles.body} contentContainerStyle={{ paddingBottom: insets.bottom + 20}}>
 
         <Controller
           control={control}
           name="title"
-          rules={{ required: true }}
+          rules={{ required: 'Título é obrigatório' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -92,6 +96,7 @@ export default function AddResource() {
               onBlur={onBlur}
               value={value}
               autoCapitalize="sentences"
+              errors={errors.title}
             />
           )}
         />
@@ -129,21 +134,25 @@ export default function AddResource() {
             <View style={styles.filesList}>
               <Text style={styles.filesListTitle}>Arquivos selecionados ({files.length})</Text>
               {files.map((file, index) => (
-                <View key={index} style={styles.fileCardContainer}>
-                  <FileCard 
-                    file={convertToResourceFile(file, index)} 
-                    onPress={() => {}} // Disable file opening during upload
-                  />
-                </View>
+                <FileCard 
+                  key={index}
+                  file={convertToResourceFile(file, index)} 
+                  onPress={() => {}} // Disable file opening during upload
+                  showCloseIcon={true}
+                  onRemove={() => removeFile(index)}
+                />
               ))}
             </View>
           )}
         </View>
 
         <View style={styles.footer}>
-          <Pressable onPress={handleSubmit(onSubmit)} style={styles.button}>
-            <Text style={styles.buttonText}>Enviar</Text>
-          </Pressable>
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Enviar"
+            isLoading={isLoading}
+            style={styles.button}
+          />
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -237,25 +246,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text[5],
     marginBottom: 8,
-  },
-  fileCardContainer: {
-    position: 'relative',
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#ff4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  removeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

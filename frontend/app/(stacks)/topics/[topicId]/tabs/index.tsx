@@ -69,7 +69,8 @@ export default function Posts() {
   // Flatten all pages of data and filter out undefined items
   const posts = useMemo(() => data?.pages.flatMap((page: any) => page.results) || [], [data]);
 
-  if (isLoading) {
+  const isAnyLoading = isLoading || isTopicInfoLoading || (debouncedChosenDate !== chosenDate.date.toISODate());
+  if (isAnyLoading) {
     return (
       <View style={styles.container}>
         <PostsHeader 
@@ -81,6 +82,23 @@ export default function Posts() {
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.light.primary} />
+        </View>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <PostsHeader 
+          title={topicTitle || 'Carregando...'} 
+          chosenDate={chosenDate}
+          setChosenDate={setChosenDate}
+          topicCreationDate={topicCreationDate}
+          topicId={topicId}
+        />
+        <View style={styles.loadingContainer}>
+          <EmptyState title="Ocorreu um erro inesperado" subtitle="Não foi possível carregar os posts. Tente novamente." />
         </View>
       </View>
     );

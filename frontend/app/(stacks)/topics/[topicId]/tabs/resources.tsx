@@ -45,6 +45,17 @@ export default function Resources() {
       );
     }
 
+    if (isError) {
+      return (
+        <View style={styles.container}>
+          <ResourcesHeader title={topicTitle || 'Carregando...'} />
+          <View style={styles.loadingContainer}>
+            <EmptyState title="Ocorreu um erro inesperado" subtitle="Não foi possível carregar os recursos. Tente novamente." />
+          </View>
+        </View>
+      );
+    }
+
     return (
     <View style={styles.container}>
       <ResourcesHeader title={topicTitle || 'Carregando...'} />

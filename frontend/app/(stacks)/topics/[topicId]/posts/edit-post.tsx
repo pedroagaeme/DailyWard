@@ -5,12 +5,13 @@ import { PostService } from '@/services/postService';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { Pressable, StyleSheet, Text, View, TextInput, useWindowDimensions, ActivityIndicator, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomImage, CustomProfileImage } from '@/components/CustomImage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
 export default function EditPostPage() {
   const { profile, isLoading: isProfileLoading } = useUserProfile();
@@ -22,6 +23,7 @@ export default function EditPostPage() {
   const postId = params.postId as string | undefined;
   const { height: screenHeight } = useWindowDimensions();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const contentTextRef = useRef<TextInput>(null);
 
@@ -60,6 +62,7 @@ export default function EditPostPage() {
       console.error('No topic or post ID');
       return;
     }
+    setIsSubmitting(true);
     const result = await PostService.updatePost(topicId, postId, {
       contentText: data.contentText,
       contentPicUrl: image || undefined
@@ -69,8 +72,10 @@ export default function EditPostPage() {
       console.log('Post updated:', result.data);
       router.back();
     } else {
+      Alert.alert('Erro', 'Ocorreu um erro inesperado');
       console.error('Error updating post:', result);
     }
+    setIsSubmitting(false);
   };
 
   if (isLoading) {
@@ -126,9 +131,12 @@ export default function EditPostPage() {
             setImage={setImage} 
             inputRef={contentTextRef} 
           />
-          <Pressable onPress={handleSubmit(onSubmit)} style={styles.createPostButton}>
-            <Text style={styles.createPostButtonText}>Salvar</Text>
-          </Pressable>
+          <ApiInterfacingButton 
+            onPress={handleSubmit(onSubmit)} 
+            label="Salvar"
+            isLoading={isSubmitting}
+            style={styles.createPostButton}
+          />
         </View>
         </Animated.View>
       </View>

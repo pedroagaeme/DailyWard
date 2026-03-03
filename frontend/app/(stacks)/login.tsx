@@ -1,26 +1,34 @@
-import { View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Colors } from '@/constants/Colors';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useRef, useState } from 'react';
-import { FormInput } from '@/components/FormInput';;
-import { Link, router } from 'expo-router';
-import { RegisterFormData } from '@/types';
-import { useRegisterForm } from '@/contexts';
+import { FormInput } from '@/components/FormInput';
+import { LoginFormData } from '@/types';
+import { Link } from 'expo-router';
+import { useAuth } from '@/contexts';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { DailyWardLogo } from '@/assets/images/dailyward-logo';
 import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
 
-export default function Register() {
-    const { control, handleSubmit, formState: {errors} } = useForm<RegisterFormData>();
+export default function Login() {
+    const { control, handleSubmit, formState: {errors} } = useForm<LoginFormData>();
     const insets = useSafeAreaInsets();
-    const { updateFormData} = useRegisterForm();
-    const lastNameRef = useRef<TextInput>(null);
+    const passwordRef = useRef<TextInput>(null);
+    const { onLogin, authState } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = async (data: RegisterFormData) => {
+    const onSubmit = async (data: LoginFormData) => {
         setIsLoading(true);
-        updateFormData!(data);
-        router.push('/register/password-form');
+        const result = await onLogin!(data);
+        if(result && result.error) {
+            const errorStatus = result.error?.response?.status;
+            if (errorStatus === 400) {
+                Alert.alert('Erro', 'Email ou senha inválidos');
+            } else {
+                Alert.alert('Erro', 'Ocorreu um erro inesperado');
+            }
+        }
         setIsLoading(false);
     };
 
@@ -34,61 +42,64 @@ export default function Register() {
             extraScrollHeight={20 + insets.bottom}
         >
             <SafeAreaView style={styles.header} edges={['top', 'left', 'right']}>
-                <Text style={styles.title}>Qual é o seu nome?</Text>
-                <Text style={styles.text}>Insira seu nome completo para se conectar com outros usuários.</Text>
+                <View style={styles.logoBox}>
+                    <DailyWardLogo width={52} height={52} color={Colors.light.background[95]} />
+                </View>
+                <Text style={styles.title}>Entrar</Text>
             </SafeAreaView>
             <View style={styles.form}>
                 <Controller 
-                    name="firstName" 
+                    name="email" 
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
-                            title='Nome'
-                            placeholder="Nome"
+                            title='Email'
+                            placeholder="Email"
+                            returnKeyType="next"
+                            onSubmitEditing={() => passwordRef.current?.focus()}
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
-                            errors={errors.firstName}
-                            returnKeyType="next"
-                            onSubmitEditing={() => lastNameRef.current?.focus()}
+                            errors={errors.email}
                             submitBehavior='submit'
                         />
                     )}
                     rules={{
-                        required: 'Nome é obrigatório'
+                        required: 'Email é obrigatório',
                     }}
                 />
                 <Controller
-                    name="lastName"
+                    name="password"
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
                         <FormInput
-                            title='Sobrenome'
-                            placeholder="Sobrenome"
+                            title='Senha'
+                            placeholder="Senha"
+                            secureTextEntry
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
-                            errors={errors.lastName}
-                            returnKeyType="next"
+                            errors={errors.password}
                             onSubmitEditing={handleSubmit(onSubmit)}
-                            ref={lastNameRef}
                             submitBehavior='blurAndSubmit'
+                            ref={passwordRef}
                         />
                     )}
-                    rules={{ 
-                        required: 'Sobrenome é obrigatório' 
+                    rules={{
+                        required: 'Senha é obrigatória',
+                        minLength: { value: 8, message: 'Senha deve ter no mínimo 8 caracteres' }
                     }}
                 />
                 <ApiInterfacingButton 
                     style={styles.button} 
                     onPress={handleSubmit(onSubmit)}
-                    label="Continuar"
+                    label="Entrar"
                     isLoading={isLoading}
                 />
                 <View style={styles.row}>
-                    <Text style={styles.text}>Já tem uma conta? </Text>
-                    <Link href="/login" style={styles.link} replace>
-                        Entrar.
+                    <Text style={styles.text}>Ainda não tem uma conta? </Text>
+                    <Link href="/register" style={styles.link} replace>
+                        Cadastre-se.
                     </Link>
                 </View>
             </View>
@@ -105,25 +116,42 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     header: {
+        alignItems: 'flex-start',
+        gap: 16,
         width: '100%',
         paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 40,
-        gap:12,
+        paddingTop: 4,
+        paddingBottom: 24
     },
     form: {
         width: '100%',
         paddingHorizontal: 20,
     },
+    logoBox: {
+        padding: 4,
+        backgroundColor: Colors.light.primary,
+        borderRadius: 16,
+    },
     title: {
         fontFamily: 'Inter_600SemiBold',
-        letterSpacing: -0.5,
-        fontSize: 28,
+        letterSpacing: 0,
+        fontSize: 32,
         lineHeight: 40,
         color: Colors.light.text[5],
     },
     button: {
         marginTop: 10,
+        backgroundColor: Colors.light.primary,
+        paddingVertical: 16,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontFamily: 'Inter_600SemiBold',
+        letterSpacing: 0.25,
+        fontSize: 16,
+        lineHeight: 20,
+        color: Colors.light.background[100],
     },
     row: {
         marginTop: 20,
@@ -134,7 +162,7 @@ const styles = StyleSheet.create({
     text: {
         fontFamily: 'Inter_400Regular',
         fontSize: 14,
-        lineHeight: 22,
+        lineHeight: 18,
         color: Colors.light.text[30],
     },
     link: {
@@ -144,3 +172,4 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
 });
+

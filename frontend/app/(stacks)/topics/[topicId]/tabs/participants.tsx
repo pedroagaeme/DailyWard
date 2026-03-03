@@ -69,6 +69,17 @@ export default function Participants() {
     );
   }
 
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <ParticipantsHeader title={topicTitle || 'Carregando...'} />
+        <View style={styles.loadingContainer}>
+          <EmptyState title="Ocorreu um erro inesperado" subtitle="Não foi possível carregar os participantes. Tente novamente." />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ParticipantsHeader title={topicTitle || 'Carregando...'} />

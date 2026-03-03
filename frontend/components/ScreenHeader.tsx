@@ -5,14 +5,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GoBackIcon } from '@/assets/images/header-icons/go-back-icon';
 import { useRouter } from 'expo-router';
 import { IconButton } from '@/components/IconButton';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ScreenHeaderProps {
   title: string;
   onBackPress?: () => void;
   rightComponent?: React.ReactNode;
+  showMenuIcon?: boolean;
 }
 
-export const ScreenHeader = ({ title, onBackPress, rightComponent }: ScreenHeaderProps) => {
+export const ScreenHeader = ({ title, onBackPress, rightComponent, showMenuIcon = false }: ScreenHeaderProps) => {
   const router = useRouter();
   const { top: topPadding } = useSafeAreaInsets();
 
@@ -27,7 +29,11 @@ export const ScreenHeader = ({ title, onBackPress, rightComponent }: ScreenHeade
   return (
     <View style={[styles.header, { paddingTop: topPadding + 12, paddingBottom: 12 }]}>
       <IconButton onPress={handleBackPress} innerSize={28} outerboxRadius={8} borders={{left: true, bottom: true}}>
-        <GoBackIcon width={28} height={28} color={Colors.light.text[5]} />
+        {showMenuIcon ? (
+          <Ionicons name="menu" size={24} color={Colors.light.text[5]} />
+        ) : (
+          <GoBackIcon width={28} height={28} color={Colors.light.text[5]} />
+        )}
       </IconButton>
       
       <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">

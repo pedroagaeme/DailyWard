@@ -8,14 +8,18 @@ import { Link, router } from 'expo-router';
 import { RegisterFormData } from '@/types';
 import { useRegisterForm } from '@/contexts';
 import { useAuth } from '@/contexts';
+import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
+import { useState } from 'react';
 
 export default function EmailScreen() {
     const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
     const insets = useSafeAreaInsets();
     const { onRegister } = useAuth();
     const { updateFormData, getFormData} = useRegisterForm();
+    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data: RegisterFormData) => {
+        setIsLoading(true);
         updateFormData!(data);
         const formData = getFormData!();
         const result = await onRegister!({ ...formData, ...data });
@@ -25,6 +29,7 @@ export default function EmailScreen() {
         else {
             console.error(result.error);
         }
+        setIsLoading(false);
     };
 
     return (
@@ -60,9 +65,12 @@ export default function EmailScreen() {
                         required: 'Email é obrigatório',
                     }}
                 />
-                <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <Text style={styles.buttonText}>Enviar Código</Text>
-                </Pressable>
+                <ApiInterfacingButton 
+                    style={styles.button} 
+                    onPress={handleSubmit(onSubmit)}
+                    label="Enviar Código"
+                    isLoading={isLoading}
+                />
                 <View style={styles.row}>
                     <Text style={styles.text}>Já tem uma conta? </Text>
                     <Link href="/" style={styles.link} replace>
@@ -102,17 +110,6 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 10,
-        backgroundColor: Colors.light.primary,
-        paddingVertical: 16,
-        borderRadius: 20,
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontFamily: 'Inter_600SemiBold',
-        letterSpacing: 0.25,
-        fontSize: 16,
-        lineHeight: 20,
-        color: Colors.light.background[100],
     },
     row: {
         marginTop: 20,

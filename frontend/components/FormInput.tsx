@@ -14,7 +14,7 @@ type FormInputProps = {
     borderless?: boolean;
     headerComponent?: React.ReactNode;
     footerComponent?: React.ReactNode;
-    parentScrollRef?: React.RefObject<KeyboardAwareScrollView> | null;
+    parentScrollRef?: React.RefObject<KeyboardAwareScrollView | null>;
 } & TextInputProps;
 
 export function FormInput({title, ref, errors, borderless = false, headerComponent, footerComponent, parentScrollRef, ...props}: FormInputProps) {
@@ -32,7 +32,7 @@ export function FormInput({title, ref, errors, borderless = false, headerCompone
 
     useEffect(() => {
         if (errors && parentScrollRef?.current) {
-            parentScrollRef.current?.scrollToPosition(0, errorY, true);
+            parentScrollRef.current?.scrollToPosition(0, errorY - 100, true);
         }
     }, [errors, errorY]);
 
