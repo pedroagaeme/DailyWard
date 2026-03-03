@@ -5,6 +5,7 @@ class IsAdminOrParticipant(permissions.BasePermission):
     - Allow read if user is a participant.
     - Allow edit/delete if user is admin of the topic.
     """
+    message = "Você não tem permissão para executar esta ação."
 
     def has_object_permission(self, request, view, obj):
         user = request.user

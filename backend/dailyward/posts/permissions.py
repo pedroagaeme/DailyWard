@@ -3,6 +3,8 @@ from topics.models import Participant
 
 class IsTopicParticipant(permissions.BasePermission):
     """Allow safe reads if requester is a participant of the post's topic."""
+    message = "Você deve ser um participante deste tópico."
+    
     def has_permission(self, request, view):
         topic_id = view.kwargs.get('topic_pk')
         if topic_id:
@@ -12,11 +14,15 @@ class IsTopicParticipant(permissions.BasePermission):
 
 class IsAuthor(permissions.BasePermission):
     """Allow action only if requester is the post author."""
+    message = "Você deve ser o autor desta postagem."
+    
     def has_object_permission(self, request, view, obj):
         return getattr(obj, "posted_by", None) == request.user
 
 class IsAuthorOrTopicAdmin(permissions.BasePermission):
     """Allow action if author OR a participant with role 'admin' in the post's topic."""
+    message = "Você deve ser o autor ou administrador do tópico."
+    
     def has_object_permission(self, request, view, obj):
         if getattr(obj, "posted_by", None) == request.user:
             return True
