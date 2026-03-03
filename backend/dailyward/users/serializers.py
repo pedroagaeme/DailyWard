@@ -48,7 +48,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         password = attrs.get('password', '')
         confirm_password = attrs.get('confirm_password', '')
         if password != confirm_password:
-            raise serializers.ValidationError("passwords do not match")
+            raise serializers.ValidationError("As senhas não coincidem")
         return attrs
     
     def create(self, validated_data):  
@@ -77,10 +77,10 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(request=request, email=email, password=password)
 
         if not user:
-            raise AuthenticationFailed("invalid credentials")
+            raise AuthenticationFailed("Credenciais inválidas")
         
         if not user.is_verified:
-            raise AuthenticationFailed("email is not verified")
+            raise AuthenticationFailed("O email não foi verificado")
         
         user_tokens = user.tokens()
         

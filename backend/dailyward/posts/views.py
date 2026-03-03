@@ -47,6 +47,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         instance = serializer.save()
+        
         # Delete cached URLs for the post and poster
         cache.delete(f'post_pic_url_{instance.id}')
     
