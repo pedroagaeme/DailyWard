@@ -4,9 +4,9 @@ from users.models import User
 
 class Resource(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, default='')
+    title = models.CharField(max_length=50, default='')
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.TextField(blank=True, default='', null=False)
+    description = models.TextField(blank=True, default='', null=False, max_length=800)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class ResourceFile(models.Model):
