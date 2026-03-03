@@ -9,6 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { useState } from 'react';
 import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
+
 interface JoinTopicForm {
   code: string;
 }
@@ -22,10 +23,10 @@ export default function JoinTopic() {
     setIsLoading(true);
     const result = await TopicService.joinTopic(data.code);
     
-    if (result && result.status === 200) {
+    if (result.status === 200) {
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error joining topic:', result);
     }
     setIsLoading(false);
