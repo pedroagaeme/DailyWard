@@ -93,7 +93,7 @@ function TopicFeedItemButton({item}:{item:TopicFeedItem}) {
             fullName={item.posterName} 
             style={styles.profilePic}
           />
-          <Text style={styles.posterName}>{item.posterName}</Text>
+          <Text style={styles.posterName} numberOfLines={1} ellipsizeMode='tail'>{item.posterName}</Text>
         </View>
         <View style={styles.timeAndOptions}>
           <Text style={styles.hourText}>{new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
@@ -150,11 +150,13 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   profileSection: {
+    flexShrink: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap:12,
   },
   posterName: {
+    flexShrink: 1,
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
     lineHeight: 24,
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    paddingLeft: 20,
   },
   profilePic: {
     width: 40,

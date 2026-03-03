@@ -121,7 +121,7 @@ export default function SeeResourceScreen() {
             />
             <Text style={styles.posterName}>{item.posterName || 'Usuário'}</Text>
             </View>
-            <View >
+            <View style={{paddingLeft: 20}}>
                 <Text style={styles.hourText}>
                     {new Date(item.createdAt || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </Text>
@@ -150,7 +150,6 @@ export default function SeeResourceScreen() {
                    key={index} 
                    file={file} 
                    resourceId={item.id}
-                   fileId={file.id.toString()}
                    topicId={topicId}
                  />
                ))}
@@ -198,11 +197,13 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   profileSection: {
+    flexShrink: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap:12,
   },
   posterName: {
+    flexShrink: 1,
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
     lineHeight: 24,

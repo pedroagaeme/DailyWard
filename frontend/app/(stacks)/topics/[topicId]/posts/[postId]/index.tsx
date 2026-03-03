@@ -111,9 +111,9 @@ export default function SeePostScreen() {
               <View style={styles.postHeaderRow}>
                   <View style={styles.profileSection}>
                     <CustomProfileImage source={item.posterProfilePicUrl} fullName={item.posterName} style={styles.profilePic}/>
-                    <Text style={styles.posterName}>{item.posterName}</Text>
+                    <Text style={styles.posterName} >{item.posterName}</Text>
                   </View>
-                  <View >
+                  <View style={{paddingLeft: 20}}>
                       <Text style={styles.hourText}>
                           {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Text>
@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   profileSection: {
+    flexShrink: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap:12,
@@ -181,6 +182,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background[90],
   },
   posterName: {
+    flexShrink: 1,
     fontFamily:'Inter_600SemiBold',
     fontSize: 16,
     lineHeight: 24,

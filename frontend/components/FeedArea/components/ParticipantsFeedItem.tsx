@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   row: {
+    flexShrink: 1,  
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -69,10 +70,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   textSection: {
+    flexShrink: 1,
     flex: 1,
     justifyContent: 'center',
   },
   fullName: {
+    flexShrink: 1,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 16,
     lineHeight: 20,

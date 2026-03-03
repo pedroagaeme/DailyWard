@@ -130,7 +130,7 @@ function ResourcesFeedItemButton({item}:{item:ResourcesFeedItem}) {
           )}
         </View>
         <View style={styles.footerRow}>
-          <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
+          <View style={{flexDirection:'row', alignItems:'center', gap:10, flexShrink: 1}}>
             <CustomProfileImage 
               source={item.posterProfilePicUrl}
               fullName={item.posterName || 'Usuário'}
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     fontFamily:'Inter_600SemiBold',
     fontSize: 13,
     lineHeight: 16,
+    flexShrink: 1,
     color: Colors.light.text[5],
   },
   title: {
@@ -208,6 +209,7 @@ const styles = StyleSheet.create({
   },
   nameAndDateContainer: {
     gap: 5,
+    flexShrink: 1,
   },
   dateText: {
     fontFamily:'Inter_400Regular',
@@ -247,6 +249,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   ellipsisButton: {
+    paddingLeft: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
