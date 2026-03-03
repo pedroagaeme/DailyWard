@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { FileCard } from '@/components/FileCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface EditResourceForm {
   title: string;
@@ -28,6 +29,7 @@ export default function EditResource() {
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   // Fetch existing resource data
   useEffect(() => {
@@ -99,10 +101,12 @@ export default function EditResource() {
       existingFileIds: existingFiles.map(f => f.id)
     });
     
-    if (result && (result.status === 200 || result.status === 201)) {
+    if (result.status === 200 || result.status === 201) {
+      queryClient.invalidateQueries({ queryKey: ['resource', topicId, resourceId] });
+      queryClient.invalidateQueries({ queryKey: ['resources', topicId] });
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error updating resource:', result);
     }
     setIsSubmitting(false);
@@ -124,7 +128,7 @@ export default function EditResource() {
         <Controller
           control={control}
           name="title"
-          rules={{ required: 'Título é obrigatório' }}
+          rules={{ required: 'Título é obrigatório', maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -134,6 +138,7 @@ export default function EditResource() {
               value={value}
               autoCapitalize="sentences"
               errors={errors.title}
+              maxLength={50}
             />
           )}
         />

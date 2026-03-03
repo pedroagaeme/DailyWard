@@ -62,10 +62,10 @@ export default function CreateTopic() {
       } : undefined
     });
 
-    if (result && result.status === 201) {
+    if (result.status === 201) {
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error creating topic:', result);
     }
     setIsLoading(false);
@@ -85,7 +85,7 @@ export default function CreateTopic() {
         <Controller
           control={control}
           name="title"
-          rules={{ required: 'Título é obrigatório' }}
+          rules={{ required: 'Título é obrigatório', maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -96,6 +96,7 @@ export default function CreateTopic() {
               autoCapitalize="sentences"
               errors={errors.title}
               parentScrollRef={scrollViewRef}
+              maxLength={50}
             />
           )}
         />

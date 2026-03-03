@@ -87,22 +87,29 @@ export default function EditTopic() {
     }
 
     setIsSubmitting(true);
+    
+    // Determine what to send for topicImageUrl
+    let topicImageUrl: string | null | undefined;
+    if (image) {
+      topicImageUrl = image;
+    } else if (!image && !existingImageUrl) {
+      topicImageUrl = null;
+    } else {
+      topicImageUrl = undefined;
+    }
+    
     const result = await TopicService.updateTopic(topicId, {
       title: data.title,
       description: data.description,
-      topicImageUrl: image ? {
-        uri: image,
-        name: image.split('/').pop() || 'topic_image.jpg',
-        type: mime.getType(image) || 'image/jpeg',
-      } : undefined
+      topicImageUrl: topicImageUrl
     });
 
-    if (result && (result.status === 200 || result.status === 201)) {
+    if (result.status === 200 || result.status === 201) {
       queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
       queryClient.invalidateQueries({ queryKey: ['topics'] });
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error updating topic:', result);
     }
     setIsSubmitting(false);
@@ -131,7 +138,7 @@ export default function EditTopic() {
         <Controller
           control={control}
           name="title"
-          rules={{ required: true }}
+          rules={{ required: true, maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -140,6 +147,7 @@ export default function EditTopic() {
               onBlur={onBlur}
               value={value}
               autoCapitalize="sentences"
+              maxLength={50}
             />
           )}
         />

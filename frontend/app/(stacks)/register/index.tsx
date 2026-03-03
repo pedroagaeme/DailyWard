@@ -52,10 +52,12 @@ export default function Register() {
                             returnKeyType="next"
                             onSubmitEditing={() => lastNameRef.current?.focus()}
                             submitBehavior='submit'
+                            maxLength={50}
                         />
                     )}
                     rules={{
-                        required: 'Nome é obrigatório'
+                        required: 'Nome é obrigatório',
+                        maxLength: 50
                     }}
                 />
                 <Controller
@@ -73,10 +75,12 @@ export default function Register() {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             ref={lastNameRef}
                             submitBehavior='blurAndSubmit'
+                            maxLength={50}
                         />
                     )}
                     rules={{ 
-                        required: 'Sobrenome é obrigatório' 
+                        required: 'Sobrenome é obrigatório',
+                        maxLength: 50
                     }}
                 />
                 <ApiInterfacingButton 

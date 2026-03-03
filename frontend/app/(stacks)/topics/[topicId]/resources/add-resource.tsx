@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { FileCard } from '@/components/FileCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ApiInterfacingButton } from '@/components/ApiInterfacingButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CreateResourceForm {
   title: string;
@@ -25,6 +26,7 @@ export default function AddResource() {
   const insets = useSafeAreaInsets();
   const [files, setFiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const pickDocuments = async () => {
     try {
@@ -70,10 +72,11 @@ export default function AddResource() {
       files: files.length > 0 ? files : undefined
     });
     
-    if (result && result.status === 201) {
+    if (result.status === 201) {
+      queryClient.invalidateQueries({ queryKey: ['resources', topicId] });
       router.back();
     } else {
-      Alert.alert('Erro', 'Ocorreu um erro inesperado');
+      Alert.alert('Erro', result.error || 'Ocorreu um erro inesperado');
       console.error('Error creating resource:', result);
     }
     setIsLoading(false);
@@ -87,7 +90,7 @@ export default function AddResource() {
         <Controller
           control={control}
           name="title"
-          rules={{ required: 'Título é obrigatório' }}
+          rules={{ required: 'Título é obrigatório', maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Título"
@@ -97,6 +100,7 @@ export default function AddResource() {
               value={value}
               autoCapitalize="sentences"
               errors={errors.title}
+              maxLength={50}
             />
           )}
         />

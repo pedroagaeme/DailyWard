@@ -100,7 +100,7 @@ export default function EditProfileScreen() {
         <Controller
           control={control}
           name="firstName"
-          rules={{ required: 'Nome é obrigatório' }}
+          rules={{ required: 'Nome é obrigatório', maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Nome"
@@ -111,6 +111,7 @@ export default function EditProfileScreen() {
               autoCapitalize="words"
               errors={errors.firstName}
               parentScrollRef={scrollViewRef}
+              maxLength={50}
             />
           )}
         />
@@ -118,7 +119,7 @@ export default function EditProfileScreen() {
         <Controller
           control={control}
           name="lastName"
-          rules={{ required: 'Sobrenome é obrigatório' }}
+          rules={{ required: 'Sobrenome é obrigatório', maxLength: 50 }}
           render={({ field: { onChange, onBlur, value } }) => (
             <FormInput
               title="Sobrenome"
@@ -129,6 +130,7 @@ export default function EditProfileScreen() {
               autoCapitalize="words"
               errors={errors.lastName}
               parentScrollRef={scrollViewRef}
+              maxLength={50}
             />
           )}
         />
@@ -147,7 +149,7 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background[100],
+    backgroundColor: Colors.light.background[90],
   },
   content: {
     flex: 1,
