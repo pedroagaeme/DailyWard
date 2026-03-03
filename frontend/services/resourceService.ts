@@ -4,6 +4,7 @@ import { ResourcesFeedItem } from '@/types';
 export interface ResourceCreateResponse {
   status: number;
   data: any;
+  error?: string;
 }
 
 export interface ResourceFetchResponse {
@@ -17,7 +18,7 @@ export class ResourceService {
     description: string;
     resourceType: 'file' | 'announcement';
     files?: any[];
-  }): Promise<ResourceCreateResponse | null> {
+  }): Promise<ResourceCreateResponse> {
     try {
       const form = new FormData();
       form.append('title', data.title);
@@ -48,9 +49,14 @@ export class ResourceService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating resource:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
@@ -90,7 +96,7 @@ export class ResourceService {
     resourceType: 'file' | 'announcement';
     files?: any[];
     existingFileIds?: number[];
-  }): Promise<ResourceCreateResponse | null> {
+  }): Promise<ResourceCreateResponse> {
     try {
       const form = new FormData();
       form.append('title', data.title);
@@ -129,21 +135,30 @@ export class ResourceService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating resource:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
-  static async deleteResource(topicId: string, resourceId: string): Promise<{ status: number } | null> {
+  static async deleteResource(topicId: string, resourceId: string): Promise<{ status: number; error?: string }> {
     try {
       const response = await axiosPrivate.delete(`/users/me/topics/${topicId}/resources/${resourceId}/`);
       return {
         status: response.status
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting resource:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        error: errorMessage
+      };
     }
   }
 }

@@ -4,16 +4,19 @@ import { HomeFeedItem } from '@/types';
 export interface TopicJoinResponse {
   status: number;
   data: any;
+  error?: string;
 }
 
 export interface TopicCreateResponse {
   status: number;
   data: any;
+  error?: string;
 }
 
 export interface TopicGetResponse {
   status: number;
   data: any;
+  error?: string;
 }
 
 export class TopicService {
@@ -32,7 +35,7 @@ export class TopicService {
     }
   }
 
-  static async joinTopic(code: string): Promise<TopicJoinResponse | null> {
+  static async joinTopic(code: string): Promise<TopicJoinResponse> {
     try {
       const response = await axiosPrivate.post('/users/me/topics/join/', {
         code: code.toUpperCase()
@@ -42,9 +45,14 @@ export class TopicService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error joining topic:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
@@ -52,7 +60,7 @@ export class TopicService {
     title: string;
     description: string;
     topicImageUrl?: any;
-  }): Promise<TopicCreateResponse | null> {
+  }): Promise<TopicCreateResponse> {
     try {
       const formData = new FormData();
       formData.append('title', data.title);
@@ -76,43 +84,56 @@ export class TopicService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating topic:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
-  static async getTopic(id: string): Promise<TopicGetResponse | null> {
+  static async getTopic(id: string): Promise<TopicGetResponse> {
     try {
       const response = await axiosPrivate.get(`/users/me/topics/${id}/`);
       return {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting topic:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
   static async updateTopic(topicId: string, data: {
     title: string;
     description: string;
-    topicImageUrl?: any;
-  }): Promise<TopicCreateResponse | null> {
+    topicImageUrl?: string | null;
+  }): Promise<TopicCreateResponse> {
     try {
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('description', data.description);
       
-      if (data.topicImageUrl) {
+      if (data.topicImageUrl && data.topicImageUrl.startsWith('file://')) {
         formData.append('topicImageUrl', {
-          uri: data.topicImageUrl.uri,
-          name: data.topicImageUrl.name || 'topic_image.jpg',
-          type: data.topicImageUrl.type || 'image/jpeg',
+          uri: data.topicImageUrl,
+          name: data.topicImageUrl.split('/').pop() || 'topic_image.jpg',
+          type: 'image/jpeg',
         } as any);
+      } else if (data.topicImageUrl === null) {
+        formData.append('topicImageUrl', '');
       }
 
+      console.log('Updating topic with data:', formData)
       const response = await axiosPrivate.put(`/users/me/topics/${topicId}/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -123,13 +144,18 @@ export class TopicService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating topic:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
-  static async leaveTopic(topicId: string): Promise<{ status: number } | null> {
+  static async leaveTopic(topicId: string): Promise<{ status: number; error?: string }> {
     try {
       const response = await axiosPrivate.delete(`/users/me/topics/${topicId}/leave/`);
       return {
@@ -137,19 +163,19 @@ export class TopicService {
       };
     } catch (error: any) {
       console.error('Error leaving topic:', error);
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error('Response status:', error.response.status);
         console.error('Response data:', error.response.data);
       } else if (error.request) {
-        // The request was made but no response was received
         console.error('No response received:', error.request);
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error('Error setting up request:', error.message);
       }
-      return null;
+      return {
+        status: error.response?.status || 500,
+        error: errorMessage
+      };
     }
   }
 }

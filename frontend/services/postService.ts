@@ -4,6 +4,7 @@ import { TopicFeedItem } from '@/types';
 export interface PostCreateResponse {
   status: number;
   data: any;
+  error?: string;
 }
 
 export interface PostFetchResponse {
@@ -14,8 +15,8 @@ export interface PostFetchResponse {
 export class PostService {
   static async createPost(topicId: string, data: {
     contentText: string;
-    contentPicUrl?: string;
-  }): Promise<PostCreateResponse | null> {
+    contentPicUrl: string | null;
+  }): Promise<PostCreateResponse> {
     try {
       const formData = new FormData();
       formData.append('contentText', data.contentText);
@@ -40,9 +41,14 @@ export class PostService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating post:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
@@ -86,8 +92,8 @@ export class PostService {
 
   static async updatePost(topicId: string, postId: string, data: {
     contentText: string;
-    contentPicUrl?: string;
-  }): Promise<PostCreateResponse | null> {
+    contentPicUrl?: string | null;
+  }): Promise<PostCreateResponse> {
     try {
       const formData = new FormData();
       formData.append('contentText', data.contentText);
@@ -98,8 +104,15 @@ export class PostService {
           name: data.contentPicUrl.split('/').pop() || 'post_image.jpg',
           type: 'image/jpeg',
         } as any);
+      } else if (data.contentPicUrl === null) {
+        formData.append('contentPicUrl', '');
       }
 
+      if (!data.contentPicUrl) {
+        formData.append('contentPicUrl', '');
+      }
+
+      console.log('Updating post with data:', formData)
       const response = await axiosPrivate.put(
         `/users/me/topics/${topicId}/posts/${postId}/`, 
         formData, 
@@ -112,21 +125,30 @@ export class PostService {
         status: response.status,
         data: response.data
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating post:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: errorMessage
+      };
     }
   }
 
-  static async deletePost(topicId: string, postId: string): Promise<{ status: number } | null> {
+  static async deletePost(topicId: string, postId: string): Promise<{ status: number; error?: string }> {
     try {
       const response = await axiosPrivate.delete(`/users/me/topics/${topicId}/posts/${postId}/`);
       return {
         status: response.status
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting post:', error);
-      return null;
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Ocorreu um erro inesperado';
+      return {
+        status: error.response?.status || 500,
+        error: errorMessage
+      };
     }
   }
 }
