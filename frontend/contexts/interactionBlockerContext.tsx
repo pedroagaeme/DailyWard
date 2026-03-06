@@ -1,6 +1,5 @@
 import { createContext, useContext, useRef, useState, ReactNode } from 'react';
-import { StyleSheet, ActivityIndicator } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 
 interface InteractionBlockerContextType {
   blockInteractions: (duration: number) => void;
@@ -32,7 +31,7 @@ interface InteractionBlockerProviderProps {
 export const InteractionBlockerProvider: React.FC<InteractionBlockerProviderProps> = ({
   children,
   showSpinner = false,
-  backgroundColor = 'rgba(0, 0, 0, 0.2)',
+  backgroundColor = 'rgba(0, 0, 0, 0)',
   opacity = 1
 }) => {
   const [isBlocking, setIsBlocking] = useState(false);
@@ -58,9 +57,7 @@ export const InteractionBlockerProvider: React.FC<InteractionBlockerProviderProp
     <InteractionBlockerContext.Provider value={{ blockInteractions, isBlocking }}>
       {children}
       {isBlocking && (
-        <Animated.View 
-          entering={FadeIn.duration(200)}
-          exiting={FadeOut.duration(200)}
+        <View 
           style={[
             styles.blocker, 
             { backgroundColor, opacity }
@@ -68,7 +65,7 @@ export const InteractionBlockerProvider: React.FC<InteractionBlockerProviderProp
           pointerEvents="auto"
         >
           {showSpinner && <ActivityIndicator size="large" color="#fff" />}
-        </Animated.View>
+        </View>
       )}
     </InteractionBlockerContext.Provider>
   );
