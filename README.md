@@ -2,9 +2,6 @@
 
 ## Demonstração
 
-<video src="dailyward-video.mp4" controls></video>
-
-
 ## Visão Geral
 DailyWard é um aplicativo desenvolvido para facilitar a comunicação, organização e compartilhamento de recursos entre usuários em ambientes colaborativos. O projeto utiliza uma arquitetura moderna, integrando backend em Django REST Framework e frontend em React Native com Expo Router.
 
