@@ -48,6 +48,7 @@ export default function Register() {
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
+                            autoCapitalize="words"
                             errors={errors.firstName}
                             returnKeyType="next"
                             onSubmitEditing={() => lastNameRef.current?.focus()}
@@ -70,6 +71,7 @@ export default function Register() {
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
+                            autoCapitalize="words"
                             errors={errors.lastName}
                             returnKeyType="next"
                             onSubmitEditing={handleSubmit(onSubmit)}

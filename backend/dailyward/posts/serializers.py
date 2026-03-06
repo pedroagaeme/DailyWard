@@ -22,6 +22,10 @@ class PostSerializer(serializers.ModelSerializer):
         # Get the default representation
         data = super().to_representation(instance)
         
+        # Ensure content_text is empty string instead of null
+        if data.get('content_text') is None:
+            data['content_text'] = ''
+        
         # Handle caching for content_pic_url
         if instance.content_pic_url:
             cache_key = f'post_pic_url_{instance.id}'

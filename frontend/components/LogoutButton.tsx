@@ -1,6 +1,7 @@
 import { LogoutIcon } from "@/assets/images/logout-icon";
-import { IconButton } from '@/components/IconButton';
 import { useAuth } from "@/contexts";
+import { Pressable, Text, StyleSheet, View } from "react-native";
+import { Colors } from "@/constants/Colors";
 
 interface LogoutButtonProps {
     onLogoutPress?: () => void;
@@ -18,12 +19,23 @@ export function LogoutButton({ onLogoutPress }: LogoutButtonProps = {}) {
     };
     
     return (
-        <IconButton 
-        onPress={handlePress} 
-        borders={{left: true, top: true}} outerboxRadius={10} 
-        innerSize={24} 
-        >
-            <LogoutIcon width={24} height={24} />
-        </IconButton>
+        <Pressable onPress={handlePress} style={styles.button}>
+            <LogoutIcon width={24} height={24} color={Colors.light.text[5]} />
+            <Text style={styles.text}>Sair</Text>
+        </Pressable>
     );
 }
+
+const styles = StyleSheet.create({
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingVertical: 8,
+    },
+    text: {
+        fontFamily: 'Inter_500Medium',
+        fontSize: 16,
+        color: Colors.light.text[5],
+    },
+});

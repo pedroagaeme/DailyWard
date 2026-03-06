@@ -163,6 +163,7 @@ export default function EditTopic() {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
+              autoCapitalize="sentences"
               multiline
               maxLength={800}
             />

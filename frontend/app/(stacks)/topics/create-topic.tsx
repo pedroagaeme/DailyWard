@@ -112,6 +112,7 @@ export default function CreateTopic() {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
+              autoCapitalize="sentences"
               multiline
               maxLength={800}
             />

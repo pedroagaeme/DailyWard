@@ -36,6 +36,10 @@ class ResourceSerializer(serializers.ModelSerializer):
         # Get the default representation
         data = super().to_representation(instance)
         
+        # Ensure description is empty string instead of null
+        if data.get('description') is None:
+            data['description'] = ''
+        
         # Handle caching for poster_profile_pic_url
         if instance.uploaded_by.profile_pic_url:
             cache_key = f'profile_pic_url_{instance.uploaded_by.id}'

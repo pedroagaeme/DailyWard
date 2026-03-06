@@ -117,6 +117,7 @@ export default function AddResource() {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
+              autoCapitalize="sentences"
               multiline
               numberOfLines={4}
               maxLength={800}

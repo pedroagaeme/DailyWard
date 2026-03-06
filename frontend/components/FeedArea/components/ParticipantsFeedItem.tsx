@@ -30,7 +30,14 @@ function ParticipantsFeedItemButton({item}: {item: ParticipantsFeedItem}) {
           style={styles.profilePic} 
         />
         <View style={styles.textSection}>
-          <Text style={styles.fullName}>{item.userFullName}</Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.fullName}>{item.userFullName}</Text>
+            {item.role === 'admin' && (
+              <View style={styles.adminBadge}>
+                <Text style={styles.adminText}>admin</Text>
+              </View>
+            )}
+          </View>
         </View>
         {isLoggedInUserAdmin && !isCurrentUser && (
           <Pressable onPress={(e) => e.stopPropagation()}>
@@ -74,11 +81,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 1,
+  },
   fullName: {
     flexShrink: 1,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 16,
     lineHeight: 20,
     color: Colors.light.text[5],
+  },
+  adminBadge: {
+    backgroundColor: Colors.light.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  adminText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 12,
+    color: Colors.light.background[100],
+    textTransform: 'lowercase',
   },
 });

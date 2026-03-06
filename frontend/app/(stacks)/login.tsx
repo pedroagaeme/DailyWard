@@ -23,8 +23,13 @@ export default function Login() {
         const result = await onLogin!(data);
         if(result && result.error) {
             const errorStatus = result.error?.response?.status;
-            if (errorStatus === 400) {
-                Alert.alert('Erro', 'Email ou senha inválidos');
+            const errorMessage = result.error?.response?.data?.detail;
+            
+            if (errorStatus === 401) {
+                // Display the specific error message from backend
+                Alert.alert('Erro', errorMessage || 'Email ou senha inválidos');
+            } else if (errorStatus === 400) {
+                Alert.alert('Erro', errorMessage || 'Dados inválidos');
             } else {
                 Alert.alert('Erro', 'Ocorreu um erro inesperado');
             }

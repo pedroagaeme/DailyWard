@@ -18,7 +18,7 @@ import { useGlobalSearchParams } from "expo-router";
 
 function ParticipantsContent({participants, code}: {participants: ParticipantsFeedItem[], code: string}) {
   return (
-      <View style={styles.container}>
+      <View>
         <View style={styles.header}>
           <TopicCodeArea code={code || ''} />
         </View>
@@ -83,10 +83,10 @@ export default function Participants() {
   return (
     <View style={styles.container}>
       <ParticipantsHeader title={topicTitle || 'Carregando...'} />
+      <ParticipantsContent participants={participants} code={code || ''} />
       <FeedArea 
         data={participants} 
         renderItem={renderParticipantsFeedItem}
-        ListHeaderComponent={<ParticipantsContent participants={participants} code={code || ''} />}
         immersiveScreen={{top: false, bottom: true}}
         additionalPadding={{top: 0, bottom: 20}}
         noHorizontalPadding={true}

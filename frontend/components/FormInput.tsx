@@ -51,6 +51,7 @@ export function FormInput({title, ref, errors, borderless = false, headerCompone
                     isFocused && !borderless && { borderColor: Colors.light.primary }
                 ]}>
                     <TextInput
+                        autoCapitalize="none"
                         {...props}
                         ref={ref}
                         style={[styles.input, {minHeight: Math.max(inputHeight, lineHeight) + lineHeight}]}

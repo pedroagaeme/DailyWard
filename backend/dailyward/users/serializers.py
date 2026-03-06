@@ -77,7 +77,7 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(request=request, email=email, password=password)
 
         if not user:
-            raise AuthenticationFailed("Credenciais inválidas")
+            raise AuthenticationFailed("Email ou senha inválidos")
         
         if not user.is_verified:
             raise AuthenticationFailed("O email não foi verificado")

@@ -20,6 +20,10 @@ class TopicSerializer(serializers.ModelSerializer):
         #get the default representation
         data = super().to_representation(instance)
 
+        # Ensure description is empty string instead of null
+        if data.get('description') is None:
+            data['description'] = ''
+
         # Handle caching for topic_image_url
         if instance.topic_image_url:
            cache_key = f'topic_image_url_{instance.id}'

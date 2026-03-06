@@ -47,7 +47,8 @@ export default function AddPicture() {
         });
         
         if (result?.error) {
-          Alert.alert('Erro', 'Falha ao fazer login. Tente novamente.');
+          const errorMessage = result.error?.response?.data?.detail;
+          Alert.alert('Erro', errorMessage || 'Falha ao fazer login. Tente novamente.');
           setIsLoading(false);
           return;
         }
